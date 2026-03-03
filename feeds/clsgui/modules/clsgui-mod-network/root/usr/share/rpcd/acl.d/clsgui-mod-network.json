@@ -1,0 +1,22 @@
+{
+    "clsgui-mod-network-config": {
+        "description": "Grant access to the network",
+        "read": {
+            "uci": [ "*" ],
+            "file": {
+                "/sbin/ip": [ "exec" ]
+            },
+            "ubus": {
+                "uci": [ "*" ]
+			}
+		},
+
+        "write": {
+            "uci": [ "network", "dhcp"],
+            "ubus": {
+                "uci": [ "*" ]
+            }
+        }
+	}
+}
+

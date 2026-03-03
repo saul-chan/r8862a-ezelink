@@ -1,0 +1,65 @@
+vbss_ac is user application to simulate VBSS AC.
+vbss_ac is supported on ARM (CLS D1K) and X86 Ubuntu platform. vbss_ac is tested
+on x86_64 20.04.1-Ubuntu with gcc (Ubuntu 9.4.0-1ubuntu1~20.04.2) 9.4.0.
+
+1. Compilation
+(1) get vbss_ac.c and vbss.h. Put them in same folder.
+(2) gcc vbss_ac.c -o vbss_ac-x86
+(3) chmod +x vbss_ac-x86
+(4) ./vbss_ac-x86 <cmds>
+
+
+2. Topology
+             PC(vbss_ac)
+                 |
+---------------Switch----------------
+|                                   |
+AP1(vbss_agent)                  AP2(vbss_agent)
+
+3. Usage
+$ ./vbss_ac-x86 ?
+Usage:
+  vbss_ac <cmd> <param>
+  cmds:
+    ping          <agent IP>
+    enable_vbss   <agent IP> <primary ifname> <0 | 1>
+    add_vap       <agent IP> <ifname> <bssid> <ssid> <wpa2 | open> [key]
+    copy_vap_info <src IP> <ifname> <dest IP> <ifname>
+    del_vap       <agent IP> <ifname>
+    copy_sta_info <sta mac> <src IP> <ifname> <dest IP> <ifname>
+    roam_sta      <sta mac> <src IP> <ifname> <dest IP> <ifname>
+    trg_switch    <sta mac> <src IP> <ifname> <dest IP> <ifname>
+    switch_done   <sta mac> <src IP> <ifname> <dest IP> <ifname>
+
+Note: MAC address format: 00:11:22:33:44:55
+
+4. Use vbss_ac to control VBSS
+Give an example to show the usage of vbss_ac. The configuration of the example:
+IP_AP1=10.30.9.159
+IP_AP2=10.30.21.76
+VBSS VAP BSSID=D0:44:33:00:00:45
+VBSS VAP BSSID=VBSS_Demo
+VBSS VAP auth=WPA2-PSK
+VBSS VAP key=12345678
+STA MAC=BC:09:1B:24:3E:0C
+
+Steps to roam STA from AP1 to AP2:
+(1) Setup PC, AP1 and AP2 as topology shown. Make sure there are network available.
+(2) 'vbss_agent &' on AP1 and AP2.
+    Lauch vbss_agent on AP1 and AP2.
+(3) Follwing cmds are executed on PC(vbss_ac).
+    (a) ./vbss_ac-x86 ping 10.30.9.159
+        Test connection between vbss_ac and AP1 vbss_agent.
+    (b) ./vbss_ac-x86 ping 10.30.21.76
+        Test connection between vbss_ac and AP2 vbss_agent.
+    (c) ./vbss_ac-x86 enable_vbss 10.30.9.159 wlan1 1
+        Enable VBSS on AP1.
+    (d) ./vbss_ac-x86 enable_vbss 10.30.21.76 wlan1 1
+        Enable VBSS on AP2.
+    (e) ./vbss_ac-x86 add_vap 10.30.9.159 wlan1_1 D0:44:33:00:00:45 VBSS_Demo wpa2 12345678
+        Add VBSS VAP wlan1_1 on AP1.
+    (f) ./vbss_ac-x86 roam_sta BC:09:1B:24:3E:0C 10.30.9.159 wlan1_1 10.30.21.76 wlan1_1
+        After STA associats AP1, roam STA from AP1 to AP2.
+    (g) ./vbss_ac-x86 roam_sta BC:09:1B:24:3E:0C 10.30.21.76 wlan1_1 10.30.9.159 wlan1_1
+        Roam STA from AP2 to AP1.
+

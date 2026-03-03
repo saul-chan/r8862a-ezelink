@@ -1,0 +1,120 @@
+#!/bin/sh /etc/rc.common
+
+# load cls wifi driver
+START=11
+
+set_wifi_fem_type() {
+	local board fem_type femwlan0 femwlan1 cal_ver
+	local version=$1
+
+	board=RDK
+	case "$(board_name)" in
+	clsemi,dubhe2000-rdk)
+		board=RDK
+		;;
+	clsemi,triband-5400-rdk)
+		board=RDK
+		;;
+	clsemi,dubhe2000-evb*)
+		board=EVB
+		;;
+	esac
+
+	femwlan0=$(fw_printsys -n femwlan0 2>/dev/null)
+	femwlan1=$(fw_printsys -n femwlan1 2>/dev/null)
+
+	case "$femwlan0-$femwlan1" in
+	KCT8270-KCT8570)
+		fem_type=kct
+		;;
+	QPF4288A-QPF4588A)
+		fem_type=qorvo
+		;;
+	SKY85333-SKY85747|SKY85333-11-SKY85747-11)
+		fem_type=skywork
+		;;
+	*)
+		echo "Warning: cannot determine fem_type according 'femwlan0=$femwlan0' 'femwlan1=$femwlan1'" > /dev/console
+		return;
+		;;
+	esac
+
+	echo "Info: call set_fem_type.sh $fem_type $version $board" > /dev/console
+
+	cd /root/irf/
+	sh set_fem_type.sh $fem_type $version $board
+	cd -
+}
+
+start()
+{
+	# link to calibartion file save dir
+	mkdir -p /tmp/cal
+	rm -rf /mnt/ubifs_data
+	ln -s /tmp/cal /mnt/ubifs_data
+
+	# load cal data for both cal and normal mode
+	/sbin/cal-data load
+
+	if [ "$BOOT" = "1" ]; then
+		# load correct gain table before wifi driver is loaded
+		local version=$(/sbin/cal-info get_gain_ver)
+		set_wifi_fem_type $version
+	fi
+
+	# insmod compat.ko
+	cal_state=$(fw_printenv -n cal_state 2>/dev/NULL)
+	lab_mode=$(fw_printenv -n lab_mode 2>/dev/null)
+	if [ "$cal_state" == "1" ]; then
+		/sbin/cal-mode start
+
+		# Install wifi driver manually in cali tool
+		insmod cfg80211.ko cfg80211_cal_mode=1
+		insmod clsm_wifi.ko debug_mode=1 ps_on=0 ps_on_5g=0 boot_cali_enable=1
+		insmod clsm_wifi_soc.ko
+
+		ifconfig wlan0 up
+		ifconfig wlan1 up
+	elif [ "$cal_state" == "2" ]; then
+		echo "Disable wifi firmware auto loading, please load wifi firmware manually" > /dev/console
+	elif [ "$cal_state" == "3" ]; then
+		echo "Enter low power mode" > /dev/console
+		insmod cfg80211.ko
+		insmod clsm_wifi.ko bands_enable=3 ps_on=0 boot_cali_enable=1 ba_buffer_size=2 tx_wq=2 low_pwr_en=1
+		insmod clsm_wifi_soc.ko
+	else
+		insmod cfg80211.ko
+
+		if [ "$lab_mode" == "3" ]; then
+			echo "SRRC mode" > /dev/console
+			insmod clsm_wifi.ko bands_enable=3 ps_on=0 boot_cali_enable=0 ba_buffer_size=2 tx_wq=2 dpd_online_en=0 zif_online_en=0 heartbeat_en=0
+		else
+			echo "Normal mode" > /dev/console
+			insmod clsm_wifi.ko bands_enable=1 ps_on=0 boot_cali_enable=1 ba_buffer_size=2 tx_wq=2
+		fi
+
+		insmod clsm_wifi_soc.ko
+		insmod clsm_3addr_br.ko
+		#disable clsm 3addr bridge debug by default
+		echo 'module clsm_3addr_br -p' > /sys/kernel/debug/dynamic_debug/control
+
+		if [ "$lab_mode" == "3" ]; then
+			echo enable 1 > /sys/kernel/debug/ieee80211/phy0/cls_wifi/atf
+			echo srrc_enable 1 > /sys/kernel/debug/ieee80211/phy0/cls_wifi/atf
+			echo enable 1 > /sys/kernel/debug/ieee80211/phy1/cls_wifi/atf
+			echo srrc_enable 1 > /sys/kernel/debug/ieee80211/phy1/cls_wifi/atf
+		fi
+	fi
+}
+
+load_wifi() {
+	start
+	/sbin/wifi config
+	/sbin/wifi up
+}
+
+boot() {
+	BOOT=1
+	# load wifi driver takes dozens of seconds, which blocks subsequent startup scripts, run it in background
+	load_wifi &
+}

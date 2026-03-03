@@ -1,0 +1,61 @@
+/*
+ * Copyright (C) 2022 Clourney Semiconductor. All rights reserved.
+ */
+
+#ifndef __DUBHE2000_EVB_N_H__
+#define __DUBHE2000_EVB_N_H__
+
+#include <asm/arch/config.h>
+
+#define CONFIG_ARMV8_SWITCH_TO_EL1
+
+#ifdef CONFIG_CLS_WATCHDOG
+#define DUBHE2000_HW_WATCHDOG_ADDR 0x9044200C
+#define DUBHE2000_HW_WATCHDOG_VAL  0xA5A55A5A
+#define DUBHE2000_HW_WDT_STAR_ADDR 0x90442008
+#endif
+
+#define DUBHE2000_GLOBAL_SWRST_ADDR   0x90444200
+#define DUBHE2000_GLOBAL_SWRST_EN     0xA5A5A5A5
+#define DUBHE2000_GLOBAL_SWRST_START  0x5A765A76
+
+#define CONFIG_SYS_SDRAM_BASE           0x00000000
+#define CONFIG_SYS_SDRAM_SIZE           CONFIG_BOARD_SDRAM_SIZE
+#define CONFIG_SYS_INIT_SP_ADDR         (CONFIG_SYS_SDRAM_BASE + 0x001e0000)
+
+#ifdef CONFIG_BRD_PLAT_RUN_CLK_VARIANT
+#define BRD_PLAT_RUN_EMU_CLK    1
+#define BRD_PLAT_RUN_FPGA_CLK   2
+#define BRD_PLAT_RUN_SOC_CLK    3
+#endif
+
+#ifdef CONFIG_BRD_BOOT_FLASH_VARIANT
+#define BRD_BOOT_FROM_PNAND    1
+#define BRD_BOOT_FROM_SPINAND  2
+#define BRD_BOOT_FROM_SPINOR   3
+#endif
+
+#define COUNTER_DUBHE_TIMER_ENABLE_ADDR 0x62001000
+
+/* UART */
+#define CONFIG_SYS_BAUDRATE_TABLE       { 8000, 9600, 19200, 38400, 57600, 115200, \
+						230400, 460800, 921600}
+
+#if CONFIG_COUNTER_FREQUENCY
+#define COUNTER_FREQUENCY		CONFIG_COUNTER_FREQUENCY
+#endif
+#define CONFIG_SYS_NS16550_CLK          250000000
+
+#define CONFIG_ENV_RANGE                (4 * CONFIG_ENV_SIZE) /* 4 blocks for env*/
+
+#ifdef CONFIG_CLS_SPI_FLASH
+#define CONFIG_SYS_MAX_FLASH_BANKS  1
+#endif
+
+#define CONFIG_EXTRA_ENV_SETTINGS \
+	"initrd_high=0xffffffffffffffff"
+
+#define CONFIG_BOOTCOMMAND              "ubi part fw1;ubi read 0x200000 kernel;bootm 0x200000"
+#define CONFIG_SYS_BOOTM_LEN SZ_128M
+
+#endif /* __DUBHE2000_EVB_N_H__ */

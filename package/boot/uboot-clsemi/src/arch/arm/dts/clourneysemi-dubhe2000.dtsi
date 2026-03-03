@@ -1,0 +1,160 @@
+/*
+ *  Copyright (c) 2021-2024, Clourney Semiconductor. All rights reserved.
+ *
+ *  This software and/or documentation is licensed by Clourney Semiconductor under limited terms and conditions.
+ *  Reproduction and redistribution in binary or source form, with or without modification,
+ *  for use solely in conjunction with a Clourney Semiconductor chipset, is permitted in condition which
+ *  must retain the above copyright notice.
+ *
+ *  By using this software and/or documentation, you agree to the limited terms and conditions.
+ *
+ *  Device Tree Include file for Clourney Semiconductor SoC.
+ *
+ */
+
+/ {
+	uart0: serial@90008000 {
+		compatible = "ns16550a";
+		reg = <0x00 0x90008000 0x00 0x1000>;
+		reg-shift = <2>;
+		status = "disabled";
+	};
+
+        uart1: serial@90009000 {
+                compatible = "ns16550a";
+                reg = <0x00 0x90009000 0x00 0x1000>;
+                reg-shift = <2>;
+                status = "disabled";
+        };
+
+        uart2: serial@9000a000 {
+                compatible = "ns16550a";
+                reg = <0x00 0x9000a000 0x00 0x1000>;
+                reg-shift = <2>;
+                status = "disabled";
+        };
+
+	nandc0: memory-controller@80000000 {
+		compatible = "arm,dubhe1000-nandc";
+		reg = <0x00 0x80000000 0x00 0x8000000>;
+		status = "disabled";
+	};
+
+	spiflash: spi@88000000 {
+		compatible = "snps,dwc-ssi-1.01a";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		reg = <0x00 0x88000000 0x00 0x1000>;
+		reg-io-width = <4>;
+		num-cs = <4>;
+		status = "disabled";
+	};
+
+	spi0: spi@90018000 {
+		compatible = "snps,dw-apb-ssi-4.01";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		reg = <0x00 0x90018000 0x00 0x1000>;
+		reg-io-width = <4>;
+		num-cs = <4>;
+		status = "disabled";
+	};
+
+	spi1: spi@90019000 {
+		compatible = "snps,dw-apb-ssi-4.01";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		reg = <0x00 0x90019000 0x00 0x1000>;
+		reg-io-width = <4>;
+		num-cs = <4>;
+		status = "disabled";
+	};
+
+	spi2: spi@9001a000 {
+		compatible = "snps,dw-apb-ssi-4.01";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		reg = <0x00 0x9001a000 0x00 0x1000>;
+		reg-io-width = <4>;
+		num-cs = <4>;
+		status = "disabled";
+	};
+
+        mmcclk_bus: mmcclk_bus {
+                compatible = "fixed-clock";
+                clock-frequency = <50000000>;
+                #clock-cells = <0>;
+        };
+
+        mmcclk_core: mmcclk_core {
+                compatible = "fixed-clock";
+                clock-frequency = <250000000>;
+                #clock-cells = <0>;
+        };
+
+        sdmmc: CLS_SDHC {
+                compatible = "clourney,dwcmshc-sdhci";
+                reg = <0x0 0x8c000000 0x0 0x10000>;
+		#clock-cells = <1>;
+		clocks = <&mmcclk_core>, <&mmcclk_core>;
+		clock-names = "core", "bus";
+		status = "disabled";
+        };
+
+	npe: cls_edma {	/* this part is based on the clourney-dubhe1000.dtsi */
+		compatible = "clourney,cls edma";
+		reg = <0x00 0x4C200000 0x00 0x8000>,   /* edma address */
+		      <0x00 0x4C208000 0x00 0x8000>,   /* edma dbg address */
+		      <0x00 0x52000000 0x00 0x8000>,   /* xpcs0 address */
+		      <0x00 0x52800000 0x00 0x8000>,   /* xpcs1 address */
+		      <0x00 0x53000000 0x00 0x120000>, /* switch address */
+		      <0x00 0x53900000 0x00 0x9000>,   /* gmac1 address */
+		      <0x00 0x53A00000 0x00 0x1000>,   /* gmac2 address */
+		      <0x00 0x53B00000 0x00 0x1000>,   /* gmac3 address */
+		      <0x00 0x53C00000 0x00 0x1000>,   /* xgmac0 address */
+		      <0x00 0x53D00000 0x00 0x1000>;   /* xgmac1 address */
+		soft-bmu = <1>;
+		local-mac-address = [a0 c0 ab 39 cc f0];
+		fifo-depth = <1 0 0 0>;
+		split-mode = <0>;
+		qos = <0>;
+		xpcs0: xpcs@52000000 {
+				compatible = "clourney,xpcs";
+				id = <0>;
+				status = "disabled";
+		};
+
+		xpcs1: xpcs@52800000 {
+				compatible = "clourney,xpcs";
+				id = <1>;
+				status = "disabled";
+		};
+
+		xgmac0: xgmac@53C00000 {
+				compatible = "clourney,dwmac";
+				id = <0>;
+				status = "disabled";
+	    };
+		xgmac1: xgmac@53D00000 {
+				compatible = "clourney,dwmac";
+				id = <1>;
+				status = "disabled";
+	    };
+		xgmac2: xgmac@53900000 {
+				compatible = "clourney,dwmac";
+				id = <2>;
+				status = "disabled";
+	    };
+		xgmac3: xgmac@53A00000 {
+				compatible = "clourney,dwmac";
+				id = <3>;
+				status = "disabled";
+	    };
+		xgmac4: xgmac@53B00000 {
+				compatible = "clourney,dwmac";
+				id = <4>;
+				status = "disabled";
+	    };
+
+	};
+};

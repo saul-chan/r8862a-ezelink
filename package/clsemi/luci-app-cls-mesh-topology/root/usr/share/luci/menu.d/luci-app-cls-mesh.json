@@ -1,0 +1,29 @@
+{
+	"admin/status/cls-mesh": {
+		"title": "Mesh Information",
+		"order": 99,
+		"action": {
+			"type": "alias",
+			"path": "admin/status/cls-mesh/list"
+		},
+		"depends": {
+			"acl": [ "luci-app-cls-mesh" ]
+		}
+	},
+	"admin/status/cls-mesh/list": {
+        "title": "List Mode",
+        "order": 1,
+        "action": {
+            "type": "view",
+            "path": "clsemi/list"
+        }
+    },
+    "admin/status/cls-mesh/topology": {
+        "title": "Topology Mode",
+        "order": 2,
+        "action": {
+            "type": "view",
+            "path": "clsemi/topology"
+        }
+    }
+}

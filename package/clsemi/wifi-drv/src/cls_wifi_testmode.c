@@ -1,0 +1,225 @@
+/*
+ * Copyright (c) 2021-2024, Clourney Semiconductor. All rights reserved.
+ *
+ * This software and/or documentation is licensed by Clourney Semiconductor under limited terms and conditions.
+ * Reproduction and redistribution in binary or source form, with or without modification,
+ * for use solely in conjunction with a Clourney Semiconductor chipset, is permitted in condition which
+ * must retain the above copyright notice.
+ *
+ * By using this software and/or documentation, you agree to the limited terms and conditions.
+ */
+
+#include <net/mac80211.h>
+#include <net/netlink.h>
+
+#include "cls_wifi_testmode.h"
+#include "cls_wifi_msg_tx.h"
+
+/*
+ * This function handles the user application commands for register access.
+ *
+ * It retrieves command ID carried with CLS_WIFI_TM_ATTR_COMMAND and calls to the
+ * handlers respectively.
+ *
+ * If it's an unknown commdn ID, -ENOSYS is returned; or -ENOMSG if the
+ * mandatory fields(CLS_WIFI_TM_ATTR_REG_OFFSET,CLS_WIFI_TM_ATTR_REG_VALUE32)
+ * are missing; Otherwise 0 is replied indicating the success of the command execution.
+ *
+ * If CLS_WIFI_TM_ATTR_COMMAND is CLS_WIFI_TM_CMD_APP2DEV_REG_READ, the register read
+ * value is returned with CLS_WIFI_TM_ATTR_REG_VALUE32.
+ *
+ * @hw: ieee80211_hw object that represents the device
+ * @tb: general message fields from the user space
+ */
+int cls_wifi_testmode_reg(struct ieee80211_hw *hw, struct nlattr **tb)
+{
+	struct cls_wifi_hw *cls_wifi_hw = hw->priv;
+	u32 mem_addr, val32;
+	struct sk_buff *skb;
+	int status = 0;
+
+	/* First check if register address is there */
+	if (!tb[CLS_WIFI_TM_ATTR_REG_OFFSET]) {
+		printk("Error finding register offset\n");
+		return -ENOMSG;
+	}
+
+	mem_addr = nla_get_u32(tb[CLS_WIFI_TM_ATTR_REG_OFFSET]);
+
+	switch (nla_get_u32(tb[CLS_WIFI_TM_ATTR_COMMAND])) {
+	case CLS_WIFI_TM_CMD_APP2DEV_REG_READ:
+		{
+			struct dbg_mem_read_cfm mem_read_cfm;
+
+			/*** Send the command to the LMAC ***/
+			if ((status = cls_wifi_send_dbg_mem_read_req(cls_wifi_hw, mem_addr, &mem_read_cfm)))
+				return status;
+
+			/* Allocate the answer message */
+			skb = cfg80211_testmode_alloc_reply_skb(hw->wiphy, 20);
+			if (!skb) {
+				printk("Error allocating memory\n");
+				return -ENOMEM;
+			}
+
+			val32 = mem_read_cfm.memdata;
+			if (nla_put_u32(skb, CLS_WIFI_TM_ATTR_REG_VALUE32, val32))
+				goto nla_put_failure;
+
+			/* Send the answer to upper layer */
+			status = cfg80211_testmode_reply(skb);
+			if (status < 0)
+				printk("Error sending msg : %d\n", status);
+		}
+		break;
+
+	case CLS_WIFI_TM_CMD_APP2DEV_REG_WRITE:
+		{
+			if (!tb[CLS_WIFI_TM_ATTR_REG_VALUE32]) {
+				printk("Error finding value to write\n");
+				return -ENOMSG;
+			} else {
+				val32 = nla_get_u32(tb[CLS_WIFI_TM_ATTR_REG_VALUE32]);
+				/* Send the command to the LMAC */
+				if ((status = cls_wifi_send_dbg_mem_write_req(cls_wifi_hw, mem_addr, val32)))
+					return status;
+			}
+		}
+		break;
+
+	default:
+		printk("Unknown testmode register command ID\n");
+		return -ENOSYS;
+	}
+
+	return status;
+
+nla_put_failure:
+	kfree_skb(skb);
+	return -EMSGSIZE;
+}
+
+/*
+ * This function handles the user application commands for Debug filter settings.
+ *
+ * @hw: ieee80211_hw object that represents the device
+ * @tb: general message fields from the user space
+ */
+int cls_wifi_testmode_dbg_filter(struct ieee80211_hw *hw, struct nlattr **tb)
+{
+	struct cls_wifi_hw *cls_wifi_hw = hw->priv;
+	u32 filter;
+	int status = 0;
+
+	/* First check if the filter is there */
+	if (!tb[CLS_WIFI_TM_ATTR_REG_FILTER]) {
+		printk("Error finding filter value\n");
+		return -ENOMSG;
+	}
+
+	filter = nla_get_u32(tb[CLS_WIFI_TM_ATTR_REG_FILTER]);
+	CLS_WIFI_DBG("testmode debug filter, setting: 0x%x\n", filter);
+
+	switch (nla_get_u32(tb[CLS_WIFI_TM_ATTR_COMMAND])) {
+	case CLS_WIFI_TM_CMD_APP2DEV_SET_DBGMODFILTER:
+		{
+			/* Send the command to the LMAC */
+			if ((status = cls_wifi_send_dbg_set_mod_filter_req(cls_wifi_hw, filter)))
+				return status;
+		}
+		break;
+	case CLS_WIFI_TM_CMD_APP2DEV_SET_DBGSEVFILTER:
+		{
+			/* Send the command to the LMAC */
+			if ((status = cls_wifi_send_dbg_set_sev_filter_req(cls_wifi_hw, filter)))
+				return status;
+		}
+		break;
+
+	default:
+		printk("Unknown testmode register command ID\n");
+		return -ENOSYS;
+	}
+
+	return status;
+}
+
+/*
+ * This function handles the user application commands for register access without using
+ * the normal LMAC messaging way.
+ * This time register access will be done through direct PCI BAR windows. This can be used
+ * to access registers even when the :AMC FW is stuck.
+ *
+ * @hw: ieee80211_hw object that represents the device
+ * @tb: general message fields from the user space
+ */
+int cls_wifi_testmode_reg_dbg(struct ieee80211_hw *hw, struct nlattr **tb)
+{
+	struct cls_wifi_hw *cls_wifi_hw = hw->priv;
+	struct cls_wifi_plat *cls_wifi_plat = cls_wifi_hw->plat;
+	u32 mem_addr;
+	struct sk_buff *skb;
+	int status = 0;
+	volatile unsigned int reg_value = 0;
+	unsigned int offset;
+
+	/* First check if register address is there */
+	if (!tb[CLS_WIFI_TM_ATTR_REG_OFFSET]) {
+		printk("Error finding register offset\n");
+		return -ENOMSG;
+	}
+
+	mem_addr = nla_get_u32(tb[CLS_WIFI_TM_ATTR_REG_OFFSET]);
+	offset = mem_addr & 0x00FFFFFF;
+
+	switch (nla_get_u32(tb[CLS_WIFI_TM_ATTR_COMMAND])) {
+	case CLS_WIFI_TM_CMD_APP2DEV_REG_READ_DBG:
+		{
+			/*** Send the command to the LMAC ***/
+			reg_value = cls_wifi_hw->plat->ep_ops->sys_read32(cls_wifi_hw->plat,
+					cls_wifi_hw->radio_idx, offset);
+
+			/* Allocate the answer message */
+			skb = cfg80211_testmode_alloc_reply_skb(hw->wiphy, 20);
+			if (!skb) {
+				printk("Error allocating memory\n");
+				return -ENOMEM;
+			}
+
+			if (nla_put_u32(skb, CLS_WIFI_TM_ATTR_REG_VALUE32, reg_value))
+				goto nla_put_failure;
+
+			/* Send the answer to upper layer */
+			status = cfg80211_testmode_reply(skb);
+			if (status < 0)
+				printk("Error sending msg : %d\n", status);
+		}
+		break;
+
+	case CLS_WIFI_TM_CMD_APP2DEV_REG_WRITE_DBG:
+		{
+			if (!tb[CLS_WIFI_TM_ATTR_REG_VALUE32]) {
+				printk("Error finding value to write\n");
+				return -ENOMSG;
+			} else {
+				reg_value = nla_get_u32(tb[CLS_WIFI_TM_ATTR_REG_VALUE32]);
+
+				/* Send the command to the LMAC */
+				cls_wifi_plat->ep_ops->sys_write32(cls_wifi_hw->plat,
+						cls_wifi_hw->radio_idx,
+						offset, reg_value);
+			}
+		}
+		break;
+
+	default:
+		printk("Unknown testmode register command ID\n");
+		return -ENOSYS;
+	}
+
+	return status;
+
+nla_put_failure:
+	kfree_skb(skb);
+	return -EMSGSIZE;
+}

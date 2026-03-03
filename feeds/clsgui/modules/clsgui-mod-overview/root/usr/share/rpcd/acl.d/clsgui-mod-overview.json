@@ -1,0 +1,12 @@
+{
+	"clsgui-mod-overview": {
+		"description": "Grant access to the router overview",
+		"read": {
+			"ubus": {
+				"file": [ "exec" ],
+                "network.device": [ "status" ],
+                "clmesh.api": [ "topology" ]
+			}
+		}
+	}
+}

@@ -1,0 +1,8 @@
+#!/bin/sh /etc/rc.common
+START=60
+
+start()
+{
+	[ -n "$(uci -q get nport.@ttyS2[0])" ] && /etc/setgps 1 & 
+	[ -n "$(uci -q get nport.@ttyS1[0])" ] && /etc/setusb 1 & 
+}

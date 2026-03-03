@@ -1,0 +1,107 @@
+#! /bin/bash
+
+rr_tips() {
+    tdir="afe"
+    mkdir /root/"$tdir"
+    rm /root/"$tdir"/rr
+    tftp 192.168.0.2 -g -r afe/rr -l /root/"$tdir"/rr
+    cat /root/"$tdir"/rr
+    chmod 777 /root/"$tdir"/rr
+
+    path_to_check=/root/irf/:/root/"$tdir"/
+    if echo "$PATH" | grep -q $path_to_check; then
+        echo "PATH already contains $path_to_check"
+    else
+        export PATH=$PATH:$path_to_check
+        echo "PATH updated to include $path_to_check"
+    fi
+    # PATH=$PATH:/root/"$tdir"/
+    echo "$PATH"
+
+    sh /root/"$tdir"/rr 0x60000000 31 24
+    rr 0x60000000
+    devmem 0x60000000 32
+}
+
+rr_usage() {
+    echo "============================================================="
+    echo 'register read addr [31 [0]] [0]'
+    echo "at least 1 parameters"
+    echo "============================================================="
+    echo "addr   : addr like 0x90000000"
+    echo "hbit   : high bit, max 31, dafault 31"
+    echo "lbit   : low  bit, min  0, default  0"
+    echo "disfull: show whole 32 bit before result, dafault 0"
+    echo "     0 : # only bits"
+    echo "       : 0x00000001"
+    echo "     1 : # bits and 32bit"
+    echo "       : 0x00000001"
+    echo "       : 0x00000011"
+    echo ""
+}
+
+argc=$#
+
+hbit=31
+lbit=0
+disfull=0
+
+if [ $argc -lt 1 ]; then
+    rr_usage
+    exit 2
+fi
+if [ $argc -eq 2 ]; then
+    hbit=$2
+fi
+if [ $argc -eq 3 ]; then
+    hbit=$2
+    lbit=$3
+fi
+if [ $argc -eq 4 ]; then
+    hbit=$2
+    lbit=$3
+    disfull=$4
+fi
+if [ $argc -gt 4 ]; then
+    rr_usage
+    exit 4
+fi
+
+addr=$(($1 & 0xfffffffC))
+
+# echo $(printf "0x%08X" $addr)
+# echo $(printf "0x%08X" $val)
+# echo $hbit
+# echo $lbit
+
+if [ "$hbit" -gt 31 ]; then
+    echo "hbit max = 31"
+    hbit=31
+fi
+
+if [ "$lbit" -gt 31 ]; then
+    echo "lbit max = 31"
+    lbit=31
+fi
+
+if [ "$lbit" -gt "$hbit" ]; then
+    echo "lbit>hbit"
+    lbit=$hbit
+fi
+
+lmask=$((0xffffffff & $((0xffffffff << lbit))))
+hmask=$(($((1 << $((hbit + 1)))) - 1))
+# echo $(printf "0x%08X" $hmask)
+# echo $(printf "0x%08X" $lmask)
+mask=$((hmask & lmask))
+# echo $(printf "0x%08X" $mask)
+
+rv=$(devmem $addr 32)
+rv1=$((rv & mask))
+rv2=$((rv1 >> lbit))
+echo $(printf "0x%08X" "$rv2") #hex $rv2
+
+# rv=123
+if [ "$disfull" -eq 1 ]; then
+    echo $(printf "0x%08X" "$rv") #hex "$rv"
+fi

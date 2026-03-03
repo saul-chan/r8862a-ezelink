@@ -1,0 +1,36 @@
+#!/bin/sh
+
+data="$@"
+
+setmacfilter() {
+        uci -q batch <<-EOF >/dev/null
+                set wireless.default_radio1.macfilter='$1'
+        EOF
+}
+
+setmaclist() {
+        uci -q batch <<-EOF >/dev/null
+                add_list wireless.default_radio1.maclist='$1'
+        EOF
+}
+
+remove() {
+        uci -q batch <<-EOF >/dev/null
+                delete wireless.default_radio1.maclist
+                commit wireless
+        EOF
+}
+
+for elem in "$@"; do
+        if [ "$elem" == "remove" ]; then
+                remove "$elem"
+        elif [ "$elem" == "allow" -o "$elem" == "deny" ]; then
+                setmacfilter "$elem"
+        else
+                setmaclist "$elem"
+        fi
+done
+
+uci -q batch <<-EOF >/dev/null
+        commit wireless
+EOF

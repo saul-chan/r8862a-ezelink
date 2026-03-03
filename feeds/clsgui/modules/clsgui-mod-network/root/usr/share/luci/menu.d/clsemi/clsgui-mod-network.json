@@ -1,0 +1,133 @@
+{
+    "admin/network/wan": {
+        "title": "WAN",
+        "order": 1,
+        "action": {
+            "type": "view",
+            "path": "network/cls-wan"
+        },
+		"depends": {
+			"acl": [ "clsgui-mod-network-config" ]
+		}
+	},
+
+    "admin/network/lan": {
+        "title": "LAN",
+        "order": 2,
+        "action": {
+               "type": "view",
+               "path": "network/cls-lan-conf"
+        },
+        "depends": {
+            "acl": [ "clsgui-mod-network-config" ]
+        }
+    },
+
+    "admin/network/lan/lan": {
+        "title": "LAN Configuration",
+        "order": 1,
+        "action": {
+               "type": "view",
+               "path": "network/cls-lan-conf"
+        },
+        "depends": {
+            "acl": [ "clsgui-mod-network-config" ]
+        }
+    },
+
+    "admin/network/lan/dhcp": {
+        "title": "DHCP Clients",
+        "order": 2,
+        "action": {
+               "type": "view",
+               "path": "network/cls-dhcp-client"
+        },
+        "depends": {
+            "acl": [ "clsgui-mod-network-config" ]
+        }
+    },
+
+    "admin/network/firewall": {
+        "title": "Firewall",
+        "order": 3,
+        "action": {
+               "type": "view",
+               "path": "network/cls-firewall-general"
+        },
+        "depends": {
+            "acl": [ "clsgui-mod-network-config" ]
+        }
+    },
+
+    "admin/network/firewall/general": {
+        "title": "General",
+        "order": 1,
+        "action": {
+               "type": "view",
+               "path": "network/cls-firewall-general"
+        },
+        "depends": {
+            "acl": [ "clsgui-mod-network-config" ]
+        }
+    },
+
+    "admin/network/firewall/forward": {
+        "title": "Port Forwards",
+        "order": 2,
+        "action": {
+               "type": "view",
+               "path": "network/cls-firewall-forward"
+        },
+        "depends": {
+            "acl": [ "clsgui-mod-network-config" ]
+        }
+    },
+
+    "admin/network/diagnosis": {
+        "title": "Diagnostics",
+        "order": 4,
+        "action": {
+               "type": "view",
+               "path": "network/cls-diagnosis"
+        },
+        "depends": {
+            "acl": [ "clsgui-mod-network-config" ]
+        }
+    },
+
+    "admin/network/advance": {
+        "title": "Advanced",
+        "order": 5,
+        "action": {
+               "type": "view",
+               "path": "network/cls-qos"
+        },
+        "depends": {
+            "acl": [ "clsgui-mod-network-config" ]
+        }
+    },
+
+    "admin/network/advance/qos": {
+        "title": "Ultra QoS",
+        "order": 1,
+        "action": {
+               "type": "view",
+               "path": "network/cls-qos"
+        },
+        "depends": {
+            "acl": [ "clsgui-mod-network-config" ]
+        }
+    },
+
+    "admin/network/advance/routing": {
+        "title": "Routing",
+        "order": 2,
+        "action": {
+               "type": "view",
+               "path": "network/cls-routes"
+        },
+        "depends": {
+            "acl": [ "clsgui-mod-network-config" ]
+        }
+    }
+}

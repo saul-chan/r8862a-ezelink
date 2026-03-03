@@ -1,0 +1,46 @@
+#!/bin/sh
+
+. /lib/functions.sh
+
+AVAILABLE_BUTTON=$(fw_printsys -n available_button 2>/dev/null)
+if [ -z "$AVAILABLE_BUTTON" ]; then
+	AVAILABLE_BUTTON="reset"
+fi
+
+mount -t tmpfs tmpfs /etc/rc.button
+cp /rom/etc/rc.button/* /etc/rc.button/
+
+for button in $AVAILABLE_BUTTON; do
+	if [ ! -x /etc/rc.button/$button ]; then
+		echo "Warning: $button is defined in boarddata available_button but /etc/rc.button/$button does not exist or is not executable"
+		continue
+	fi
+	append available_button "$button"
+done
+
+echo "Start test '$available_button' button..."
+
+if [ ! -p /tmp/button_msg ]; then
+	mkfifo /tmp/button_msg
+fi
+
+for button in $available_button; do
+	sed -i '1a echo "$(basename $0) button is $ACTION" > /tmp/button_msg' /etc/rc.button/$button
+	sed -i '2a return 0' /etc/rc.button/$button
+done
+
+for button in $available_button; do
+	echo "Please press then release $button button"
+	button_tested=0
+	while [ $button_tested -ne 1 ]; do
+		while read msg; do
+			if [ "$msg" = "$button button is released" ]; then
+				echo "$button button test passed"
+				button_tested=1
+				break
+			fi
+		done < /tmp/button_msg
+	done
+done
+
+umount /etc/rc.button

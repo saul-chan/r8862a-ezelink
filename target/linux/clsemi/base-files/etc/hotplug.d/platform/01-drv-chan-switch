@@ -1,0 +1,7 @@
+#!/bin/sh
+
+[ "$EVENT" = "drv_chan_switch" ] || exit
+
+export > /dev/console
+
+$cmd_patch -i $vifname chan_switch $cs_count $freq sec_channel_offset=$sec_channel_offset center_freq1=$center_freq1 bandwidth=$bandwidth $blocktx $ht $vht $he

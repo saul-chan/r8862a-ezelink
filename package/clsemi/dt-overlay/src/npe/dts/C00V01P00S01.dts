@@ -1,0 +1,76 @@
+/*C00.V01.P00.S01*/
+//serde0 sfp
+//serde1 QSGMII
+//RGMII1
+//RGMII2
+/dts-v1/;
+/plugin/;
+/ {
+	fragment@0 {
+		target=<&xpcs0>;
+		__overlay__ {
+			phy-mode = "usxgmii";
+			usxg_mode = <0>;
+			status = "okay";
+		};
+	};
+
+	fragment@1 {
+		target=<&xpcs1>;
+		__overlay__ {
+			phy-mode = "qsgmii";
+			status = "okay";
+		};
+	};
+
+	fragment@2 {
+		target=<&xgmac0>;
+		__overlay__ {
+			max-speed = <10000>;
+		};
+	};
+
+	fragment@3 {
+		target=<&xgmac2>;
+		__overlay__ {
+			mode = "rgmii";
+			phy-handle = <&rgmii_phy7>;
+			rgmii-rx-delay = <1>;
+			mdio-flags = <1>;
+			status = "okay";
+			mdio{
+				compatible = "clourney,mdio";
+				#address-cells = <1>;
+				#size-cells = <0>;
+				device_type="mdio";
+				status = "okay";
+				rgmii_phy7: phy@7 {
+					compatible = "ethernet-phy-ieee802.3-c22";
+					reg = <0x5>;
+				};
+				rgmii_phy2: phy@2 {
+					compatible = "ethernet-phy-ieee802.3-c22";
+					reg = <0x2>;
+				};
+			};
+		};
+	};
+
+	fragment@4  {
+		target=<&xgmac1>;
+		__overlay__ {
+			mode = "non-rgmii";
+			phy-handle = <&qsgmii_phy0>;
+			status = "okay";
+		};
+	};
+
+	fragment@5 {
+		target = <&xgmac3>;
+		__overlay__ {
+			mode = "non-rgmii";
+			phy-handle = <&qsgmii_phy2>;
+			status = "okay";
+		};
+	};
+};

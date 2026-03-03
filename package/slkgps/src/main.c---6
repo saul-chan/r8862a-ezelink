@@ -1,0 +1,316 @@
+/*
+	set ipq4029's mac address v1.0
+*/
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdbool.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <sys/ioctl.h>
+#include <sys/param.h>
+#include <sys/mount.h>
+#include <sys/stat.h>
+#include <mtd/mtd-user.h>
+#include <sys/stat.h>
+#include <sys/mman.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+
+#define BUF_SIZE 1024
+const char *GNRMC = "$GNRMC";
+const char *GNGGA = "$GNGGA";
+const char *GPRMC = "$GPRMC";
+const char *GPGGA = "$GPGGA";
+const char *version_A="LC29HCA";
+const char *version_R="L26UDR";
+const char *path="/tmp/gps";
+
+double str_number(char str[])
+{
+    char *end;
+    double num = strtod(str, &end);
+ 
+    // 检查是否转换成功，如果end指向的是不是字符串末尾，则可能转换失败
+    if (end != str + strlen(str)) {
+        printf("转换失败\n");
+		return 0;
+    } else {
+       // printf("转换成功，数字为: %f\n", num);
+		int data1=num/100;
+		double data2=(num-data1*100)/60;
+		double data=data1+data2;									//经纬度转换公式
+		
+		return data;
+		
+    }
+}
+
+//从字符串钟取某个字符的的前后数据
+void split_string(const char *str, const char delim, char *before, char *after) 
+{
+    const char *delim_pos = strchr(str, delim);
+    if (delim_pos && before && after) {
+        size_t delim_index = delim_pos - str;
+        strncpy(before, str, delim_index);
+        before[delim_index] = '\0';
+        strncpy(after, delim_pos + 1, strlen(str) - delim_index - 1);
+        after[strlen(str) - delim_index - 1] = '\0';
+    }
+}
+
+
+/*插入字符串*/
+void insert_string(char *str, char *to_insert, int pos)     //插入字符串
+{     
+    char temp_str[100];
+    strncpy(temp_str, str, pos);
+    temp_str[pos] = '\0';
+    strcat(temp_str, to_insert);
+    strcat(temp_str, str + pos);
+    strcpy(str, temp_str);
+}
+
+
+/*删除某个位置后的字符串 */
+void delete_char_at(char *str, int position) 				
+{
+    int length = strlen(str);
+    if (position >= length || position < 0) {
+        printf("Position is out of bounds.\n");
+        return;
+    }
+    str[position] = '\0'; // 更新字符串结尾
+} 
+
+
+/*删除某段字符*/
+void remove_char_at(char *str, int start,int end) 
+{
+    int length = strlen(str);
+    if (start < 0 ||  start >= length || start >= end ) {
+        printf("Position is out of bounds.\n");
+        return;
+    }
+    char *part1 = str;
+    char *part2 = str + start;
+    char *part3 = str + end + 1;
+ 
+    // Calculate the new length of the string
+    int new_length = length - 2;
+ 
+    // Move part3 to part2's position and null-terminate
+    strcpy(part2, part3);
+    str[new_length] = '\0';
+}
+
+/*换算英文月份*/
+void change_months(char str[20])
+{
+	char *month[12]= {"January:","February:","March:","April:","May:","June:","July:","August:","September:","October:","November:","December:"};
+	int sum=0;
+	sum=str[3]+str[4]-97;
+	if( str[3] == 49 )
+		sum=str[3]+str[4]-88;
+	remove_char_at(str,3,5);
+	insert_string(str,month[sum],0);
+}
+
+void write_file()
+{
+    FILE *p = fopen(path, "w");
+    char temp[100] = { 0 };
+    while(1)
+    {
+        fgets(temp, sizeof(temp), stdin);
+        if(strcmp(temp, "exit\n") == 0)
+            break;
+        fprintf(p, "%s", temp);
+    }
+    fclose(p);
+}
+
+
+char *order(char* order)                     //使用linux命令并返回结果值
+{
+	FILE * fp;
+	char *s;
+	char *buffer;
+	s = (char *)malloc(255);
+    buffer = (char *)malloc(255);
+	memset(buffer,0,255);
+    fp=popen(order,"r");
+    while( fgets(s,sizeof(s),fp) !=NULL)
+		strcat(buffer,s);
+    pclose(fp);
+	buffer[strlen(buffer) - 1] = '\0';
+	return buffer;
+}
+
+
+
+
+void write_gps(char *buffer)
+{   
+	int locate=0;
+	int flag=1;
+	char time[255];
+	char lat[255];
+	char lon[255];
+	
+	FILE *p = fopen(path, "w");
+	char* str1 = strtok(buffer, ",");              //拆分GPRMC数据
+	while (str1 != NULL)
+	{
+         str1 = strtok(NULL, ",");
+         if(NULL == str1)
+         break;
+		 if(flag == 1 )                 		  //时分秒
+		 {
+			fprintf(p, "{ \n");
+			strcpy(time,str1);	
+			delete_char_at(time, 6);			
+			insert_string(time,"h:",2);
+			insert_string(time,"m:",6);
+			insert_string(time,"s",10);
+			
+		 }
+		 
+		 if(flag == 2){
+			 if(strcmp(str1,"V") == 0)
+				locate=-1;	
+		 }
+		 
+		 if(flag == 3 )							 //经度						
+		 {
+			 
+			 if( locate!=-1 )
+			 {
+				double lat_s=str_number(str1);
+				sprintf(lat,"\"lat\":%f,",lat_s);
+				printf("flag=%d---->%s,\n",flag,lat);
+			 }
+			 else
+			 {
+				char times[255];
+				char sun[255];
+				strcpy(sun,str1);
+				insert_string(sun,":",2);
+				insert_string(sun,":",5);
+				insert_string(sun,"20",6);
+				change_months(sun);
+				sprintf(times,"\"time\": \"%s:%s\",",time,sun);
+				fprintf(p, "%s\n", times);			
+				fprintf(p, "\"lat\":0,\n");
+				fprintf(p, "\"lon\":0,\n");
+				fprintf(p, "}");					 
+			 }
+		 }		 
+		 if(flag == 5 && locate!=-1)							//纬度
+		 {
+			double lon_s=str_number(str1);		
+			sprintf(lon,"\"lon\":%f",lon_s);
+			printf("---->%s\n", lon);
+		 }
+		 
+		 
+		 if(flag == 9 && locate!=-1 )
+		 {
+			char times[255];
+			char sun[255];
+			strcpy(sun,str1);
+			insert_string(sun,":",2);
+			insert_string(sun,":",5);
+			insert_string(sun,"20",6);
+			change_months(sun);
+			sprintf(times,"\"time\": \"%s:%s\",",time,sun);
+			fprintf(p, "%s\n", times);			
+			fprintf(p, "%s\n", lat);
+			fprintf(p, "%s\n", lon);
+			fprintf(p, "}");			
+		 }
+		flag++;
+	}
+		
+	fclose(p);
+}
+
+int main(int argc, char* argv[])
+{
+	//char buffer[1024];
+	char before[256], after[256];
+	const char ip_port[255];
+	const char *ip,*port;
+	ip=order("uci get network.lan.ipaddr");
+	port=order("uci get nport.@ttyM1[0].localport");
+	sprintf(ip_port,"telnet %s %s",ip,port);
+	
+	int sock;
+    struct sockaddr_in server_addr;
+    char buffer[BUF_SIZE];
+    int received_bytes;
+ 
+    // 创建一个socket
+    sock = socket(AF_INET, SOCK_STREAM, 0);
+    if (sock < 0) {
+        perror("socket creation failed");
+        exit(EXIT_FAILURE);
+    }
+ 
+    // 指定服务器地址和端口
+    memset(&server_addr, 0, sizeof(server_addr));
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(atoi(port));
+    inet_pton(AF_INET, ip, &server_addr.sin_addr);
+ 
+    // 连接到服务器
+    if (connect(sock, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
+        perror("connection failed");
+        exit(EXIT_FAILURE);
+    }
+	
+	memset(buffer, 0, BUF_SIZE);
+    received_bytes = 0;
+	
+    while ((received_bytes = recv(sock, buffer, BUF_SIZE - 1, 0)) > 0) 
+	{
+/* 			// 找到换行符并退出循环
+			char *newline = strchr(buffer, '/r/n');
+			if (newline) 
+			{
+				*newline = '\0'; // 确保以换行符结束的字符串
+				printf("Received: %s\n", buffer);
+			} */
+			
+			// 没有换行符，继续读取 */
+			
+			//printf("Received partial data: %s\n", buffer);
+			if(strstr(buffer, GPRMC) || strstr(buffer, GNRMC))
+			{
+				//printf("NMEA data:%s\n", buffer);
+				split_string(buffer, '\r\n', before, after);
+				if ( strstr(after, GNRMC)  )
+						write_gps(after);
+				else if ( strstr(before, GNRMC) )
+						write_gps(before);
+				
+				memset(before, 0, sizeof(before)/2);	
+				memset(after, 0, sizeof(after)/2);	
+			}
+			memset(buffer, 0, BUF_SIZE);
+    }
+ 
+    // 关闭socket连接
+    close(sock);
+	
+    return 0;
+}
+
+
+
+
+
+
+

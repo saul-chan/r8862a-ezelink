@@ -1,0 +1,699 @@
+/*
+ * Device Tree Include file for Clourneysemi Dubhe1000 family SoC.
+ *
+ * Copyright (C) 2022 - 2024 Clourney Semiconductor. All rights reserved.
+ */
+
+/dts-v1/;
+/include/ "clourneysemi-dubhe2000.dtsi"
+
+/ {
+	model = "DUBHE2000 EVB-N Board";
+	compatible = "clourneysemi,dubhe2000_evb";
+	#size-cells = <0x2>;
+	#address-cells = <0x2>;
+
+	chosen {
+		stdout-path = &uart0;
+	};
+};
+
+&uart0 {
+        status = "okay";
+};
+
+&spi0 {
+	busclk = <250000000>;
+	spi-max-frequency = <5000000>;
+	status = "okay";
+};
+
+&spiflash {
+	busclk = <250000000>;
+	spi-max-frequency = <62500000>;
+	rx-sample-delay-ns = <8>;
+	status = "okay";
+	nor_flash: flash@0 {
+		compatible = "jedec,spi-nor";
+		reg = <0>;
+		spi-max-frequency = <62500000>;
+		status = "okay";
+	};
+};
+
+&sdmmc {
+	max-frequency = <50000000>;
+	bus-width = <8>;
+	non-removable;
+	cap-mmc-highspeed;
+	status = "okay";
+};
+
+&npe {
+	/*C00.V01.P00.S00*/
+	//serde0 10G sfp
+	//serdes1 QSGMII
+	//RGMII1
+	hw@10000 {
+		hw-version = "C00.V01.P00.S00";
+
+		xpcs@0 {
+			compatible = "clourney,xpcs";
+			id = <0>;
+			phy-mode = "usxgmii";
+			usxg_mode = <0>;
+			status = "okay";
+		};
+
+		xpcs@1 {
+			compatible = "clourney,xpcs";
+			id = <1>;
+			phy-mode = "qsgmii";
+			status = "okay";
+		};
+
+		xgmac@0 {
+			compatible = "clourney,dwmac";
+			id = <0>;
+			status = "okay";
+			fixed-link {
+				speed = <10000>;
+				full-duplex;
+				pause;
+			};
+		};
+
+		xgmac@1 {
+			compatible = "clourney,dwmac";
+			id = <1>;
+			phy-handle = <&qsgmii_phy0>;
+			status = "okay";
+		};
+
+		xgmac@2 {
+			compatible = "clourney,dwmac";
+			id = <2>;
+			phy-handle = <&qsgmii_phy1>;
+			status = "okay";
+		};
+
+		xgmac@3 {
+			compatible = "clourney,dwmac";
+			id = <3>;
+			phy-handle = <&qsgmii_phy2>;
+			status = "okay";
+		};
+
+		xgmac@4 {
+			compatible = "clourney,dwmac";
+			id = <4>;
+			mode = "rgmii";
+			phy-handle = <&rgmii1_phy1>;
+			rgmii-rx-delay = <1>;
+			status = "okay";
+		};
+	};
+
+	/*C00.V01.P00.S01*/
+	//serde0 sfp
+	//serde1 QSGMII
+	//RGMII1
+	//RGMII2
+	hw@10001 {
+		hw-version = "C00.V01.P00.S01";
+
+		xpcs@0 {
+			compatible = "clourney,xpcs";
+			id = <0>;
+			phy-mode = "usxgmii";
+			usxg_mode = <0>;
+			status = "okay";
+		};
+
+		xpcs@1 {
+			compatible = "clourney,xpcs";
+			id = <1>;
+			phy-mode = "qsgmii";
+			status = "okay";
+		};
+
+		xgmac@0 {
+			compatible = "clourney,dwmac";
+			id = <0>;
+			status = "okay";
+			fixed-link {
+				speed = <10000>;
+				full-duplex;
+				pause;
+			};
+		};
+
+		xgmac@1 {
+			compatible = "clourney,dwmac";
+			id = <1>;
+			phy-handle = <&qsgmii_phy0>;
+			status = "okay";
+		};
+
+		xgmac@2 {
+			compatible = "clourney,dwmac";
+			id = <2>;
+			mode = "rgmii";
+			phy-handle = <&rgmii2_phy>;
+			rgmii-rx-delay = <1>;
+			status = "okay";
+		};
+
+		xgmac@3 {
+			compatible = "clourney,dwmac";
+			id = <3>;
+			phy-handle = <&qsgmii_phy2>;
+			status = "okay";
+		};
+
+		xgmac@4 {
+			compatible = "clourney,dwmac";
+			id = <4>;
+			mode = "rgmii";
+			phy-handle = <&rgmii1_phy1>;
+			rgmii-rx-delay = <1>;
+			status = "okay";
+		};
+	};
+
+	/*C00.V01.P00.S02*/
+	//serde1 QSGMII
+	//RGMII1
+	//RGMII2
+	hw@10002 {
+		hw-version = "C00.V01.P00.S02";
+
+		xpcs@0 {
+			compatible = "clourney,xpcs";
+			id = <0>;
+			status = "disabled";
+		};
+
+		xpcs@1 {
+			compatible = "clourney,xpcs";
+			id = <1>;
+			phy-mode = "qsgmii";
+			status = "okay";
+		};
+
+		xgmac@0 {
+			compatible = "clourney,dwmac";
+			id = <0>;
+			status = "disabled";
+		};
+
+		xgmac@1 {
+			compatible = "clourney,dwmac";
+			id = <1>;
+			phy-handle = <&qsgmii_phy0>;
+			status = "okay";
+		};
+
+		xgmac@2 {
+			compatible = "clourney,dwmac";
+			id = <2>;
+			mode = "rgmii";
+			phy-handle = <&rgmii2_phy>;
+			rgmii-rx-delay = <1>;
+			status = "okay";
+		};
+
+		xgmac@3 {
+			compatible = "clourney,dwmac";
+			id = <3>;
+			phy-handle = <&qsgmii_phy2>;
+			status = "okay";
+		};
+
+		xgmac@4 {
+			compatible = "clourney,dwmac";
+			id = <4>;
+			mode = "rgmii";
+			phy-handle = <&rgmii1_phy1>;
+			rgmii-rx-delay = <1>;
+			status = "okay";
+		};
+	};
+
+	/*C00.V01.P00.S03*/
+	//serde0 hsgmii
+	//QSGMII
+	hw@10003 {
+		hw-version = "C00.V01.P00.S03";
+		xpcs@0 {
+			compatible = "clourney,xpcs";
+			id = <0>;
+			phy-mode = "sgmii";
+			status = "okay";
+		};
+
+		xpcs@1 {
+			compatible = "clourney,xpcs";
+			id = <1>;
+			phy-mode = "qsgmii";
+			status = "okay";
+		};
+
+		xgmac@0 {
+			compatible = "clourney,dwmac";
+			id = <0>;
+			phy-handle = <&sgmii1_phy>;
+			status = "okay";
+		};
+
+		xgmac@1 {
+			compatible = "clourney,dwmac";
+			id = <1>;
+			phy-handle = <&qsgmii_phy0>;
+			status = "okay";
+		};
+
+		xgmac@2 {
+			compatible = "clourney,dwmac";
+			id = <2>;
+			phy-handle = <&qsgmii_phy1>;
+			status = "okay";
+		};
+
+		xgmac@3 {
+			compatible = "clourney,dwmac";
+			id = <3>;
+			phy-handle = <&qsgmii_phy2>;
+			status = "okay";
+		};
+
+		xgmac@4 {
+			compatible = "clourney,dwmac";
+			id = <4>;
+			phy-handle = <&qsgmii_phy3>;
+			status = "okay";
+		};
+	};
+
+	/*C00.V01.P01.S00*/
+	//serde0 hsgmii
+	//QSGMII
+	hw@10100 {
+		hw-version = "C00.V01.P01.S00";
+		xpcs@0 {
+			compatible = "clourney,xpcs";
+			id = <0>;
+			phy-mode = "sgmii";
+			status = "okay";
+		};
+
+		xpcs@1 {
+			compatible = "clourney,xpcs";
+			id = <1>;
+			phy-mode = "qsgmii";
+			status = "okay";
+		};
+
+		xgmac@0 {
+			compatible = "clourney,dwmac";
+			id = <0>;
+			phy-handle = <&sgmii1_phy>;
+			status = "okay";
+		};
+
+		xgmac@1 {
+			compatible = "clourney,dwmac";
+			id = <1>;
+			phy-handle = <&qsgmii_phy0>;
+			status = "okay";
+		};
+
+		xgmac@2 {
+			compatible = "clourney,dwmac";
+			id = <2>;
+			phy-handle = <&qsgmii_phy1>;
+			status = "okay";
+		};
+
+		xgmac@3 {
+			compatible = "clourney,dwmac";
+			id = <3>;
+			phy-handle = <&qsgmii_phy2>;
+			status = "okay";
+		};
+
+		xgmac@4 {
+			compatible = "clourney,dwmac";
+			id = <4>;
+			phy-handle = <&qsgmii_phy3>;
+			status = "okay";
+		};
+	};
+
+	/*C00.V01.P01.S01*/
+	//RGMII0
+	//RGMII1
+	//RGMII2
+	hw@10101 {
+		hw-version = "C00.V01.P01.S01";
+
+		xpcs@0 {
+			compatible = "clourney,xpcs";
+			id = <0>;
+			status = "disabled";
+		};
+
+		xpcs@1 {
+			compatible = "clourney,xpcs";
+			id = <1>;
+			status = "disabled";
+		};
+
+		xgmac@0 {
+			compatible = "clourney,dwmac";
+			id = <0>;
+			mode = "rgmii";
+			phy-handle = <&rgmii0_phy>;
+			rgmii-rx-delay = <1>;
+			status = "okay";
+		};
+
+		xgmac@1 {
+			compatible = "clourney,dwmac";
+			id = <1>;
+			status = "disabled";
+		};
+
+		xgmac@2 {
+			compatible = "clourney,dwmac";
+			id = <2>;
+			mode = "rgmii";
+			phy-handle = <&rgmii2_phy>;
+			rgmii-rx-delay = <1>;
+			status = "okay";
+		};
+
+		xgmac@3 {
+			compatible = "clourney,dwmac";
+			id = <3>;
+			status = "disabled";
+		};
+
+		xgmac@4 {
+			compatible = "clourney,dwmac";
+			id = <4>;
+			mode = "rgmii";
+			phy-handle = <&rgmii1_phy1>;
+			rgmii-rx-delay = <1>;
+			status = "okay";
+		};
+	};
+
+	/*A' C00.V11.P00.S00*/
+	//serde0 sfp sgmii
+	//serde1 hsgmii
+	//RGMII1
+	hw@110000 {
+		hw-version = "C00.V11.P00.S00";
+
+		xpcs@0 {
+			compatible = "clourney,xpcs";
+			id = <0>;
+			phy-mode = "sgmii-2500";
+			status = "okay";
+		};
+
+		xpcs@1 {
+			compatible = "clourney,xpcs";
+			id = <1>;
+			phy-mode = "sgmii";
+			status = "okay";
+		};
+
+		xgmac@0 {
+			compatible = "clourney,dwmac";
+			id = <0>;
+			status = "okay";
+			fixed-link {
+				speed = <2500>;
+				full-duplex;
+				pause;
+			};
+		};
+
+		xgmac@1 {
+			compatible = "clourney,dwmac";
+			id = <1>;
+			phy-handle = <&sgmii1_phy>;
+			status = "okay";
+		};
+
+		xgmac@2 {
+			compatible = "clourney,dwmac";
+			id = <2>;
+			status = "disabled";
+		};
+
+		xgmac@3 {
+			compatible = "clourney,dwmac";
+			id = <3>;
+			status = "disabled";
+		};
+
+		xgmac@4 {
+			compatible = "clourney,dwmac";
+			id = <4>;
+			mode = "rgmii";
+			phy-handle = <&rgmii1_phy>;
+			rgmii-rx-delay = <1>;
+			status = "okay";
+		};
+	};
+
+	/*A' C00.V11.P00.S01*/
+	//serde0 sfp sgmii
+	//serde1 hsgmii
+	//RGMII1
+	hw@110001 {
+		hw-version = "C00.V11.P00.S01";
+
+		xpcs@0 {
+			compatible = "clourney,xpcs";
+			id = <0>;
+			phy-mode = "sgmii-2500";
+			status = "okay";
+		};
+
+		xpcs@1 {
+			compatible = "clourney,xpcs";
+			id = <1>;
+			phy-mode = "sgmii";
+			status = "okay";
+		};
+
+		xgmac@0 {
+			compatible = "clourney,dwmac";
+			id = <0>;
+			status = "okay";
+			fixed-link {
+				speed = <2500>;
+				full-duplex;
+				pause;
+			};
+		};
+
+		xgmac@1 {
+			compatible = "clourney,dwmac";
+			id = <1>;
+			phy-handle = <&sgmii1_phy>;
+			status = "okay";
+		};
+
+		xgmac@2 {
+			compatible = "clourney,dwmac";
+			id = <2>;
+			status = "disabled";
+		};
+
+		xgmac@3 {
+			compatible = "clourney,dwmac";
+			id = <3>;
+			status = "disabled";
+		};
+
+		xgmac@4 {
+			compatible = "clourney,dwmac";
+			id = <4>;
+			mode = "rgmii";
+			phy-handle = <&rgmii1_phy>;
+			rgmii-rx-delay = <1>;
+			status = "okay";
+		};
+	};
+
+	/*A' C00.V11.P00.S02*/
+	//RGMII0
+	//RGMII1
+	//RGMII2
+	hw@110002 {
+		hw-version = "C00.V11.P00.S02";
+
+		xpcs@0 {
+			compatible = "clourney,xpcs";
+			id = <0>;
+			status = "disabled";
+		};
+
+		xpcs@1 {
+			compatible = "clourney,xpcs";
+			id = <1>;
+			status = "disabled";
+		};
+
+		xgmac@0 {
+			compatible = "clourney,dwmac";
+			id = <0>;
+			mode = "rgmii";
+			phy-handle = <&rgmii0_phy>;
+			rgmii-rx-delay = <1>;
+			status = "okay";
+		};
+
+		xgmac@1 {
+			compatible = "clourney,dwmac";
+			id = <1>;
+			status = "disabled";
+		};
+
+		xgmac@2 {
+			compatible = "clourney,dwmac";
+			id = <2>;
+			mode = "rgmii";
+			phy-handle = <&rgmii2_phy>;
+			rgmii-rx-delay = <1>;
+			status = "okay";
+		};
+
+		xgmac@3 {
+			compatible = "clourney,dwmac";
+			id = <3>;
+			status = "disabled";
+		};
+
+		xgmac@4 {
+			compatible = "clourney,dwmac";
+			id = <4>;
+			mode = "rgmii";
+			phy-handle = <&rgmii1_phy>;
+			rgmii-rx-delay = <1>;
+			status = "okay";
+		};
+	};
+};
+
+&xpcs0 {
+	phy-mode = "usxgmii";
+	usxg_mode = <0>;
+	status = "okay";
+};
+
+&xgmac0 {
+	mode = "non-rgmii";
+	max-speed = <10000>;
+	mac-address = [a0 c0 ab 39 cc f0];
+	status = "okay";
+	fixed-link {
+		speed = <10000>;
+		full-duplex;
+		pause;
+	};
+
+	mdio0 {
+	compatible = "clourney,mdio";
+	#address-cells = <1>;
+	#size-cells = <0>;
+	device_type = "mdio";
+	clk_csr = <1>;
+	status = "okay";
+	rgmii1_phy: ethernet-phy@5 {
+		 compatible = "realtek,8211f","ethernet-phy-ieee802.3-c22";
+		 reg = <0x5>;
+		 mdio-flags = <1>;
+	};
+	rgmii1_phy1: ethernet-phy@6 {
+		 compatible = "realtek,8211f","ethernet-phy-ieee802.3-c22";
+		 reg = <0x6>;
+		 mdio-flags = <1>;
+	};
+	qsgmii_phy0: ethernet-phy@8 {
+		 compatible = "ethernet-phy-ieee802.3-c22";
+		 port-id = <0>;
+		 reg = <0x8>;
+		 mdio-flags = <1>;
+	};
+	qsgmii_phy1: ethernet-phy@9 {
+		compatible = "ethernet-phy-ieee802.3-c22";
+		port-id = <1>;
+		reg = <0x9>;
+		mdio-flags = <1>;
+	};
+	qsgmii_phy2: ethernet-phy@a {
+		compatible = "ethernet-phy-ieee802.3-c22";
+		port-id = <2>;
+		reg = <0xa>;
+	};
+	qsgmii_phy3: ethernet-phy@b {
+		compatible = "ethernet-phy-ieee802.3-c22";
+		port-id = <3>;
+		reg = <0xb>;
+		mdio-flags = <1>;
+	};
+	sgmii1_phy: ethernet-phy@1 {
+		compatible = "ethernet-phy-ieee802.3-c22";
+		reg = <0x1>;
+		mdio-flags = <1>;
+	};
+	rgmii0_phy: ethernet-phy@3 {
+		compatible = "ethernet-phy-ieee802.3-c22";
+		reg = <0x3>;
+		mdio-flags = <1>;
+	};
+  };
+};
+
+&xgmac4 {
+	mode = "rgmii";
+	max-speed = <1000>;
+	mac-address = [a0 c0 ab 39 cc f2];
+	phy-handle = <&rgmii1_phy>;
+	rgmii-rx-delay = <1>;
+	status = "okay";
+};
+
+&xgmac1 {
+	status = "disabled";
+};
+
+&xgmac2 {
+
+	status = "disabled";
+
+	mdio2 {
+	compatible = "clourney,mdio";
+	#address-cells = <1>;
+	#size-cells = <0>;
+	device_type = "mdio";
+	clk_csr = <1>;
+	status = "okay";
+	rgmii2_phy: ethernet-phy@7 {
+		compatible = "ethernet-phy-ieee802.3-c22";
+		reg = <0x7>;
+		mdio-flags = <1>;
+		};
+	};
+
+};
+
+&xgmac3 {
+	status = "disabled";
+};

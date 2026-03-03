@@ -1,0 +1,2 @@
+echo "module clsm_wifi +p" > /sys/kernel/debug/dynamic_debug/control
+echo "module clsm_3addr_br +p" > /sys/kernel/debug/dynamic_debug/control

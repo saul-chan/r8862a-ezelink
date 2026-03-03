@@ -1,0 +1,55 @@
+#!/bin/sh
+
+. /lib/functions.sh
+. /lib/functions/system.sh
+
+mtdpart="caldata"
+caltar="caldata.tar.gz"
+mtdsize=524288 # caldata use 4 blocks max
+
+usage() {
+	cat <<EOF
+Usage: $0 [save|load]
+save or load the calibration data, it is saved at mtd raw partition.
+EOF
+	exit 1
+}
+
+save() {
+	calmtd=$(find_mtd_chardev $mtdpart)
+	[ "$calmtd" = "" ] && return
+
+	# need to erase the caldata partition, otherwise load will fail
+	flash_erase $calmtd 0 0
+
+	cd /tmp/cal
+	echo "packaging calibration data to $caltar"
+	tar -zcf $caltar *
+
+	tarsize=$(/bin/ls -l $caltar | awk '{print $5}')
+	[ $tarsize -gt $mtdsize ] && return
+
+	echo "saving calibration data to $calmtd"
+	nandwrite -p $calmtd $caltar
+	rm -f $caltar
+}
+
+load() {
+	calmtd=$(find_mtd_chardev $mtdpart)
+	[ "$calmtd" = "" ] && return
+
+	cd /tmp/cal
+	echo "loading calibration data from $calmtd start..."
+	nanddump -f $caltar -l $mtdsize $calmtd
+	tar -zxvf $caltar
+	echo "loading calibration data from $calmtd end..."
+	rm -f $caltar
+
+	mkdir -p m2k
+}
+
+case "$1" in
+	save) save ;;
+	load) load ;;
+	*) usage; exit 1;;
+esac

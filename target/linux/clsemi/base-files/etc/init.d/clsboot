@@ -1,0 +1,187 @@
+#!/bin/sh /etc/rc.common
+
+START=10
+
+MANUF_OUI="d0:44:33"
+
+generate_radom_macaddr() {
+	local rand_src base_mac
+
+	. /lib/functions/system.sh
+
+	rand_src=$(get_mac_binary /dev/urandom 0)
+	base_mac="$MANUF_OUI:${rand_src:9:7}0"
+
+	macwlan0=$base_mac
+	macwlan1=$(macaddr_add $base_mac 1)
+	maclan0=$(macaddr_add $base_mac 2)
+	macwan0=$(macaddr_add $base_mac 3)
+}
+
+prepare_macaddr() {
+	local use_random_mac=0
+
+	macwlan0=$(fw_printsys -n macwlan0 2>/dev/null)
+	macwlan1=$(fw_printsys -n macwlan1 2>/dev/null)
+	macwan0=$(fw_printsys -n macwan0 2>/dev/null)
+	maclan0=$(fw_printsys -n maclan0 2>/dev/null)
+
+	if [ -z "$macwlan0" ]; then
+		echo "Warning: cannot get 'macwlan0' from boarddata" > /dev/console
+		use_random_mac=1
+	fi
+
+	if [ -z "$macwlan1" ]; then
+		echo "Warning: cannot get 'macwlan1' from boarddata" > /dev/console
+		use_random_mac=1
+	fi
+
+	if [ -z "$macwan0" ]; then
+		echo "Warning: cannot get 'macwan0' from boarddata" > /dev/console
+		use_random_mac=1
+	fi
+
+	if [ -z "$maclan0" ]; then
+		echo "Warning: cannot get 'maclan0' from boarddata" > /dev/console
+		use_random_mac=1
+	fi
+
+	if [ $use_random_mac -eq 1 ]; then
+		echo "Warning: cannot get all MAC address from boarddata, use random MAC address instead" > /dev/console
+		generate_radom_macaddr
+	fi
+
+	# save macaddr info to /tmp/sysinfo/board_macaddr for backup
+	echo "macwlan0=$macwlan0" >  /tmp/sysinfo/board_macaddr
+	echo "macwlan1=$macwlan1" >> /tmp/sysinfo/board_macaddr
+	echo "macwan0=$macwan0" >> /tmp/sysinfo/board_macaddr
+	echo "maclan0=$maclan0" >> /tmp/sysinfo/board_macaddr
+}
+
+# Prepare for clsemi npe offload
+set_router_port_macaddr() {
+	local mode=router
+
+	# If cls-opmode package is not enabled, let's just treat it in router mode by default
+	config_load cls-opmode && config_get mode globals mode
+	if [ "$mode" = "router" ]; then
+		# echo "port_mac <is_wan> <Mac>" > /sys/kernel/debug/cls_npe/command
+		echo "port_mac 0 $maclan0" > /sys/kernel/debug/cls_npe/command
+		echo "port_mac 1 $macwan0" > /sys/kernel/debug/cls_npe/command
+	fi
+}
+
+set_wifi_macaddr() {
+	echo "MAC_ADDR=$macwlan0" > /lib/firmware/cls_wifi_settings.ini
+	echo "MAC_ADDR1=$macwlan1" >> /lib/firmware/cls_wifi_settings.ini
+}
+
+# Before it, router mac need to be configured by set_router_port_macaddr in advance
+allow_wan_non_ip_packet() {
+	#echo "acl_nonip [enable | disable |lanwan]" > /sys/kernel/debug/cls_npe/command
+	local board=$(board_name)
+	#demo-o use dsa network framework, need enable lan/wan nonip filter
+	if [ "$board" == "clsemi,dubhe2000-demo-o" ]; then
+		echo "acl_nonip lanwan" > /sys/kernel/debug/cls_npe/command
+	else
+		echo "acl_nonip enable" > /sys/kernel/debug/cls_npe/command
+	fi
+}
+
+set_wifi_rx_gain_file() {
+	local band=$1
+	local fem_name=$2
+	local rf_dir=/root/irf
+	local rx_gain_file=$rf_dir/rx_gain_level_${band}.bin
+	local rx_gain_file_info=$rf_dir/rx_gain_level_${band}.info
+	local def_rx_gain_file=$rf_dir/rx_gain_level_${band}_default.bin
+	local current_rx_gain_file desired_rx_gain_file fem_type
+
+	if [ ! -f $def_rx_gain_file ]; then
+		if [ -f /overlay/upper/$rx_gain_file ]; then
+			echo "Wanring: $rx_gain_file is not original file, please run 'firstboot' to recover" > /dev/console
+			return
+		else
+			cp $rx_gain_file $def_rx_gain_file
+		fi
+	fi
+
+	if [ -f $rx_gain_file_info ]; then
+		current_rx_gain_file=$(cat $rx_gain_file_info)
+	else
+		current_rx_gain_file=$(basename $def_rx_gain_file)
+	fi
+
+	fem_type=$(fw_printsys -n $fem_name 2>/dev/null)
+	if [ -z "$fem_type" ]; then
+		echo "Warning: cannot get '$fem_name' from boarddata, treat as 'default'" > /dev/console
+		fem_type="default"
+	fi
+
+	case "$band-$fem_type" in
+	2G-QPF4288A)
+		desired_rx_gain_file=rx_gain_level_2G_QPF4288A.bin
+		;;
+	2G-SKY85333|2G-SKY85333-11)
+		desired_rx_gain_file=rx_gain_level_2G_SKY85333.bin
+		;;
+	2G-nofem)
+		desired_rx_gain_file=rx_gain_level_2G_nofem.bin
+		;;
+	2G-default)
+		desired_rx_gain_file=rx_gain_level_2G_default.bin
+		;;
+	2G-*)
+		desired_rx_gain_file=rx_gain_level_2G_default.bin
+		echo "Warning: don't support FEM '$fem_type', use default rx_gain_level file" > /dev/console
+		;;
+	5G-QPF4588A)
+		desired_rx_gain_file=rx_gain_level_5G_QPF4588A.bin
+		;;
+	5G-SKY85747|5G-SKY85747-11)
+		desired_rx_gain_file=rx_gain_level_5G_SKY85747.bin
+		;;
+	5G-nofem)
+		desired_rx_gain_file=rx_gain_level_5G_nofem.bin
+		;;
+	5G-default)
+		desired_rx_gain_file=rx_gain_level_5G_default.bin
+		;;
+	5G-*)
+		desired_rx_gain_file=rx_gain_level_5G_default.bin
+		echo "Warning: don't support FEM '$fem_type', use default rx_gain_level file" > /dev/console
+		;;
+	esac
+
+	if [ "$desired_rx_gain_file" != "$current_rx_gain_file" ]; then
+		echo "Info: replace $(basename $rx_gain_file) with $desired_rx_gain_file for FEM '$fem_type'" > /dev/console
+		cp $rf_dir/$desired_rx_gain_file $rx_gain_file
+		echo $desired_rx_gain_file > $rx_gain_file_info
+	fi
+}
+
+set_switch_qos_setting() {
+	if [ -e /etc/cls-qos/tc_mapping.conf -a -e /sys/kernel/debug/cls_npe/tc_map ]; then
+		cat /etc/cls-qos/tc_mapping.conf > /sys/kernel/debug/cls_npe/tc_map
+		echo apply > /sys/kernel/debug/cls_npe/tc_map
+	fi
+
+	if [ -e /etc/cls-qos/dscp_mapping.conf -a -e /sys/kernel/debug/cls_npe/dscp_map ]; then
+		cat /etc/cls-qos/dscp_mapping.conf > /sys/kernel/debug/cls_npe/dscp_map
+		echo apply > /sys/kernel/debug/cls_npe/dscp_map
+	fi
+
+	if [ -e /etc/cls-qos/egress_queue.conf -a -e /sys/kernel/debug/cls_npe/queue_weight ]; then
+		cat /etc/cls-qos/egress_queue.conf > /sys/kernel/debug/cls_npe/queue_weight
+		echo apply > /sys/kernel/debug/cls_npe/queue_weight
+	fi
+}
+
+start() {
+	prepare_macaddr
+	set_eth_macaddr_and_wan_port
+	set_router_port_macaddr
+	set_wifi_macaddr
+	allow_wan_non_ip_packet
+	set_switch_qos_setting
+}

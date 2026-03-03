@@ -1,0 +1,23 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2014 OpenWrt.org
+
+START=99
+
+start()
+{
+	uci set system.@system[0].F_ver='V1.0.0_x64-20260131'
+	# uci set luci.main.lang='en'
+	#uci set luci.main.lang='zh_cn'
+	uci set network.@device[0].igmp_snooping='1'
+	uci set network.@device[0].multicast_querier='1'
+	
+	uci set network.lan.igmp_snooping='1'
+	uci set network.lan.multicast_querier='1'
+	uci commit
+	
+   	rm -r /etc/init.d/slk-init
+}
+
+
+
+

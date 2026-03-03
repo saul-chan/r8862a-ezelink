@@ -1,0 +1,83 @@
+/*C00.V01.P00.S03*/
+//serde0 hsgmii
+//QSGMII
+/dts-v1/;
+/plugin/;
+/ {
+	fragment@0 {
+		target=<&xpcs0>;
+		__overlay__ {
+			phy-mode = "sgmii";
+			/delete-property/ usxg_mode;
+			status = "okay";
+		};
+	};
+
+	fragment@1 {
+		target=<&xpcs1>;
+		__overlay__ {
+			phy-mode = "qsgmii";
+			status = "okay";
+		};
+	};
+
+	fragment@2 {
+		target=<&xgmac0>;
+		__overlay__ {
+			status = "disable";
+		};
+	};
+
+	fragment@3 {
+		target=<&npe>;
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+		__overlay__ {
+			xgmac0@0 {
+				id = <0>;
+				compatible = "clourney,dwmac";
+				mode = "non-rgmii";
+				phy-handle = <&sgmii1_phy>;
+				reg = <0x00 0x53c00000 0x00 0x100000>;
+				status = "okay";
+			};
+		};
+	};
+
+	fragment@4  {
+		target=<&xgmac1>;
+		__overlay__ {
+			mode = "non-rgmii";
+			phy-handle = <&qsgmii_phy0>;
+			status = "okay";
+		};
+	};
+
+	fragment@5 {
+		target = <&xgmac2>;
+		__overlay__ {
+			mode = "non-rgmii";
+			phy-handle = <&qsgmii_phy1>;
+			status = "okay";
+		};
+	};
+
+	fragment@6 {
+		target = <&xgmac3>;
+		__overlay__ {
+			mode = "non-rgmii";
+			phy-handle = <&qsgmii_phy2>;
+			status = "okay";
+		};
+	};
+
+	fragment@7 {
+		target = <&xgmac4>;
+		__overlay__ {
+			mode = "non-rgmii";
+			phy-handle = <&qsgmii_phy3>;
+			status = "okay";
+		};
+	};
+};

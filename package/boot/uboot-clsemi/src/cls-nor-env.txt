@@ -1,0 +1,49 @@
+bootargs=ubi.mtd=fw1 rootfstype=squashfs rootwait ro
+bootcmd=run bootrdk_safe
+bootdelay=3
+loadaddr=0x400000
+initrd_high=0xffffffffffffffff
+active_fw=fw1
+backup_fw=fw2
+ipaddr=192.168.1.110
+serverip=192.168.1.111
+load_k_addr=0x400000
+bootrdk=part start mmc 0 $active_fw part_addr && part size mmc 0 $active_fw part_size && mmc read $load_k_addr $part_addr 0x100 && imszb $load_k_addr image_size && test 0x$image_size -le 0x$part_size && mmc read $load_k_addr 0x$part_addr 0x$image_size && source $load_k_addr:script-1
+bootrdk_args=root=/dev/mmcblk0p65 rootwait cls_rootdisk=$active_fw
+bootrdk_safe=run bootrdk;run swap_active;run bootrdk
+bootcdk=setenv bootargs ${bootcdk_args};ext4load mmc 0:1 ${loadaddr} Image; bootm ${loadaddr}
+bootcdk_args=root=/dev/mmcblk0p2 rw rootfstype=ext4 rootwait
+mmc_write_vol=imszb $loadaddr image_size && test 0x$image_size -le 0x$part_size && mmc write $loadaddr 0x$part_addr 0x$image_size
+upgrade_fw1=part start mmc 0 fw1 part_addr && part size mmc 0 fw1 part_size && run mmc_write_vol
+upgrade_fw2=part start mmc 0 fw2 part_addr && part size mmc 0 fw2 part_size && run mmc_write_vol
+upgrade_fw_active=echo $active_fw; part start mmc 0 $active_fw part_addr && part size mmc 0 $active_fw part_size && run mmc_write_vol
+upgrade_sbl=cls_bimid $loadaddr 0x2000 sbl_id;if test $sbl_id = 0x494d4701; then \
+			mtd erase sbl && mtd write sbl $loadaddr 0x0 $filesize; \
+		else \
+			echo loading sbl image id $sbl_id is err; \
+		fi
+upgrade_atf=cls_bimid $loadaddr 0x0 atf_id;if test $atf_id = 0x494d4702; then \
+			mtd erase atf && mtd write atf $loadaddr 0x0 $filesize; \
+                else \
+                        echo loading atf image id $atf_id is err; \
+		fi
+upgrade_platformdata=cls_bimid $loadaddr 0x0 platformdata_id;if test $platformdata_id = 0x43464703; then \
+			mtd erase platformdata && mtd write platformdata $loadaddr 0x0 $filesize; \
+                else \
+                        echo loading platformdata image id $platformdata_id is err; \
+		fi
+upgrade_uboot=cls_bimid $loadaddr 0x0 uboot_id;if test $uboot_id = 0x494d4704; then \
+			mtd erase uboot && mtd write uboot $loadaddr 0x0 $filesize; \
+                else \
+                        echo loading uboot image id $uboot_id is err; \
+		fi
+swap_active=if test $active_fw = fw1; then \
+		setenv active_fw fw2; \
+		setenv backup_fw fw1; \
+		saveenv; \
+	else \
+		setenv active_fw fw1; \
+		setenv backup_fw fw2; \
+		saveenv; \
+	fi
+

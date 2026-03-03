@@ -1,0 +1,48 @@
+bootargs=ubi.mtd=fw1 rootfstype=squashfs rootwait ro
+bootcmd=run bootrdk_safe
+bootdelay=3
+loadaddr=0x400000
+initrd_high=0xffffffffffffffff
+active_fw=fw1
+backup_fw=fw2
+ipaddr=192.168.1.110
+serverip=192.168.1.123
+load_k_addr=0x400000
+bootrdk=ubi part $active_fw;ubi read $load_k_addr kernel;source $load_k_addr:script-1
+bootrdk_args=ubi.mtd=${active_fw} rootfstype=squashfs rootwait ro
+bootrdk_safe=run bootrdk;run swap_active;run bootrdk
+bootcdk=setenv bootargs ${bootcdk_args};mtd read spi-nand0 ${loadaddr} 0x900000 0x2000000;bootm ${loadaddr}
+bootcdk_args=rdinit=/linuxrc rw rootwait
+upgrade_fw1=mtd erase fw1 && mtd write fw1 $loadaddr 0x0 $filesize
+upgrade_fw2=mtd erase fw2 && mtd write fw2 $loadaddr 0x0 $filesize
+upgrade_fw_active=echo $active_fw; mtd erase $active_fw && mtd write $active_fw $loadaddr 0x0 $filesize
+upgrade_sbl=cls_bimid $loadaddr 0x2000 sbl_id;if test $sbl_id = 0x494d4701; then \
+			mtd erase sbl && mtd write sbl $loadaddr 0x0 $filesize; \
+		else \
+			echo loading sbl image id $sbl_id is err; \
+		fi
+upgrade_atf=cls_bimid $loadaddr 0x0 atf_id;if test $atf_id = 0x494d4702; then \
+			mtd erase atf && mtd write atf $loadaddr 0x0 $filesize; \
+                else \
+                        echo loading atf image id $atf_id is err; \
+		fi
+upgrade_platformdata=cls_bimid $loadaddr 0x0 platformdata_id;if test $platformdata_id = 0x43464703; then \
+			mtd erase platformdata && mtd write platformdata $loadaddr 0x0 $filesize; \
+                else \
+                        echo loading platformdata image id $platformdata_id is err; \
+		fi
+upgrade_uboot=cls_bimid $loadaddr 0x0 uboot_id;if test $uboot_id = 0x494d4704; then \
+			mtd erase uboot && mtd write uboot $loadaddr 0x0 $filesize; \
+                else \
+                        echo loading uboot image id $uboot_id is err; \
+		fi
+swap_active=if test $active_fw = fw1; then \
+		setenv active_fw fw2; \
+		setenv backup_fw fw1; \
+		saveenv; \
+	else \
+		setenv active_fw fw1; \
+		setenv backup_fw fw2; \
+		saveenv; \
+	fi
+

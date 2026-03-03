@@ -1,0 +1,1 @@
+/home/slk/SLK-R8862A/clsemi-openwrt/feeds/kernel/tools/spi-target-aarch64_cortex-a53_musl/../../include/uapi/linux/spi/spidev.h

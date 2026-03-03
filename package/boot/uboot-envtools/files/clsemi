@@ -1,0 +1,57 @@
+[ -e /etc/config/ubootenv ] && exit 0
+
+touch /etc/config/ubootenv
+
+. /lib/uboot-envtools.sh
+. /lib/functions.sh
+
+board=$(board_name)
+envpartname="ubootenv"
+syspartname="boarddata"
+
+case "$board" in
+clourney,dubhe2000-emu|\
+clourney,dubhe2000|\
+clsemi,dubhe2000-evb-a|\
+clsemi,dubhe2000-evb-b|\
+clsemi,dubhe2000-demo-o|\
+clsemi,dubhe2000-demo-r|\
+clsemi,dubhe2000-demo-a|\
+clsemi,dubhe2000-demo-b|\
+clsemi,dubhe2000-rdk|\
+clsemi,dubhe2000-rdk-s|\
+clsemi,dubhe2000-rdk-slk|\
+clsemi,triband-5400-rdk)
+        . /lib/upgrade/nand.sh
+        envubi=$(nand_find_ubi "$envpartname")
+        envdev=/dev/$(nand_find_volume $envubi ubootenv)
+        envdev2=/dev/$(nand_find_volume $envubi ubootenv2)
+        ubootenv_add_uci_config "$envdev" "0x0" "0x1f000" "0x1f000" "1"
+        ubootenv_add_uci_config "$envdev2" "0x0" "0x1f000" "0x1f000" "1"
+
+        sysubi=$(nand_find_ubi "$syspartname")
+        sysdev=/dev/$(nand_find_volume $sysubi boarddata)
+        sysdev2=/dev/$(nand_find_volume $sysubi boarddata2)
+        ubootenv_add_uci_sys_config "$sysdev" "0x0" "0x1f000" "0x1f000" "1"
+        ubootenv_add_uci_sys_config "$sysdev2" "0x0" "0x1f000" "0x1f000" "1"
+        ;;
+clsemi,dubhe2000-evb-e)
+        envdev=/dev/mtd$(find_mtd_index ubootenv)
+        envdev2=/dev/mtd$(find_mtd_index ubootenv2)
+        ubootenv_add_uci_config "$envdev" "0x0" "0x20000" "0x10000" "2"
+        ubootenv_add_uci_config "$envdev2" "0x0" "0x20000" "0x10000" "2"
+
+        sysdev=/dev/mtd$(find_mtd_index boarddata)
+        sysdev2=/dev/mtd$(find_mtd_index boarddata2)
+        ubootenv_add_uci_sys_config "$sysdev" "0x0" "0x20000" "0x10000" "2"
+        ubootenv_add_uci_sys_config "$sysdev2" "0x0" "0x20000" "0x10000" "2"
+        ;;
+*)
+	echo "Unsupported hardware. fw_env.config and fw_sys.config not initialized" > /dev/console
+        ;;
+esac
+
+config_load ubootenv
+config_foreach ubootenv_add_app_config
+
+exit 0

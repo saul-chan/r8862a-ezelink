@@ -1,0 +1,2 @@
+config dnshijack 'config'
+	list name 'mywifi.com'

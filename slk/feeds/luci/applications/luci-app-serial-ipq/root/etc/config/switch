@@ -1,0 +1,6 @@
+
+config signal
+	option serialproto '0'
+	option iosignal '0'
+	option localport '502'
+

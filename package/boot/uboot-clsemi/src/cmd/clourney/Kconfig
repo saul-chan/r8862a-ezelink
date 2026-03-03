@@ -1,0 +1,8 @@
+menu "Clourney specific command line interface"
+
+config CMD_CLS_BIMID
+        bool "command for get clourney bootloader image id"
+        help
+           This command supports check image valid and get image id.
+
+endmenu

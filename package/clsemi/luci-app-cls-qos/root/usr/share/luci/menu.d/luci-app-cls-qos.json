@@ -1,0 +1,30 @@
+{
+	"admin/services/cls-qos": {
+		"title": "CLS-QoS",
+		"action": {
+			"type": "alias",
+			"path": "admin/services/cls-qos/cls-classic-qos"
+		},
+		"depends": {
+			"acl": [ "luci-app-cls-qos" ]
+		}
+	},
+
+	"admin/services/cls-qos/cls-classic-qos": {
+		"title": "Classic QoS",
+		"order": 1,
+		"action": {
+			"type": "view",
+			"path": "clsemi/cls-classic-qos"
+		}
+	},
+
+	"admin/services/cls-qos/cls-vip-qos": {
+		"title": "VIP QoS",
+		"order": 2,
+		"action": {
+			"type": "view",
+			"path": "clsemi/cls-vip-qos"
+		}
+	}
+}

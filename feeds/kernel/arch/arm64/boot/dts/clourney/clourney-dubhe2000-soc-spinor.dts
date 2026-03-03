@@ -1,0 +1,96 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Device Tree Include file for Clourney dubhe2000 family SoC.
+ *
+ * Copyright (C) 2022-2023 Clourney Semiconductor - All Rights Reserved.
+ *
+ */
+
+/dts-v1/;
+#include "clourney-dubhe2000.dtsi"
+
+/ {
+	model = "DUBHE2000 SOC Board";
+	compatible = "clourney,dubhe2000";
+
+	aliases {
+		serial0 = &duart0;
+		spidev0 = &spi0;
+		spinor = &spiflash;
+	};
+
+	chosen {
+		stdout-path = "serial0:9600n8";
+	};
+};
+
+&duart0 {
+	status = "ok";
+};
+
+&spi0 {
+	status = "ok";
+	spidev@0 {
+		spi-max-frequency = <4000000>;
+		reg = <0>;
+		compatible = "linux,spidev";
+	};
+};
+
+&spiflash {
+	status = "ok";
+
+	nor_flash: flash@0 {
+		compatible = "st,mt25ql128a", "jedec,spi-nor";
+		spi-max-frequency = <4000000>;
+		reg = <0>;
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		partition@0 {
+			label = "norflash-spl";
+			reg = <0x0 0x20000>;
+		};
+
+		partition@1 {
+			label = "norflash-atf";
+			reg = <0x20000 0x60000>;
+		};
+
+		partition@2 {
+			label = "norflash-uboot";
+			reg = <0x80000 0x80000>;
+		};
+
+		partition@3 {
+			label = "norflash-dtb";
+			reg = <0x100000 0x100000>;
+		};
+
+		partition@4 {
+			label = "norflash-rootfs";
+			reg = <0x200000 0xE00000>;
+		};
+	};
+};
+
+&npe  { status = "ok"; };
+
+&wifi0 { status = "ok"; };
+
+&wifi1 { status = "ok"; };
+
+&sdhci { status = "ok"; };
+
+&watchdog0 {
+	timeout-sec = <WDT_TIMEOUT_S>;
+	status = "ok";
+};
+
+&gpio0 { status = "ok"; };
+
+&gpio1 { status = "ok"; };
+
+&gpio_keys { status = "ok"; };
+
+&gpio_leds { status = "ok"; };

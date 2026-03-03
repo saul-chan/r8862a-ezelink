@@ -1,0 +1,42 @@
+
+#PCIE_PLL_Config(int refdiv, int fbdiv, int frac, int postdiv1, int postdiv2)
+PCIE_PLL_Config  2 125 0 3 1
+#clkout_sel 1000M
+soc_write 0x90412a0c 0x1
+#pciephy_ref_use_pad
+#soc_write 0x900c0828 0x2
+#sys_aux_pwr_det
+soc_write 0x900c0008 0x1
+
+#PCIE_SFT_RST_CTRL
+soc_write 0x90000084 0x0
+#sft_buttom_rst_n
+soc_write 0x90000084 0x1
+#sft_rst_pcie_n
+soc_write 0x90414008 0xffffe7
+#20ns
+sleep 1
+#sft_perst_n
+soc_write 0x90000084 0x3
+
+#判断SRAM是否加载完成
+#ETH_serdes_reg_read 3 0x203e
+PCIE_serdes_reg_read 0x203e
+#SRAM init in
+soc_write 0x900c0750 1
+
+#target_link_speed gen4
+soc_write 0xc00000a0 0x2010044
+soc_write 0xc00000a0 0x2010043
+soc_write 0xc00000a0 0x2010042
+soc_write 0xc00000a0 0x2010041
+#loopback_enable
+soc_write 0xc0000710 0x10124
+
+#ser tx2rx loopback enable
+#soc_write 0x900c0754 0x00000001
+#app_ltssm_enale
+soc_write 0x900c0010 0x1
+#10ms
+sleep 1
+soc_read 0x900c00c0

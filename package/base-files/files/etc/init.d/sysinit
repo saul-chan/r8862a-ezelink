@@ -1,0 +1,16 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2014 OpenWrt.org
+
+START=41
+
+start()
+{	
+	esw_cli yt_port_enable_set 0 6  YT_DISABLE
+	
+	#搜索工具支持
+	lua /etc/slkapp/udp &
+
+}
+
+
+

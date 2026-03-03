@@ -1,0 +1,122 @@
+#! /bin/bash
+
+wr_tips() {
+    tdir="afe"
+    mkdir /root/"$tdir"
+    rm /root/"$tdir"/wr
+    tftp 192.168.0.2 -g -r afe/wr -l /root/"$tdir"/wr
+    cat /root/"$tdir"/wr
+    chmod 777 /root/"$tdir"/wr
+
+    path_to_check=/root/irf/:/root/"$tdir"/
+    if echo "$PATH" | grep -q $path_to_check; then
+        echo "PATH already contains $path_to_check"
+    else
+        export PATH=$PATH:$path_to_check
+        echo "PATH updated to include $path_to_check"
+    fi
+    # PATH=$PATH:/root/"$tdir"/
+    echo "$PATH"
+
+    sh /root/"$tdir"/wr 0x60000000 0x02D00000 31 0 1
+    wr 0x60000000 0x02D00000
+    devmem 0x60000000 32
+}
+
+wr_usage() {
+    echo "============================================================="
+    echo 'register write addr value [31 [0 [0]]]'
+    echo "at least 2 parameters"
+    echo "============================================================="
+    echo "addr   : addr like 0x90000000"
+    echo "val    : value, accept hex (0xff), dec(127) and bin(0b11111111)"
+    echo "hbit   : high bit, max 31, dafault 31"
+    echo "lbit   : low  bit, min  0, defautt  0"
+    echo "rback  : show origin whole 32 bit and whole 32 readback, dafault 0"
+    echo "     0 : # noting"
+    echo "       :          "
+    echo "     1 : # origin 32 bits and readback 32 bits"
+    echo "       : 0x00000011"
+    echo "       : 0x00000001"
+    echo ""
+}
+
+argc=$#
+
+hbit=31
+lbit=0
+rback=0
+
+if [ $argc -lt 2 ]; then
+    wr_usage
+    exit 2
+fi
+if [ $argc -eq 3 ]; then
+    hbit=$3
+fi
+if [ $argc -eq 4 ]; then
+    hbit=$3
+    lbit=$4
+fi
+if [ $argc -eq 5 ]; then
+    hbit=$3
+    lbit=$4
+    rback=$5
+fi
+if [ $argc -gt 5 ]; then
+    rw_usage
+    exit 5
+fi
+
+addr=$(($1 & 0xfffffffC))
+val=$2
+
+# echo $(printf "0x%08X" $addr)
+# echo $(printf "0x%08X" $val)
+# echo $hbit
+# echo $lbit
+
+if [ "$hbit" -gt 31 ]; then
+    echo "hbit max = 31"
+    hbit=31
+fi
+
+if [ "$lbit" -gt 31 ]; then
+    echo "lbit max = 31"
+    lbit=31
+fi
+
+if [ "$lbit" -gt "$hbit" ]; then
+    echo "lbit>hbit"
+    lbit=$hbit
+fi
+
+lmask=$((0xffffffff & $((0xffffffff << lbit))))
+hmask=$(($((1 << $((hbit + 1)))) - 1))
+# echo $(printf "0x%08X" $hmask)
+# echo $(printf "0x%08X" $lmask)
+# mask=$(($hmask & $lmask))
+mask=$((hmask & lmask))
+# echo $(printf "0x%08X" $mask)
+
+if [ "$rback" -eq 1 ]; then
+    devmem $addr 32
+fi
+
+if [ $mask -eq 4294967295 ]; then
+    devmem $addr 32 "$val"
+else
+    rv=$(devmem $addr 32)
+
+    rv1=$((rv & ~mask))
+    # echo $(printf "0x%08X" $rv1)
+    rv2=$(((val << lbit) & mask))
+    # echo $(printf "0x%08X" $rv2)
+    rv3=$((rv1 | rv2))
+    # echo $(printf "0x%08X" $rv3)
+    devmem $addr 32 $rv3
+fi
+
+if [ "$rback" -eq 1 ]; then
+    devmem $addr 32
+fi

@@ -1,0 +1,13 @@
+{
+	"admin/overview": {
+		"title": "Overview",
+		"order": 20,
+		"action": {
+			"type": "view",
+			"path": "overview/index"
+		},
+		"depends": {
+			"acl": [ "clsgui-mod-overview" ]
+		}
+	}
+}

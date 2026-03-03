@@ -1,0 +1,12 @@
+#!/bin/sh
+
+if [ "$PKG_UPGRADE" != 1 ]; then
+	uci get luci.themes.ezelink >/dev/null 2>&1 || \
+	uci batch <<-EOF
+		set luci.themes.ezelink=/luci-static/ezelink
+		set luci.main.mediaurlbase=/luci-static/ezelink
+		commit luci
+	EOF
+fi
+
+exit 0

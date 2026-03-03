@@ -1,0 +1,49 @@
+{
+	"admin/wireless/settings": {
+		"title": "Settings",
+		"order": 1,
+		"action": {
+			"type": "view",
+			"path": "wireless/cls-settings"
+		},
+		"depends": {
+			"acl": [ "clsgui-mod-wireless" ]
+		}
+	},
+
+    "admin/wireless/advance": {
+        "title": "Advanced",
+        "order": 3,
+        "action": {
+            "type": "view",
+            "path": "wireless/cls-advance-general"
+        },
+        "depends": {
+            "acl": [ "clsgui-mod-wireless" ]
+        }
+    },
+
+	"admin/wireless/advance/cls-advance-general": {
+        "title": "General Settings",
+        "order": 1,
+        "action": {
+            "type": "view",
+            "path": "wireless/cls-advance-general"
+        },
+        "depends": {
+            "acl": [ "clsgui-mod-wireless" ]
+        }
+    },
+
+	"admin/wireless/advance/cls-advance-access": {
+        "title": "Access Permision",
+        "order": 2,
+        "action": {
+            "type": "view",
+            "path": "wireless/cls-advance-access"
+        },
+        "depends": {
+            "acl": [ "clsgui-mod-wireless" ]
+        }
+    }
+}

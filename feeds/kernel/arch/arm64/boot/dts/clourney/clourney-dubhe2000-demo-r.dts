@@ -1,0 +1,242 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Device Tree Include file for Clourney dubhe2000 family SoC.
+ *
+ * Copyright (C) 2022-2024 Clourney Semiconductor - All Rights Reserved.
+ *
+ */
+
+/dts-v1/;
+#include "clourney-dubhe2000.dtsi"
+
+/ {
+	model = "Clourney Semiconductor DUBHE2000 DEMO-R Board";
+	compatible = "clsemi,dubhe2000-demo-r", "clsemi,dubhe2000";
+
+	aliases {
+		serial0 = &duart1;
+		spinand = &spiflash;
+		pwm0 = &pwm0;
+		pwm1 = &pwm1;
+		pwm2 = &pwm2;
+		pwm3 = &pwm3;
+		pwm4 = &pwm4;
+		pwm5 = &pwm5;
+	};
+
+	chosen {
+		stdout-path = "serial0:115200n8";
+	};
+};
+
+&duart1 {
+	status = "ok";
+};
+
+&spiflash {
+	rx-sample-delay-ns = <8>;
+	status = "ok";
+
+	nand_flash: flash@0 {
+		compatible = "spi-nand";
+		/* Avoid interference with 5G and 2.4G, not setting clk to  41.67MHz  */
+		spi-max-frequency = <31250000>;
+		reg = <0>;
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		/*0.5MB*/
+		partition@0 {
+			label = "sbl";
+			reg = <0x0 0x80000>;
+		};
+
+		/*0.5MB*/
+		partition@1 {
+			label = "atf";
+			reg = <0x80000 0x80000>;
+		};
+
+		/*1MB*/
+		partition@2 {
+			label = "platformdata";
+			reg = <0x100000 0x100000>;
+		};
+
+		/*2MB*/
+		partition@3 {
+			label = "uboot";
+			reg = <0x200000 0x200000>;
+		};
+
+		/*1MB*/
+		partition@4 {
+			label = "caldata";
+			reg = <0x400000 0x100000>;
+		};
+
+		/*1MB*/
+		partition@5 {
+			label = "caldata2";
+			reg = <0x500000 0x100000>;
+		};
+
+		/*1.5MB*/
+                partition@6 {
+                        label = "ubootenv";
+                        reg = <0x600000 0x180000>;
+                };
+
+		/*1.5MB*/
+                partition@7 {
+                        label = "boarddata";
+                        reg = <0x780000 0x180000>;
+                };
+
+		/*32MB*/
+                partition@8 {
+                        label = "fw1";
+                        reg = <0x900000 0x2000000>;
+                };
+
+		/*32MB*/
+                partition@9 {
+                        label = "fw2";
+                        reg = <0x2900000 0x2000000>;
+                };
+
+		/*55MB*/
+                partition@10 {
+                        label = "reserved";
+                        reg = <0x4900000 0x3700000>;
+                };
+	};
+};
+
+&npe  {
+	status = "ok";
+	switch-pause = <4>;
+};
+
+&xpcs0 {
+        phy-mode = "2500base-x";
+        status = "okay";
+};
+
+&xpcs1 {
+        phy-mode = "sgmii";
+        status = "okay";
+};
+
+&xgmac0 {
+        mode = "non-rgmii";
+        max-speed = <2500>;
+        mac-address = [a0 c0 ab 39 cc f0];
+        sfp;
+        mdio-flags = <1>;
+        clk_csr = <1>;
+        status = "okay";
+        mdio {
+        compatible = "clourney,mdio";
+        #address-cells = <1>;
+        #size-cells = <0>;
+        device_type = "mdio";
+        status = "okay";
+        rgmii1_phy: ethernet-phy@5 {
+                 compatible = "realtek,8211f","ethernet-phy-ieee802.3-c22";
+                 reg = <0x5>;
+        };
+        sgmii1_phy: ethernet-phy@6 {
+                compatible = "ethernet-phy-ieee802.3-c22";
+                reg = <0x6>;
+        };
+  };
+};
+
+&xgmac4 {
+        mode = "rgmii";
+        max-speed = <1000>;
+        mdio-flags = <1>;
+        phy-handle = <&rgmii1_phy>;
+        rgmii-rx-delay = <1>;
+        mdio-flags = <1>;
+        status = "okay";
+};
+
+&xgmac1 {
+        mode = "non-rgmii";
+        max-speed = <2500>;
+        phy-handle = <&sgmii1_phy>;
+        mdio-flags = <1>;
+        status = "okay";
+};
+
+&xgmac2 {
+        status = "disabled";
+};
+
+&xgmac3 {
+        status = "disabled";
+};
+
+&wifi0 { status = "ok"; };
+
+&wifi1 { status = "ok"; };
+
+&wifiarm { status = "disabled"; };
+
+&wifiarc { status = "ok"; };
+
+&crgwdt {
+        timeout-sec = <WDT_TIMEOUT_S>;
+        status = "ok";
+};
+
+&gpio0 { status = "ok"; };
+
+&gpio1 { status = "ok"; };
+
+&usbdrd3 { status = "ok";};
+
+&usb {status = "ok"; };
+
+&pwm0 { status = "ok"; };
+
+&pvt_sensor {
+	status = "ok";
+        // T2
+        temp_rise_alarm2_L = "102000";
+        temp_rise_alarm2_H = "110000";
+        temp_fall_alarm2_H = "110000";
+        temp_fall_alarm2_L = "102000";
+        // T0
+        temp_rise_alarm0_L = "110000";
+        temp_rise_alarm0_H = "118000";
+        temp_fall_alarm0_H = "118000";
+        temp_fall_alarm0_L = "110000";
+        // T1
+        temp_rise_alarm1_L = "118000";
+        temp_rise_alarm1_H = "126000";
+        temp_fall_alarm1_H = "126000";
+        temp_fall_alarm1_L = "118000";
+};
+
+&cls_tsens {
+	status = "ok";
+        // T2
+        temp_rise_alarm2_L = "102000";
+        temp_rise_alarm2_H = "110000";
+        temp_fall_alarm2_H = "110000";
+        temp_fall_alarm2_L = "102000";
+        // T0
+        temp_rise_alarm0_L = "110000";
+        temp_rise_alarm0_H = "118000";
+        temp_fall_alarm0_H = "118000";
+        temp_fall_alarm0_L = "110000";
+        // T1
+        temp_rise_alarm1_L = "118000";
+        temp_rise_alarm1_H = "126000";
+        temp_fall_alarm1_H = "126000";
+        temp_fall_alarm1_L = "118000";
+};
+

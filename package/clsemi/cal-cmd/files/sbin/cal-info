@@ -1,0 +1,81 @@
+#!/bin/sh
+
+. /etc/init.d/cls-load-wifi
+. /lib64/functions.sh
+
+usage() {
+	cat <<EOF
+Usage: $0 get_gain_ver|set_gain_last|save_info [Cali Time][Cali Tool Version][Cali Framwork Version]
+Save current calibration info, this include:
+1. Cali Time: need user input
+2. Cali Tool Version: need user input
+3. Cali Framwork Version: need user input
+4. DUT SW version
+5. DUT Gain version
+EOF
+	exit 1
+}
+
+gain_file=tx_gain_level_5G.bin
+
+# TODO. need to update for triband board
+cal_info=/mnt/ubifs_data/cal_info
+irf_root=/root/irf
+if [ -f $irf_root/m2k/$gain_file ]; then
+	irf_root=/root/irf/m2k
+	cal_info=/mnt/ubifs_data/m2k/cal_info
+fi
+
+write_info(){
+	cat << EOF > $cal_info
+Cali Time: $1
+Cali Tool SW Version: $2
+Cali Framwork Version: $3
+DUT SW Version: $4
+DUT Gain Version: $5
+EOF
+}
+
+save_info(){
+	dut_sw_ver=$(cat /etc/openwrt_cls_info | grep Build_time | awk -F "=" '{print $2}' | sed "s/ /_/g")
+	dut_gain_ver=$(readlink $irf_root/$gain_file | awk -F "/" '{print $2}')
+
+	write_info $1 $2 $3 $dut_sw_ver $dut_gain_ver
+}
+
+get_gain_ver(){
+	# 1. uncalibrated board need to use the latest gain table
+	# 2. calibrated board but w/o gain ver, set to ver10(D2K) & ver2(M2K) by default
+	# 3. calibrated board but w gain ver, set to calibrated verion
+	local version=LAST
+	if [ -f $cal_info ]; then
+		cal_ver=$(cat $cal_info | grep "DUT Gain Version" | awk -F "ver" '{print $2}' | tr -d ' ')
+		if [ -n "$cal_ver" ]; then
+			version=$cal_ver
+		else
+			# TODO. modify for triband board
+			version=10
+			[[ -f /root/irf/m2k/$gain_file ]] && version=2
+		fi
+	fi
+
+	echo $version
+}
+
+set_last_gain(){
+	set_wifi_fem_type LAST
+}
+
+case "$1" in
+	save_info)
+		save_info $2 $3 $4
+		;;
+	get_gain_ver)
+		get_gain_ver
+		;;
+	set_gain_last)
+		set_last_gain
+		;;
+	*) usage;
+		;;
+esac

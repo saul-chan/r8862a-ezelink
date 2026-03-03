@@ -1,0 +1,225 @@
+#!/bin/sh
+
+# 脚本配置文件
+CONFIG_FILE="/etc/wifi_di_control.conf"
+LOG_FILE="/var/log/wifi_di_control.log"
+
+# GPIO引脚和状态文件
+DI_GPIO_VALUE="/sys/class/gpio/gpio43/value"
+
+# 日志函数
+log_message() {
+    timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+    echo "[$timestamp] $1" >> "$LOG_FILE"
+    echo "$1"  # 同时输出到控制台
+}
+
+# 检查必要文件是否存在
+check_prerequisites() {
+    if [ ! -f "$DI_GPIO_VALUE" ]; then
+        log_message "错误: DI GPIO值文件不存在: $DI_GPIO_VALUE"
+        return 1
+    fi
+    
+    log_message "检查通过，开始运行脚本"
+    return 0
+}
+
+# 获取DI状态 (1=低电平，0=高电平，根据您的描述)
+get_di_status() {
+    di_value=$(cat "$DI_GPIO_VALUE" 2>/dev/null)
+    
+    # 检查获取是否成功
+    if [ $? -eq 0 ] && [ -n "$di_value" ]; then
+        # 去除可能的换行符
+        di_value=$(echo "$di_value" | tr -d '\n\r')
+        echo "$di_value"
+        return 0
+    else
+        log_message "警告: 无法读取DI状态"
+        echo "-1"
+        return 1
+    fi
+}
+
+# 获取脚本使能状态
+get_script_enable() {
+    enable_status=$(uci -q get io.@io[0].enable 2>/dev/null)
+    
+    if [ $? -eq 0 ] && [ -n "$enable_status" ]; then
+        echo "$enable_status"
+        return 0
+    else
+        log_message "警告: 无法获取脚本使能状态，默认为0（开启）"
+        echo "0"
+        return 1
+    fi
+}
+
+# 获取WiFi使能配置
+get_wifi_enable() {
+    wifi_en_raw=$(uci -q show wificonfig.wlan0.en 2>/dev/null)
+    if [ $? -eq 0 ] && [ -n "$wifi_en_raw" ]; then
+        wifi_en=$(echo "$wifi_en_raw" | cut -d'=' -f2)
+        echo "$wifi_en"
+        return 0
+    else
+        log_message "警告: 无法获取WiFi使能配置"
+        echo "-1"
+        return 1
+    fi
+}
+
+# 控制WiFi开关
+control_wifi() {
+    action=$1
+    
+    case $action in
+        "on")
+            log_message "尝试开启WiFi..."
+            # 先设置wifi使能为1
+            # uci set wificonfig.wlan0.en=1 2>/dev/null
+            # uci set wificonfig.wlan1.en=1 2>/dev/null
+            # uci commit wificonfig 2>/dev/null
+            
+            # 使用wifi_init重启
+            # if [ -x "/etc/init.d/wifi_init" ]; then
+                # /etc/init.d/wifi_init restart 2>/dev/null
+            # else
+                # log_message "警告: wifi_init脚本不存在，直接启动wifi"
+                wifi up 2>/dev/null
+            # fi
+            
+            # 等待并验证
+            sleep 3
+            log_message "WiFi开启命令执行完成"
+            ;;
+        "off")
+            log_message "尝试关闭WiFi..."
+            # 先设置wifi使能为0
+            # uci set wificonfig.wlan0.en=0 2>/dev/null
+            # uci set wificonfig.wlan1.en=0 2>/dev/null
+            # uci commit wificonfig 2>/dev/null
+            
+            # 使用wifi_init重启
+            #if [ -x "/etc/init.d/wifi_init" ]; then
+             #   /etc/init.d/wifi_init restart 2>/dev/null
+            #else
+             #   log_message "警告: wifi_init脚本不存在，直接关闭wifi"
+                wifi down 2>/dev/null
+            #fi
+            
+            # 等待
+            sleep 2
+            log_message "WiFi关闭命令执行完成"
+            ;;
+        *)
+            log_message "错误: 未知的WiFi控制操作: $action"
+            ;;
+    esac
+}
+
+# 处理DI状态变化
+handle_di_change() {
+    di_status=$1
+    script_enable=$2
+    last_wifi_state=$3
+    
+    # 如果脚本未使能，保持WiFi开启
+    if [ "$script_enable" != "1" ]; then
+        if [ "$last_wifi_state" != "on" ]; then
+            log_message "脚本未使能，开启WiFi"
+            control_wifi "on"
+            echo "on"
+        else
+            echo "on"
+        fi
+        return
+    fi
+    
+    # 脚本使能的情况下，根据DI状态控制WiFi
+    # di_status: 1=低电平，0=高电平
+    if [ "$di_status" = "0" ]; then
+        # DI高电平，开启WiFi
+        if [ "$last_wifi_state" != "on" ]; then
+            log_message "检测到DI高电平，开启WiFi"
+            control_wifi "on"
+            echo "on"
+        else
+            echo "on"
+        fi
+    elif [ "$di_status" = "1" ]; then
+        # DI低电平，关闭WiFi
+        if [ "$last_wifi_state" != "off" ]; then
+            log_message "检测到DI低电平，关闭WiFi"
+            control_wifi "off"
+            echo "off"
+        else
+            echo "off"
+        fi
+    else
+        # DI状态读取失败，保持当前状态
+        log_message "DI状态读取失败，保持WiFi当前状态"
+        echo "$last_wifi_state"
+    fi
+}
+
+# 初始化WiFi状态
+initialize_wifi_state() {
+    script_enable=$(get_script_enable)
+    
+    # 如果脚本使能，初始关闭WiFi
+    if [ "$script_enable" = "1" ]; then
+        log_message "脚本使能，初始关闭WiFi"
+        control_wifi "off"
+        echo "off"
+    else
+        log_message "脚本未使能，初始开启WiFi"
+        control_wifi "on"
+        echo "on"
+    fi
+}
+
+# 主循环
+main() {
+    log_message "WiFi DI控制脚本启动"
+    
+    if ! check_prerequisites; then
+        log_message "初始化失败，退出脚本"
+        exit 1
+    fi
+    
+    last_di_status="-1"
+    last_script_enable="-1"
+    
+    # 初始化WiFi状态
+    last_wifi_state=$(initialize_wifi_state)
+    
+    log_message "初始化完成: WiFi状态=$last_wifi_state"
+    
+    # 主循环
+    while true; do
+        # 获取当前状态
+        current_di=$(get_di_status)
+        current_script_enable=$(get_script_enable)
+        
+        # 检查状态是否有变化
+        if [ "$current_di" != "$last_di_status" ] || [ "$current_script_enable" != "$last_script_enable" ]; then
+            log_message "状态变化: DI=$current_di, 脚本使能=$current_script_enable"
+            
+            # 处理状态变化
+            last_wifi_state=$(handle_di_change "$current_di" "$current_script_enable" "$last_wifi_state")
+            
+            # 更新最后的状态
+            last_di_status="$current_di"
+            last_script_enable="$current_script_enable"
+        fi
+        
+        # 等待一段时间再检查
+        sleep 1
+    done
+}
+
+# 脚本启动
+main
+

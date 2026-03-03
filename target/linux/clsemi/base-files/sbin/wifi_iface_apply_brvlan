@@ -1,0 +1,98 @@
+#!/bin/sh
+
+. /lib/functions.sh
+
+PROGRAM=${0##*/}
+IFNAME=$1
+IFACE_SECTION=$2
+
+__wifi_iface_set_vlan() {
+	local vid=0
+	local untagged=0
+	local tagged=0
+	local pvid=0
+	local arg_tag arg_pvid
+	local bridge_vlan_section
+
+	for opt in $(echo "$1" | sed 's/*/:p/' | tr ':' ' '); do
+		case "$opt" in
+			t) tagged=1; arg_tag=":t" ;;
+			u) untagged=1; arg_tag=":u" ;;
+			p) pvid=1; arg_pvid="*" ;;
+			[0-9]*) vid=$opt;;
+		esac
+	done
+
+	if [ $vid -eq 0 ] || [ $untagged -eq $tagged ]; then
+		logger -p error -t $PROGRAM "$IFACE_SECTION ignore invalid brvlan option: \"$1\""
+		return
+	fi
+
+	if [ $pvid -eq 1 ]; then
+		if [ $PVID -eq 0 ]; then
+			PVID=$vid
+		else
+			logger -p error -t $PROGRAM "$IFACE_SECTION config multiple pvid: $PVID $vid"
+			return
+		fi
+	fi
+
+	bridge_vlan_section=$(brvlan_find_or_create $vid)
+	uci add_list network.$bridge_vlan_section.ports="$IFNAME$arg_tag$arg_pvid"
+}
+
+__remove_wifi_port() {
+	local val=$1
+
+	if [ "${val%%:*}" = "$IFNAME" ] ; then
+		uci del_list network.$BRIDGE_VLAN_SECTION.ports=$val
+	fi
+}
+
+remove_wifi_port() {
+	BRIDGE_VLAN_SECTION="$1"
+
+	config_list_foreach "$BRIDGE_VLAN_SECTION" "ports" __remove_wifi_port
+}
+
+wifi_iface_apply_brvlan() {
+	logger -p notice -t $PROGRAM "apply brvlan for $IFNAME $IFACE_SECTION"
+
+	has_uncommit_conf=0
+	if [ -n "$(uci changes network)" ]; then
+		has_uncommit_conf=1
+	fi
+
+	network_md5_old=$(uci show network | md5sum | awk '{print $1}')
+
+	config_load network
+	config_foreach remove_wifi_port "bridge-vlan"
+
+	config_load wireless
+	PVID=0
+	config_list_foreach "$IFACE_SECTION" "brvlan" __wifi_iface_set_vlan
+
+	network_md5_new=$(uci show network | md5sum | awk '{print $1}')
+
+	if [ "$network_md5_old" != "$network_md5_new" ]; then
+		if [ $has_uncommit_conf -eq 1 ]; then
+			logger -p notice -t $PROGRAM "uci network uncommitted changes is committed by $PROGRAM"
+		fi
+		uci commit network
+		ubus call network reload
+	else
+		if [ $has_uncommit_conf -eq 0 ]; then
+			uci revert network
+		fi
+	fi
+}
+
+
+main() {
+	{
+		flock -x 1000
+		wifi_iface_apply_brvlan
+	} 1000>/var/run/brvlan.lock
+}
+
+main

@@ -1,0 +1,32 @@
+#!/bin/sh
+. /usr/share/libubox/jshn.sh
+while true
+do
+res=`ubus call system board`
+if [ "$?" = 0 ]; then
+	json_init
+	json_load "$res" >/dev/null
+	json_get_var board board_name >/dev/null
+	if [ -z "$board" ];then
+		json_get_var board model >/dev/null
+	fi
+fi
+
+board=$(echo $board | sed s/[[:space:]]//g)
+echo "$board" > /tmp/board_name
+if [ -n "$board" ];then
+	break
+fi
+done
+if [[ ${board/"dubhe2000"//} != $board ]];then
+uci -q batch <<EOF
+	set system.@system[-1].board='R710'
+	commit system
+	
+	set network.wan.metric='10'
+	commit network
+EOF
+	
+	#/etc/init.d/netwan &
+fi
+exit 0

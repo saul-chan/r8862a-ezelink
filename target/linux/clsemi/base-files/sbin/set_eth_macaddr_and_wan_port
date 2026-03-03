@@ -1,0 +1,47 @@
+#!/bin/sh
+
+. /lib/functions.sh
+
+retrieve_lan_ports() {
+	local device="$1"
+	local name
+
+	config_get name "$device" name
+	[ "$name" != "$lan_device" ] && return
+
+	add_lan_ports() {
+		append lan_ports "$1"
+	}
+
+	config_list_foreach "$device" ports add_lan_ports
+}
+
+config_load network
+config_get lan_device lan device
+config_foreach retrieve_lan_ports device
+config_get wan_device wan device
+
+maclan0=$(awk -F '=' '/maclan0/{print $2}' /tmp/sysinfo/board_macaddr)
+macwan0=$(awk -F '=' '/macwan0/{print $2}' /tmp/sysinfo/board_macaddr)
+
+if [ -n "$wan_device" ]; then
+	echo $wan_device > /sys/kernel/debug/cls_npe/wan_port
+
+	for device in $lan_ports; do
+		ip link set dev $device address $maclan0
+	done
+
+	ip link set dev $wan_device address $macwan0
+else
+	echo none > /sys/kernel/debug/cls_npe/wan_port
+
+	wan_device=$(jsonfilter -i /etc/board.json -e '@.network.wan.device')
+	for device in $lan_ports; do
+		[ "$device" = "$wan_device" ] && continue
+		ip link set dev $device address $maclan0
+	done
+
+	if [ -n "$wan_device" ]; then
+		ip link set dev $wan_device address $macwan0
+	fi
+fi

@@ -1,0 +1,108 @@
+/*
+ *  Copyright (c) 2021-2024, Clourney Semiconductor. All rights reserved.
+ *
+ *  This software and/or documentation is licensed by Clourney Semiconductor under limited terms and conditions.
+ *  Reproduction and redistribution in binary or source form, with or without modification,
+ *  for use solely in conjunction with a Clourney Semiconductor chipset, is permitted in condition which
+ *  must retain the above copyright notice.
+ *
+ *  By using this software and/or documentation, you agree to the limited terms and conditions.
+ *
+ *  Device Tree Include file for Clourney Semiconductor SoC.
+ *
+ */
+
+/dts-v1/;
+/include/ "clourneysemi-dubhe2000.dtsi"
+
+/ {
+	model = "DUBHE2000 DEMO-A Board";
+	compatible = "clourneysemi,dubhe2000_demo";
+	#size-cells = <0x2>;
+	#address-cells = <0x2>;
+
+	chosen {
+		stdout-path = &uart1;
+	};
+};
+
+&uart1 {
+        status = "okay";
+};
+
+&spi0 {
+	busclk = <250000000>;
+	spi-max-frequency = <5000000>;
+	status = "okay";
+};
+
+&spiflash {
+	busclk = <250000000>;
+	spi-max-frequency = <62500000>;
+	rx-sample-delay-ns = <8>;
+	status = "okay";
+	spi-nand@0 {
+		compatible = "spi-nand";
+		reg = <0>;
+		spi-max-frequency = <62500000>;
+		status = "okay";
+	};
+};
+
+&xpcs0 {
+        phy-mode = "sgmii-2500";
+        status = "okay";
+};
+
+&xpcs1 {
+        phy-mode = "sgmii";
+        status = "okay";
+};
+
+&xgmac0 {
+	status = "disable";
+        mdio0 {
+        compatible = "clourney,mdio";
+        #address-cells = <1>;
+        #size-cells = <0>;
+        device_type = "mdio";
+        clk_csr = <1>;
+        status = "okay";
+        rgmii1_phy: ethernet-phy@5 {
+                 compatible = "realtek,8211f","ethernet-phy-ieee802.3-c22";
+                 reg = <0x5>;
+                 mdio-flags = <1>;
+        };
+        sgmii1_phy: ethernet-phy@6 {
+                compatible = "ethernet-phy-ieee802.3-c22";
+                reg = <0x6>;
+                mdio-flags = <1>;
+        };
+  };
+};
+
+&xgmac4 {
+        mode = "rgmii";
+        max-speed = <1000>;
+        mac-address = [a0 c0 ab 39 cc f2];
+        rgmii-rx-delay;
+        phy-handle = <&rgmii1_phy>;
+        rgmii-rx-delay = <1>;
+        status = "okay";
+};
+
+&xgmac1 {
+        mode = "non-rgmii";
+        max-speed = <2500>;
+        mac-address = [a0 c0 ab 39 cc f3];
+        phy-handle = <&sgmii1_phy>;
+        status = "okay";
+};
+
+&xgmac2 {
+        status = "disabled";
+};
+
+&xgmac3 {
+        status = "disabled";
+};

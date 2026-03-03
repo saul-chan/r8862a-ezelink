@@ -1,0 +1,221 @@
+#!/bin/sh /etc/rc.common
+
+START=90
+
+USE_PROCD=1
+
+ROUTER_SERVICES="igmpproxy mcproxy firewall"
+
+disable_router_service() {
+	for service in $ROUTER_SERVICES; do
+		[ -x /etc/init.d/$service ] || continue
+		/etc/init.d/$service disable
+		/etc/init.d/$service stop 2>/dev/null
+	done
+}
+
+enable_router_service() {
+	for service in $ROUTER_SERVICES; do
+		[ -x /etc/init.d/$service ] || continue
+		/etc/init.d/$service enable
+		/etc/init.d/$service restart 2>/dev/null
+	done
+}
+
+set_port_isolation()
+{
+	board=$(board_name)
+	case "$board" in
+	clsemi,dubhe2000-demo-b)
+		case $1 in
+		router)
+			esw_cli yt_port_isolation_set 0 0 portbits 0x3E
+			esw_cli yt_port_isolation_set 0 1 portbits 0x41
+			esw_cli yt_port_isolation_set 0 2 portbits 0x41
+			esw_cli yt_port_isolation_set 0 3 portbits 0x41
+			esw_cli yt_port_isolation_set 0 5 portbits 0x41
+			esw_cli yt_port_isolation_set 0 6 portbits 0x3E
+			esw_cli yt_port_mac_force_set 0 6 speed_dup PORT_SPEED_DUP_1000FULL rx_fc_en 1 tx_fc_en 1 link PORT_LINK_UP
+			;;
+		bridge|repeater)
+			esw_cli yt_port_isolation_set 0 0 portbits 0x40
+			esw_cli yt_port_isolation_set 0 1 portbits 0x40
+			esw_cli yt_port_isolation_set 0 2 portbits 0x40
+			esw_cli yt_port_isolation_set 0 3 portbits 0x40
+			esw_cli yt_port_isolation_set 0 5 portbits 0x40
+			esw_cli yt_port_isolation_set 0 6 portbits 0x3F
+			esw_cli yt_port_mac_force_set 0 6 link PORT_LINK_DOWN
+			;;
+		esac
+		;;
+	*)
+		;;
+	esac
+}
+
+set_router_port_macaddr() {
+	maclan0=$(awk -F '=' '/maclan0/{print $2}' /tmp/sysinfo/board_macaddr)
+	macwan0=$(awk -F '=' '/macwan0/{print $2}' /tmp/sysinfo/board_macaddr)
+
+	# echo "port_mac <is_wan> <Mac>" > /sys/kernel/debug/cls_npe/command
+	echo "port_mac 0 $maclan0" > /sys/kernel/debug/cls_npe/command
+	echo "port_mac 1 $macwan0" > /sys/kernel/debug/cls_npe/command
+}
+
+clear_router_port_macaddr() {
+	# echo "port_mac <is_wan> <Mac>" > /sys/kernel/debug/cls_npe/command
+	echo "port_mac 0 00:00:00:00:00:00" > /sys/kernel/debug/cls_npe/command
+	echo "port_mac 1 00:00:00:00:00:00" > /sys/kernel/debug/cls_npe/command
+}
+
+config_repeater_mode()
+{
+	uci -q batch <<-EOF
+		set wireless.station_iface.device=$sta_phyname
+		set wireless.station_iface.ifname=wlan${sta_phyname#radio}-sta
+		delete wireless.station_iface.disabled
+		set cls-opmode.globals.sta_phyname=$sta_phyname
+		commit
+	EOF
+
+	ubus call service event '{"type":"config.change","data":{"package":"wireless"}}'
+}
+
+config_bridge_mode()
+{
+	local wan_device=$(jsonfilter -i /etc/board.json -e '@.network.wan.device')
+	if ! uci get network.@device[0].ports | grep -q "$wan_device"; then
+		uci add_list network.@device[0].ports="$wan_device"
+	fi
+
+	uci -q batch <<-EOF
+		set network.lan.proto=dhcp
+		set network.@device[0].primary_port=$wan_device
+		# remove network.wan and network.wan6, or can we just set network.wan(6).ifname is NULL and
+		# keep network.wan(6) , so we can restore easily after disable bridge mode? However,This way will
+		# leave GUI still show wan(6) interfaces.
+		delete network.wan
+		delete network.wan6
+
+		# let br-lan obtain IPv6 global address
+		set network.lan6=interface
+		set network.lan6.proto=dhcpv6
+		set network.lan6.device=br-lan
+
+		# disable dhcp
+		set dhcp.lan.ignore=1
+		# disable wan ipv6
+		set dhcp.lan.dhcpv6=disabled
+		set dhcp.lan.ra=disabled
+
+		##disable station interface related
+		set wireless.station_iface.disabled=1
+		# commit all settings in one shot
+		commit
+	EOF
+
+	# Link down one port for boards with external switch, then call ubus network service event
+	# to avoid loop during very short time.
+	set_port_isolation bridge
+	clear_router_port_macaddr
+	ubus call service event '{"type":"config.change","data":{"package":"network"}}'
+	/etc/init.d/dnsmasq restart
+	disable_router_service
+}
+
+config_router_mode()
+{
+	local wan_device=$(jsonfilter -i /etc/board.json -e '@.network.wan.device')
+	uci -q batch <<-EOF
+		set network.lan.proto=static
+		del_list network.@device[0].ports=$wan_device
+		delete network.@device[0].primary_port
+		set network.wan=interface
+		set network.wan.proto=dhcp
+		set network.wan.device=$wan_device
+		set network.wan6=interface
+		set network.wan6.proto=dhcpv6
+		set network.wan6.device=$wan_device
+
+		delete network.lan6
+
+		# enable dhcp
+		delete dhcp.lan.ignore
+		# enable wan ipv6
+		set dhcp.lan.dhcpv6=server
+		set dhcp.lan.ra=server
+
+		##disable station interface related
+		set wireless.station_iface.disabled=1
+		#commit all settings in one shot
+		commit
+	EOF
+
+	# Call ubus network service event  first, then link up one port which is already down in
+	# the bridge mode for boards with external switch to avoid loop during very short time.
+	set_router_port_macaddr
+	ubus call service event '{"type":"config.change","data":{"package":"network"}}'
+	set_port_isolation router
+	/etc/init.d/dnsmasq restart
+	enable_router_service
+}
+
+start_service()
+{
+        local mode
+
+        config_load cls-opmode
+        config_get mode globals mode
+
+        case $mode in
+        router)
+                # Do nothing
+		;;
+        bridge|repeater)
+		mesh_solution="$(clsapi get board_info | grep "release_version" | grep "Mesh")"
+		sta_phyname=$(uci get cls-opmode.globals.sta_phyname)
+		if [ -n "$mesh_solution" -a  ! -f "/etc/.cls_mesh_solution_firstboot" ]; then
+			config_bridge_mode
+			touch /etc/.cls_mesh_solution_firstboot
+		else
+			set_port_isolation bridge
+			disable_router_service
+		fi
+		if [ "$mode" = "repeater" ]; then
+			# Maybe this is still called when it's already in repeater mode, but
+			# this is fine and just increased very little time. Any better idea?
+			config_repeater_mode
+		fi
+		;;
+        esac
+}
+
+service_triggers()
+{
+	procd_add_reload_trigger cls-opmode
+}
+
+reload_service() {
+        local mode
+
+        config_load cls-opmode
+        config_get mode globals mode
+
+        case $mode in
+        router)
+		config_router_mode
+		;;
+        bridge)
+                config_bridge_mode
+		;;
+        repeater)
+                sta_phyname=$(uci get cls-opmode.globals.sta_phyname)
+                config_bridge_mode
+                config_repeater_mode
+		;;
+        esac
+}
+
+stop_service() {
+        return 0
+}

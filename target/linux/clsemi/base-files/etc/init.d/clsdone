@@ -1,0 +1,33 @@
+#!/bin/sh /etc/rc.common
+
+START=99
+
+set_npe_txdone_irq_smp_affinity() {
+	npe_txdone_irq=`cat /proc/interrupts | grep "GICv3 170"`
+	npe_txdone_irq_idx=`eval echo ${npe_txdone_irq%%:*}`
+	echo 2 > /proc/irq/$npe_txdone_irq_idx/smp_affinity
+}
+
+set_npe_rx_5g_irq_smp_affinity() {
+	npe_rx_5g_irq=`cat /proc/interrupts | grep "GICv3 167"`
+	npe_rx_5g_irq_idx=`eval echo ${npe_rx_5g_irq%%:*}`
+	echo 4 > /proc/irq/$npe_rx_5g_irq_idx/smp_affinity
+}
+
+set_npe_rx_lhost_irq_smp_affinity() {
+	npe_rx_lhost_irq=`cat /proc/interrupts | grep "GICv3 169"`
+	npe_rx_lhost_irq_idx=`eval echo ${npe_rx_lhost_irq%%:*}`
+	echo 8 > /proc/irq/$npe_rx_lhost_irq_idx/smp_affinity
+}
+
+stop_cls_log () {
+	#disable log in clsm_wifi module
+	echo "module clsm_wifi -p" > /sys/kernel/debug/dynamic_debug/control
+}
+
+start() {
+	stop_cls_log
+	set_npe_txdone_irq_smp_affinity
+	set_npe_rx_5g_irq_smp_affinity
+	set_npe_rx_lhost_irq_smp_affinity
+}

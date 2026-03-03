@@ -1,0 +1,20 @@
+#!/bin/sh
+
+. /lib/functions.sh
+
+enable_igmp_snooping() {
+	local config="$1"
+	local type
+
+	config_get type "$config" type
+
+	if [ "$type" = "bridge" ]; then
+		uci_set network "$config" igmp_snooping 1
+	fi
+}
+
+config_load network
+config_foreach enable_igmp_snooping device
+uci commit network
+
+exit 0

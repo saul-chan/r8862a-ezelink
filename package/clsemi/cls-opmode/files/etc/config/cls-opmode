@@ -1,0 +1,6 @@
+# This UCI config file is used for cls-opmode module.
+
+###################################################################################################
+config globals "globals"
+	option mode 'router'
+	option sta_phyname 'radio1'

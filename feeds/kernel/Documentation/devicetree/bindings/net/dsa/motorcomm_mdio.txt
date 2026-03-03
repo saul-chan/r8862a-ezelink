@@ -1,0 +1,59 @@
+Motorcomm MDIO-based Ethernet switch
+================================
+
+Required properties:
+
+- compatible: Must be compatible = "motorcomm,yt921x";
+
+
+Required properties for the child nodes within ports container:
+- #address-cells: Must be 1.
+- #size-cells: Must be 0.
+- reg: Port address
+- phy-mode: String, must be "rgmii" for port labeled "cpu".
+
+See Documentation/devicetree/bindings/net/dsa/dsa.txt for a list of additional
+required, optional properties and how the integrated switch subnodes must
+be specified.
+
+Example:
+
+	switch {
+		compatible = "motorcomm,yt921x";
+
+		ports {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			port@0 {
+				reg = <0>;
+				label = "lan0";
+			};
+			port@1 {
+				reg = <1>;
+				label = "lan1";
+			};
+			port@2 {
+				reg = <2>;
+				label = "lan2";
+			};
+			port@3 {
+				reg = <3>;
+				label = "lan3";
+			};
+			port@4 {
+				reg = <4>;
+				label = "wan";
+			};
+			port@5 {
+				reg = <8>;
+				label = "cpu";
+				ethernet = <&mac>;
+				phy-mode = "rgmii";
+				fixed-link {
+					speed = <1000>;
+					full-duplex;
+				};
+			};
+		};
+	};

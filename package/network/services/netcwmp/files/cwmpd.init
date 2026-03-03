@@ -1,0 +1,72 @@
+#!/bin/sh /etc/rc.common
+
+START==99
+USE_PROCD=1
+NAME=cwmpd
+
+FILE_PATH=/etc/cwmpd
+DEF_CONFIG_FILE=$FILE_PATH/cwmp.conf
+RUN_FILE_PATH=/var/run/cwmpd
+CONFIG_FILE=$RUN_FILE_PATH/cwmp.conf
+
+uci_to_conf_netcwmp() {
+	uci_options=$(uci show netcwmp.cwmp | awk -F'=' 'NR>1{print substr($1,14)}' | sed ':a;N;$!ba;s/\n/|/g')
+	runtime_options="cpe_oui|cpe_sn|cpe_version|cpe_hwver"
+	while read LINE
+	do
+		if [ -z "$LINE" -o "$(echo $LINE | cut -c 1)" = "#" ]; then
+			continue
+		fi
+		if [ "$LINE" = "[cwmp]" ]; then
+			echo "[cwmp]" > $CONFIG_FILE
+		elif [ "$LINE" = "[cwmpd]" ]; then
+			break
+		else
+			def_option=$(echo $LINE | awk -F'=' '{print $1}')
+			if [ -n "$(echo $def_option | grep -E "$uci_options|$runtime_options")" ]; then
+				continue
+			else
+				echo "$LINE" >> $CONFIG_FILE
+			fi
+		fi
+	done < $DEF_CONFIG_FILE
+	uci show netcwmp.cwmp >> $CONFIG_FILE
+	echo "cpe_oui=$(fw_printsys -n maclan0 2>/dev/null | head -c 8)" >> $CONFIG_FILE
+	echo "cpe_sn=$(fw_printsys -n SN 2>/dev/null)" >> $CONFIG_FILE
+	sed -i '/cpe_version/d' $CONFIG_FILE
+	echo "cpe_version=$(awk -F '"' '/VERSION=/{print $2}' /etc/os-release)" >> $CONFIG_FILE
+	echo "cpe_hwver=$(awk -F '"' '/OPENWRT_DEVICE_REVISION=/{print $2}' /etc/os-release)" >> $CONFIG_FILE
+
+	echo "" >> $CONFIG_FILE
+	echo "[cwmpd]" >> $CONFIG_FILE
+	uci show netcwmp.cwmpd >> $CONFIG_FILE
+
+	echo "" >> $CONFIG_FILE
+	echo "[stun]" >> $CONFIG_FILE
+	uci show netcwmp.stun >> $CONFIG_FILE
+
+	sed -i '/netcwmp.cwmpd=netcwmp/d' $CONFIG_FILE
+	sed -i 's/netcwmp.cwmpd.//g' $CONFIG_FILE
+	sed -i '/netcwmp.cwmp=netcwmp/d' $CONFIG_FILE
+	sed -i 's/netcwmp.cwmp.//g' $CONFIG_FILE
+	sed -i '/netcwmp.stun=netcwmp/d' $CONFIG_FILE
+	sed -i 's/netcwmp.stun.//g' $CONFIG_FILE
+	sed -i '/qtn-custom/d' $CONFIG_FILE
+	sed -i s/\'//g $CONFIG_FILE > /dev/null
+}
+
+start_service() {
+	local netcwmp_enable
+
+	config_load 'netcwmp'
+	config_get_bool netcwmp_enable 'cwmp' 'enable' 0
+
+	if [ "$netcwmp_enable" == "1" ]; then
+		echo "Starting cwmpd"
+		mkdir -p $RUN_FILE_PATH
+		uci_to_conf_netcwmp
+		procd_open_instance WTP
+		procd_set_param command /usr/sbin/cwmpd $RUN_FILE_PATH
+		procd_close_instance
+	fi
+}

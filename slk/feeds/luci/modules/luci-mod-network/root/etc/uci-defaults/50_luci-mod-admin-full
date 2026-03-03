@@ -1,0 +1,22 @@
+#!/bin/sh
+
+if [ "$(uci -q get luci.diag)" != "internal" ]; then
+	host=""
+
+	if [ -s /etc/os-release ]; then
+		. /etc/os-release
+		host="${HOME_URL:-${BUG_URL:-$OPENWRT_DEVICE_MANUFACTURER_URL}}"
+		host="${host#*://}"
+		host="${host%%/*}"
+	fi
+
+	uci -q batch <<-EOF >/dev/null
+		set luci.diag=internal
+		set luci.diag.dns='${host:-www.google.com}'
+		set luci.diag.ping='${host:-www.google.com}'
+		set luci.diag.route='${host:-www.google.com}'
+		commit luci
+	EOF
+fi
+
+exit 0

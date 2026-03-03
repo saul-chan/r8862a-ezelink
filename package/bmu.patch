@@ -1,0 +1,93 @@
+diff --git a/package/clsemi/npe-drv/src/dubhe2000/dubhe2000_export.c b/package/clsemi/npe-drv/src/dubhe2000/dubhe2000_export.c
+index 033840ab..c7cc1728 100644
+--- a/package/clsemi/npe-drv/src/dubhe2000/dubhe2000_export.c
++++ b/package/clsemi/npe-drv/src/dubhe2000/dubhe2000_export.c
+@@ -56,6 +56,19 @@ int dubhe1000_is_bmu_skb(struct sk_buff *skb)
+ 		return 0;
+ }
+ 
++dma_addr_t dubhe1000_cls_bmu_dma_addr(void *addr)
++{
++	if((g_adapter == NULL) || (g_adapter->soft_bmu_en))
++		return 0;
++
++	if(((u64)addr >= (u64)g_adapter->hw_data) &&
++		((u64)addr <= (((u64)g_adapter->hw_data) + DUBHE1000_HW_BMU_BUF_MAX(g_adapter))))
++		return (u64)addr - (u64)g_adapter->hw_data + (u64)g_adapter->body_dma;
++	else
++		return 0;
++}
++
++
+ void *dubhe1000_get_head_data(void *body)
+ {
+ 	int offset = ((u64)body - (u64)g_adapter->hw_data) / g_adapter->body_block_size;
+diff --git a/package/clsemi/npe-drv/src/dubhe2000/dubhe2000_main.c b/package/clsemi/npe-drv/src/dubhe2000/dubhe2000_main.c
+index 3960ab50..838ab38c 100644
+--- a/package/clsemi/npe-drv/src/dubhe2000/dubhe2000_main.c
++++ b/package/clsemi/npe-drv/src/dubhe2000/dubhe2000_main.c
+@@ -206,6 +206,8 @@ module_param(switch_pure_mod, int, 0644);
+ MODULE_PARM_DESC(switch_pure_mod, "switch work without init process");
+ 
+ struct dubhe1000_adapter *g_adapter = NULL;
++extern dma_addr_t dubhe1000_cls_bmu_dma_addr(void *addr);
++extern dma_addr_t (*cls_bmu_dma_addr)(void *addr);
+ 
+ static inline void dubhe1000_save_status1(struct dubhe1000_adapter *adapter, uint32_t channel, u8 *tag_buf, int pkt_id,
+ 					  u8 buf_bid, u16 buf_pid, u8 blk_num, u16 packet_tid, u32 status1)
+@@ -1252,6 +1254,7 @@ static int dubhe2000_remove(struct platform_device *pdev)
+ 	g_adapter = NULL;
+ 	cls_skb_free = NULL;
+ 	cls_is_bmu_skb = NULL;
++	cls_bmu_dma_addr = NULL;
+ 
+ 	pr_info("[%s] Leave\n", __func__);
+ 
+@@ -2150,6 +2153,8 @@ static int dubhe2000_probe(struct platform_device *pdev)
+ 
+ 	cls_skb_free = dubhe1000_skb_free;
+ 	cls_is_bmu_skb = dubhe1000_is_bmu_skb;
++	cls_bmu_dma_addr = dubhe1000_cls_bmu_dma_addr;
++	pr_err("cls_bmu_dma_addr=%px\n", cls_bmu_dma_addr);
+ 
+ 	adapter->tx_poll_start = false;
+ 
+@@ -3791,6 +3796,26 @@ void npe_rxmpud_data_dump(void)
+ 	npe_statistics_rx_cnt = 0;
+ }
+ 
++
++//#define SKB_SW_DUP
++#ifdef SKB_SW_DUP
++struct sk_buff *dup_sw_skb(struct sk_buff *skb1)
++{
++	struct sk_buff *skb2 = NULL;
++
++	skb2 = skb_copy(skb1, GFP_KERNEL);
++	if (!skb2){
++		pr_err("skb copy to sw fail, return bmu skb\n");
++		return skb1;
++	}
++
++	consume_skb(skb1);
++
++	printk_once("use sw skb\n");
++	return skb2;
++}
++#endif
++
+ /**
+  * dubhe1000_receive_skb - helper function to handle rx indications
+  * @adapter: board private structure
+@@ -3887,7 +3912,11 @@ static void dubhe1000_receive_skb(struct net_device *netdev, struct dubhe1000_to
+ 			}
+ 		} else { // not hit or sa should to be learned
+ 			skb->protocol = eth_type_trans(skb, netdev);
++#ifdef SKB_SW_DUP
++			netif_receive_skb(dup_sw_skb(skb));
++#else
+ 			netif_receive_skb(skb);
++#endif
+ 		}
+ 	}
+ }

@@ -1,0 +1,410 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Device Tree Include file for Clourney dubhe2000 family SoC.
+ *
+ * Copyright (C) 2022-2024 Clourney Semiconductor - All Rights Reserved.
+ *
+ */
+
+/dts-v1/;
+#include "clourney-dubhe2000.dtsi"
+
+/ {
+	model = "Clourney Semiconductor DUBHE2000 EVB-A Board";
+	compatible = "clsemi,dubhe2000-evb-a", "clsemi,dubhe2000";
+
+	aliases {
+		serial0 = &duart0;
+		spidev0 = &spi0;
+                spidev1 = &spi1;
+		spidev2 = &spi2;
+		spinand = &spiflash;
+		pwm0 = &pwm0;
+		pwm1 = &pwm1;
+		pwm2 = &pwm2;
+		pwm3 = &pwm3;
+		pwm4 = &pwm4;
+		pwm5 = &pwm5;
+
+	};
+
+	chosen {
+		stdout-path = "serial0:115200n8";
+	};
+
+	macros {
+	    #define MMC_CARD_USED   1
+	 };
+};
+
+&duart0 {
+	status = "ok";
+};
+
+&duart1 {
+        status = "ok";
+};
+
+&spi0 {
+	status = "ok";
+	spidev@0 {
+		spi-max-frequency = <5000000>;
+		reg = <0>;
+		compatible = "linux,spidev";
+	};
+};
+
+&spi1 {
+	status = "ok";
+	spidev@1 {
+		spi-max-frequency = <5000000>;
+		reg = <0>;
+		compatible = "linux,spidev";
+	};
+};
+
+&spi2 {
+	status = "ok";
+	spidev@2 {
+		spi-max-frequency = <5000000>;
+		reg = <0>;
+		compatible = "linux,spidev";
+	};
+};
+
+&i2c0 {
+        label = "I2C0";
+        status = "okay";
+};
+
+&i2c1 {
+	label = "I2C1";
+	status = "disabled";
+	wm8960: wm8960@1a {
+		#sound-dai-cells = <0>;
+		compatible = "wlf,wm8960";
+		clocks = <&osc_24m>;
+		clock-names = "mclk";
+		reg = <0x1a>;
+		wlf,shared-lrclk;
+	};
+};
+
+&i2c2 {
+        label = "I2C2";
+        status = "okay";
+};
+
+&i2s0 {
+	#sound-dai-cells = <0>;
+	top_sysclk_frequence = <49152000>;
+	status = "disabled";
+};
+
+&sound0 {
+	status = "disabled";
+	simple-audio-card,format = "i2s";
+	simple-audio-card,name = "wm8960";
+	simple-audio-card,cpu {
+		sound-dai = <&i2s0>;
+		frame-master;
+		bitclock-master;
+	};
+	simple-audio-card,codec {
+		sound-dai = <&wm8960>;
+		system-clock-frequency = <12288000>;
+	};
+};
+
+&spiflash {
+	rx-sample-delay-ns = <8>;
+	status = "ok";
+
+	nand_flash: flash@0 {
+		compatible = "spi-nand";
+		spi-max-frequency = <50000000>;
+		reg = <0>;
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		/*0.5MB*/
+		partition@0 {
+			label = "sbl";
+			reg = <0x0 0x80000>;
+		};
+
+		/*0.5MB*/
+		partition@1 {
+			label = "atf";
+			reg = <0x80000 0x80000>;
+		};
+
+		/*1MB*/
+		partition@2 {
+			label = "platformdata";
+			reg = <0x100000 0x100000>;
+		};
+
+		/*2MB*/
+		partition@3 {
+			label = "uboot";
+			reg = <0x200000 0x200000>;
+		};
+
+		/*1MB*/
+		partition@4 {
+			label = "caldata";
+			reg = <0x400000 0x100000>;
+		};
+
+		/*1MB*/
+		partition@5 {
+			label = "caldata2";
+			reg = <0x500000 0x100000>;
+		};
+
+		/*1.5MB*/
+                partition@6 {
+                        label = "ubootenv";
+                        reg = <0x600000 0x180000>;
+                };
+
+		/*1.5MB*/
+                partition@7 {
+                        label = "boarddata";
+                        reg = <0x780000 0x180000>;
+                };
+
+		/*32MB*/
+                partition@8 {
+                        label = "fw1";
+                        reg = <0x900000 0x2000000>;
+                };
+
+		/*32MB*/
+                partition@9 {
+                        label = "fw2";
+                        reg = <0x2900000 0x2000000>;
+                };
+
+		/*55MB*/
+                partition@10 {
+                        label = "reserved";
+                        reg = <0x4900000 0x3700000>;
+                };
+	};
+};
+
+&npe  {
+	status = "ok";
+	switch-pause = <3>;
+};
+
+&xpcs0 {
+	phy-mode = "sgmii";
+	status = "okay";
+};
+
+&xpcs1 {
+	phy-mode = "qsgmii";
+	status = "okay";
+};
+
+&xgmac0 {
+	mode = "non-rgmii";
+	max-speed = <25000>;
+	phy-handle = <&sgmii1_phy>;
+	clk_csr = <1>;
+	mdio-flags = <1>;
+	status = "okay";
+	mdio {
+	compatible = "clourney,mdio";
+	#address-cells = <1>;
+	#size-cells = <0>;
+	device_type = "mdio";
+	status = "okay";
+	rgmii1_phy: ethernet-phy@5 {
+		 compatible = "realtek,8211f","ethernet-phy-ieee802.3-c22";
+		 reg = <0x5>;
+	};
+	qsgmii_phy0: ethernet-phy@8 {
+		 compatible = "ethernet-phy-ieee802.3-c22";
+		 port-id = <0>;
+		 reg = <0x8>;
+	};
+	qsgmii_phy1: ethernet-phy@9 {
+		compatible = "ethernet-phy-ieee802.3-c22";
+		port-id = <1>;
+		reg = <0x9>;
+	};
+	qsgmii_phy2: ethernet-phy@a {
+		compatible = "ethernet-phy-ieee802.3-c22";
+		port-id = <2>;
+		reg = <0xa>;
+	};
+	qsgmii_phy3: ethernet-phy@b {
+		compatible = "ethernet-phy-ieee802.3-c22";
+		port-id = <3>;
+		reg = <0xb>;
+	};
+	sgmii0_phy: ethernet-phy@01 {
+		compatible = "ethernet-phy-ieee802.3-c22";
+		reg = <0x2>;
+	};
+	sgmii1_phy: ethernet-phy@1 {
+		compatible = "ethernet-phy-ieee802.3-c22";
+		reg = <0x1>;
+	};
+	rgmii0_phy: ethernet-phy@3 {
+		compatible = "ethernet-phy-ieee802.3-c22";
+		reg = <0x3>;
+	};
+	rgmii2_phy: ethernet-phy@7 {
+		compatible = "ethernet-phy-ieee802.3-c22";
+		reg = <0x7>;
+	};
+  };
+};
+
+&xgmac1 {
+	mode = "non-rgmii";
+	phy-handle = <&qsgmii_phy0>;
+	status = "okay";
+};
+
+&xgmac2 {
+	mode = "non-rgmii";
+	phy-handle = <&qsgmii_phy1>;
+	status = "okay";
+};
+
+&xgmac3 {
+	mode = "non-rgmii";
+	phy-handle = <&qsgmii_phy2>;
+	status = "okay";
+};
+
+&xgmac4 {
+	mode = "non-rgmii";
+	phy-handle = <&qsgmii_phy3>;
+	status = "okay";
+};
+
+&wifi0 { status = "ok"; };
+
+&wifi1 { status = "ok"; };
+
+&wifiarm { status = "disabled"; };
+
+&wifiarc { status = "ok"; };
+
+&sdhci { status = "ok"; };
+
+&crgwdt {
+        timeout-sec = <WDT_TIMEOUT_S>;
+        status = "ok";
+};
+
+&watchdog0 {
+	timeout-sec = <WDT_TIMEOUT_S>;
+	status = "ok";
+};
+
+&gpio0 { status = "ok"; };
+
+&gpio1 { status = "ok"; };
+
+&gpio_keys { status = "ok"; };
+
+&gpio_leds { status = "ok"; };
+
+&usbdrd3 { status = "ok";};
+
+&usb {status = "ok"; };
+
+&sdhci {
+	disable-wp;
+	keep-power-in-suspend;
+	sdhci-caps-mask = <0xff0000 0x0>;
+	sdhci-caps = <0x0 0x0>;
+	max-frequency = <50000000>;
+	clock-frequency = <50000000>;
+
+	#if MMC_CARD_USED
+	bus-width = <8>;
+	non-removable;
+	no-sdio;
+	no-sd;
+	cap-mmc-highspeed;
+	keep-power-in-suspend;
+	/* HS400 mode */
+	#elif SD_CARD_USED
+	bus-width = <4>;
+	no-sdio;
+	no-mmc;
+	supports-sd;
+	card-detect-delay = <2000>;
+	cap-sd-highspeed;
+	/* controller clock frequence low than 50M is recommended */
+	sd-uhs-sdr12;
+	sd-uhs-sdr25;
+	sd-uhs-sdr50;
+	sd-uhs-sdr104;
+	no-1-8-v;
+	#elif SDIO_CARD_USED
+	no-sd;
+	no-mmc;
+	#endif
+	status = "okay";
+};
+
+&pwm0 { status = "ok"; };
+
+&pwm1 { status = "ok"; };
+
+&pwm2 { status = "ok"; };
+
+&pwm3 { status = "ok"; };
+
+&pwm4 { status = "ok"; };
+
+&pwm5 { status = "ok"; };
+
+&pvt_sensor {
+	status = "ok";
+        // T2
+        temp_rise_alarm2_L = "102000";
+        temp_rise_alarm2_H = "110000";
+        temp_fall_alarm2_H = "110000";
+        temp_fall_alarm2_L = "102000";
+        // T0
+        temp_rise_alarm0_L = "110000";
+        temp_rise_alarm0_H = "118000";
+        temp_fall_alarm0_H = "118000";
+        temp_fall_alarm0_L = "110000";
+        // T1
+        temp_rise_alarm1_L = "118000";
+        temp_rise_alarm1_H = "126000";
+        temp_fall_alarm1_H = "126000";
+        temp_fall_alarm1_L = "118000";
+};
+
+&cls_tsens {
+	status = "ok";
+        // T2
+        temp_rise_alarm2_L = "102000";
+        temp_rise_alarm2_H = "110000";
+        temp_fall_alarm2_H = "110000";
+        temp_fall_alarm2_L = "102000";
+        // T0
+        temp_rise_alarm0_L = "110000";
+        temp_rise_alarm0_H = "118000";
+        temp_fall_alarm0_H = "118000";
+        temp_fall_alarm0_L = "110000";
+        // T1
+        temp_rise_alarm1_L = "118000";
+        temp_rise_alarm1_H = "126000";
+        temp_fall_alarm1_H = "126000";
+        temp_fall_alarm1_L = "118000";
+};
+

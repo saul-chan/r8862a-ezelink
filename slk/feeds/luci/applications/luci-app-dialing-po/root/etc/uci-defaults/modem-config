@@ -1,0 +1,30 @@
+#!/bin/sh
+#sleep 5s
+#/etc/init.d/add-modem start &
+[ ! -f /usr/sbin/cmdat ] && ln -s /usr/sbin/sendat /usr/sbin/cmdat
+
+uci -q batch <<EOF
+	delete network.SIM
+	delete network.SIM_6
+	set network.SIM=interface
+	add_list network.SIM.sendopts='lease:63072000'
+	
+	delete cellular.SIM
+	set cellular.SIM='info'
+	
+	commit
+EOF
+
+
+if [ -z $(uci -q get firewall.@zone[1].network | grep SIM) ];then
+uci batch <<-EOF
+	
+	add_list firewall.@zone[1].network='SIM'
+
+    commit firewall
+EOF
+fi
+
+exit 0
+
+

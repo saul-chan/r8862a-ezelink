@@ -1,0 +1,22 @@
+{
+    "clsgui-mod-wireless": {
+        "description": "Grant access to the wireless",
+        "read": {
+            "file": {
+                "/usr/libexec/macfilter": [ "read" ]
+            },
+            "ubus": {
+                "file": [ "exec" ]
+            }
+        },
+        "write": {
+            "file": {
+                "/usr/libexec/macfilter": [ "exec" ]
+            },
+            "ubus": {
+                "file": [ "exec" ]
+            }
+        }
+    }
+}
+

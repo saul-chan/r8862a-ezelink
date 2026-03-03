@@ -1,0 +1,10 @@
+{
+	"clsgui-mod-system": {
+		"description": "Grant access to the system",
+		"read": {
+			"ubus": {
+				"file": [ "exec" ]
+			}
+		}
+	}
+}

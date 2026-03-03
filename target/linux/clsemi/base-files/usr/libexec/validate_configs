@@ -1,0 +1,54 @@
+#!/bin/sh
+
+. /lib/functions.sh
+. /lib/functions/system.sh
+. /usr/share/libubox/jshn.sh
+
+# Usage: ./validate_configs backup.tar.gz
+
+# 1. check param
+[ $# -ne 1 ] && {
+    echo "Usage: $0 <backup.tar.gz>" >&2
+    exit 2
+}
+
+BACKUP_TAR="$1"
+
+# 2. check file exist
+[ ! -f "$BACKUP_TAR" ] && {
+    echo "File not found: $BACKUP_TAR" >&2
+    exit 2
+}
+
+# 3. mkdir tmp dir
+TMPDIR=$(mktemp -d)
+
+# untar configs
+if ! tar -xzf "$BACKUP_TAR" -C "$TMPDIR"; then
+    echo "Failed to extract backup archive" >&2
+    rm -rf "$TMPDIR"
+    exit 2
+fi
+
+# 4. read config_name
+BACKUP_BOARD="$TMPDIR$BOARD_TYPE"
+CURRENT_BOARD=$BOARD_TYPE
+
+if [ ! -f "$BACKUP_BOARD" ] || [ ! -f "$CURRENT_BOARD" ]; then
+    echo "Missing board_name file in backup or system" >&2
+	#skip comp
+    rm -rf "$TMPDIR"
+    exit 0
+fi
+
+# 5. compare board
+if cmp -s "$BACKUP_BOARD" "$CURRENT_BOARD"; then
+    RESULT=0
+else
+    RESULT=1
+fi
+
+# 6. clean up
+rm -rf "$TMPDIR"
+exit $RESULT
+

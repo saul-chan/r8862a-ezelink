@@ -1,0 +1,70 @@
+#!/bin/sh /etc/rc.common
+
+START=18
+STOP=22
+
+USE_PROCD=1
+NAME=wtp
+
+FILE_PATH=/etc/wtp
+RUN_FILE_PATH=/var/run/wtp
+CONFIG_FILE=$RUN_FILE_PATH/config.wtp
+SETTINGS_FILE=$RUN_FILE_PATH/settings.wtp.txt
+
+write_wtp_config() {
+	local acaddr
+	local controlport
+	local dataport
+	local security
+	local password
+	local wtpname
+	local location
+	local debug
+	local authenable
+	local interval
+	local retransmitmax
+
+	cp $FILE_PATH/* $RUN_FILE_PATH/
+	config_load 'wtp'
+
+	# write config.wtp
+	config_get acaddr 'preferac' 'ac_addresses'
+	config_get controlport 'preferac' 'wtp_control_port'
+	config_get dataport 'preferac' 'wtp_data_port'
+	config_get security 'preferac' 'wtp_security'
+	config_get password 'preferac' 'wtp_security_password'
+	config_get wtpname 'config' 'wtp_name'
+	config_get location 'config' 'wtp_location'
+	config_get_bool debug 'config' 'debug' 0
+	sed -i "/<AC_ADDRESSES>/{n;s/.*/$acaddr/;}" $CONFIG_FILE
+	sed -i "/^<\/WTP_PORT_CONTROL>/c\<\/WTP_PORT_CONTROL>$controlport" $CONFIG_FILE
+	sed -i "/^<\/WTP_PORT_DATA>/c\<\/WTP_PORT_DATA>$dataport" $CONFIG_FILE
+	sed -i "/^<\/WTP_FORCE_SECURITY>/c\<\/WTP_FORCE_SECURITY>$security" $CONFIG_FILE
+	sed -i "/^<\/WTP_SECURITY_PASSWORD>/c\<\/WTP_SECURITY_PASSWORD>$password" $CONFIG_FILE
+	sed -i "/^<\/WTP_NAME>/c\<\/WTP_NAME>$wtpname" $CONFIG_FILE
+	sed -i "/^<\/WTP_LOCATION>/c\<\/WTP_LOCATION>$location" $CONFIG_FILE
+	sed -i "/^<\/WTP_LOG_FILE_ENABLE>/c\<\/WTP_LOG_FILE_ENABLE>$debug" $CONFIG_FILE
+
+	# write settings.wtp.txt
+	config_get authenable 'config' 'enable_auth'
+	config_get interval 'config' 'echo_interval'
+	config_get retransmitmax 'config' 'echo_retransmit_max'
+	sed -i "/^<WTP_HOSTAPD_AUTH_ENABLE>/c\<WTP_HOSTAPD_AUTH_ENABLE>$authenable" $SETTINGS_FILE
+	sed -i "/^<ECHO_INTERVAL>/c\<ECHO_INTERVAL>$interval" $SETTINGS_FILE
+	sed -i "/^<ECHO_RETRANSMIT_MAX>/c\<ECHO_RETRANSMIT_MAX>$retransmitmax" $SETTINGS_FILE
+}
+
+start_service() {
+	local enable_capwap
+
+	config_load 'wtp'
+	config_get_bool enable_capwap 'config' 'enable' 0
+
+	if [ "$enable_capwap" == "1" ]; then
+		mkdir -p $RUN_FILE_PATH
+		write_wtp_config
+		procd_open_instance WTP
+		procd_set_param command /usr/sbin/WTP $RUN_FILE_PATH
+		procd_close_instance
+	fi
+}

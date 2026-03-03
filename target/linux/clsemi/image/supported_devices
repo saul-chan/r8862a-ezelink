@@ -1,0 +1,14 @@
+#<value of board_type>	<dts file> <fw_flash_type>
+rdk			clourney-dubhe2000-rdk.dts		nand
+rdk_v24			clourney-dubhe2000-rdk-v24.dts		nand
+evb_b			clourney-dubhe2000-evb-b.dts		nand
+evb_a			clourney-dubhe2000-evb-a.dts		nand
+demo_o			clourney-dubhe2000-demo-o.dts		nand
+demo_r			clourney-dubhe2000-demo-r.dts		nand
+evb_a2			clourney-dubhe2000-evb-a2.dts		nand
+demo_a			clourney-dubhe2000-demo-a.dts		nand
+demo_b			clourney-dubhe2000-demo-b.dts		nand
+evb_e			clourney-dubhe2000-evb-e.dts		emmc
+triband_5400_rdk       clourney-dubhe2000-triband-5400-rdk.dts	nand
+rdk_s			clourney-dubhe2000-rdk-s.dts		nand
+rdk_c			clourney-dubhe2000-rdk-c.dts		nand

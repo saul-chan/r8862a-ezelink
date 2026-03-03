@@ -1,0 +1,12 @@
+#!/bin/sh /etc/rc.common
+
+START=12
+
+start() {
+	local board=$(board_name)
+
+	if [ "$board" == "clsemi,dubhe2000-demo-o" ]; then
+		modprobe motorcomm_vlan_tag
+		set_eth_macaddr_and_wan_port
+	fi
+}

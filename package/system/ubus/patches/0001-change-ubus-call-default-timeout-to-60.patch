@@ -1,0 +1,13 @@
+diff --git a/cli.c b/cli.c
+index 5d2cd4c..fc642c3 100644
+--- a/cli.c
++++ b/cli.c
+@@ -18,7 +18,7 @@
+ 
+ static struct blob_buf b;
+ static int listen_timeout;
+-static int timeout = 30;
++static int timeout = 60;
+ static bool simple_output = false;
+ static int verbose = 0;
+ static int monitor_dir = -1;

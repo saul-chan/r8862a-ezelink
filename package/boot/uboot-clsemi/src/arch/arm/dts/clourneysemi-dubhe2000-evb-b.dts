@@ -1,0 +1,140 @@
+/*
+ *  Copyright (c) 2021-2024, Clourney Semiconductor. All rights reserved.
+ *
+ *  This software and/or documentation is licensed by Clourney Semiconductor under limited terms and conditions.
+ *  Reproduction and redistribution in binary or source form, with or without modification,
+ *  for use solely in conjunction with a Clourney Semiconductor chipset, is permitted in condition which
+ *  must retain the above copyright notice.
+ *
+ *  By using this software and/or documentation, you agree to the limited terms and conditions.
+ *
+ *  Device Tree Include file for Clourney Semiconductor SoC.
+ *
+ */
+
+/dts-v1/;
+/include/ "clourneysemi-dubhe2000.dtsi"
+
+/ {
+	model = "DUBHE2000 EVB-B Board";
+	compatible = "clourneysemi,dubhe2000_rdb";
+	#size-cells = <0x2>;
+	#address-cells = <0x2>;
+
+	chosen {
+		stdout-path = &uart1;
+	};
+};
+
+&uart1 {
+	status = "okay";
+};
+
+&spiflash {
+	busclk = <250000000>;
+	spi-max-frequency = <62500000>;
+	rx-sample-delay-ns = <8>;
+	status = "okay";
+	spi-nand@0 {
+		compatible = "spi-nand";
+		reg = <0>;
+		spi-max-frequency = <62500000>;
+		status = "okay";
+	};
+};
+
+&npe {
+
+	mdio: mdio {
+		compatible = "clourney,mdio";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		device_type = "mdio";
+		id = <0>;
+		clk_csr = <1>;
+		status = "okay";
+		regs,phys_reset_init = <0x90410054 0xFFFF 0x6008>;
+	};
+
+	ytesw@0 {
+		compatible = "clourney,yt_switch";
+		mdio-bus = <&mdio>;
+		port-isolation="oooooox";
+		/* rgmii. txc delay = txc_2ns_en * 2ns + txc_delay * 0.15ns;rxc delay = rxc_delay * 0.15ns */
+		rgmii-rxc_delay = <1>;
+		rgmii-txc_delay = <2>;
+		rgmii-txc_2ns_en = <1>;
+		reset-gpio = <4>;
+	};
+};
+
+&xpcs0 {
+	status = "disabled";
+};
+
+&xpcs1 {
+        phy-mode = "2500base-x";
+        status = "okay";
+};
+
+&xgmac0 {
+	status = "disabled";
+};
+
+&xgmac1 {
+        mode = "non-rgmii";
+        max-speed = <2500>;
+        mac-address = [a0 c0 ab 39 cc f3];
+        status = "okay";
+		fixed-link {
+			speed = <2500>;
+			full-duplex;
+			pause;
+	};
+};
+
+
+&xgmac2 {
+	mode = "rgmii";
+	max-speed = <1000>;
+	mac-address = [a0 c0 ab 39 cc f2];
+	rgmii-rx-delay;
+	phy-handle = <&rgmii2_phy>;
+	rgmii-rx-delay = <1>;
+	status = "okay";
+
+	mdio2 {
+	compatible = "clourney,mdio";
+	#address-cells = <1>;
+	#size-cells = <0>;
+	device_type = "mdio";
+	clk_csr = <1>;
+	status = "okay";
+	regs,phys_reset_init =	<0x90420090 0x6 0x6>,
+				<0x90420094 0xF 0x2>;
+	rgmii2_phy: ethernet-phy@7 {
+		compatible = "ethernet-phy-ieee802.3-c22";
+		reg = <0x5>;
+		mdio-flags = <1>;
+		};
+	};
+};
+
+&xgmac3 {
+	status = "disabled";
+};
+
+&xgmac4 {
+        mode = "rgmii";
+        max-speed = <1000>;
+        mac-address = [a0 c0 ab 39 cc f2];
+		rgmii-rx-delay = <0>;
+		rgmii-tx-delay = <2>;
+        status = "disabled";
+		fixed-link {
+			speed = <1000>;
+			full-duplex;
+			pause;
+		};
+};
+

@@ -1,0 +1,74 @@
+#!/bin/sh
+
+
+usage() {
+	cat <<EOF
+Usage: $0 [start|stop]
+enter/exit the calibartion mode
+EOF
+	exit 1
+}
+
+# the following category script need to removed
+# 1. wpad: hostapd/wpa_supplicant script
+# 2. cls-mesh, cls-opmode: clsemi feature
+# 3. dnsmasq, firewall...: speed up boot time
+# 4. mac80211.sh, /sbin/wifi: remove wifi setup script
+
+# some scripts should be kept and will be used
+# 1. boot, system: boot up and board config script
+# 2. network...: network configure script
+# 3. dropbear: ssh server need be enabled for cal
+cal_rm_list="
+	/etc/rc.d/S19wpad
+	/etc/rc.d/S90cls-opmode
+	/etc/rc.d/S99cls-mesh
+	/etc/rc.d/S19dnsmasq
+	/etc/rc.d/S19firewall
+	/etc/rc.d/S35odhcpd
+	/etc/rc.d/S50uhttpd
+	/etc/rc.d/S90sysstat
+	/etc/rc.d/S96led
+	/lib/netifd/wireless/mac80211.sh
+	/lib/wifi/mac80211.sh
+	/sbin/wifi
+	"
+
+start()
+{
+	cal_state=$(fw_printenv cal_state | awk -F "=" '{print $2}')
+	if [ "$cal_state" == "1" ]; then
+		chmod 777 /tmp/cal
+		for file in $cal_rm_list; do
+			rm -f $file
+			echo "removing $file for calibartion mode"
+		done
+	fi
+}
+
+# "stop" need to be called explicitly for manufacture tools
+stop()
+{
+	cal_state=$(fw_printenv cal_state | awk -F "=" '{print $2}')
+	[ "$cal_state" != "1" ] && return
+
+	for file in $cal_rm_list; do
+		# here we discard overlay upper changes for cal files
+		# if we restore the file from "/rom", some daemon,
+		# e.g. dnsmasq and led will startup failed
+		rm -f /overlay/upper/$file
+		echo "restoring $file for calibartion mode"
+	done
+
+	echo "setting env "cal_state" to production mode(0)"
+	fw_setenv cal_state 0
+
+	sleep 1
+}
+
+case "$1" in
+	start) start ;;
+	stop)  stop ;;
+	*) usage; exit 1;;
+esac
+

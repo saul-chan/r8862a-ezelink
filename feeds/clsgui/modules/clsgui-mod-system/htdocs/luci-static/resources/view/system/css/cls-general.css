@@ -1,0 +1,72 @@
+.cbi-page-actions {
+    padding-top: 0;
+    padding-right: 1rem;
+}
+
+.form-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    margin-left: 7%;
+}
+
+.last-group {
+    padding-bottom: 30px;
+}
+
+.form-group label {
+    width: 200px;
+    text-align: end;
+    margin-right: 30px;
+}
+
+.error {
+    border: 2px solid red;
+}
+
+.hidden {
+    display: none;
+}
+
+.visible {
+    display: block;
+    color: red;
+    font-size: 0.9rem;
+}
+
+input[type="password"] {
+    display: block;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 200px;
+    margin-right: 10px;
+}
+
+input[type="text"] {
+    display: block;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 200px;
+    margin-right: 10px;
+}
+
+#applyButton {
+    background-color: #5e72e4;
+    width: auto;
+    color: #fff;
+    white-space: nowrap;
+}
+
+#applyButton:disabled {
+    background-color: #5e72e4;
+    cursor: not-allowed;
+    width: auto;
+    color: #fff;
+    white-space: nowrap;
+}
+
+#applyButton:hover {
+    background-color: #0056b3;
+}

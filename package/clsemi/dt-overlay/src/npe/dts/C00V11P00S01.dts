@@ -1,0 +1,22 @@
+/*A' C00.V11.P00.S01*/
+//serde0 sfp sgmii
+//serde1 hsgmii
+//RGMII1
+/dts-v1/;
+/plugin/;
+/ {
+	fragment@0 {
+		target=<&xpcs0>;
+		__overlay__ {
+			phy-mode = "25000base-x";
+			status = "okay";
+		};
+	};
+
+	fragment@1 {
+		target=<&xgmac0>;
+		__overlay__ {
+			max-speed = <2500>;
+		};
+	};
+};

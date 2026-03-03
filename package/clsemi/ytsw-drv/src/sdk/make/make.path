@@ -1,0 +1,28 @@
+# Function modules parameter
+SDK_ROOT_PATH = ${SDK_BASE_PATH}
+
+CORE_PATH               = ${SDK_ROOT_PATH}/core
+
+CORE_API_PATH       = $(CORE_PATH)/yt
+CORE_CAL_PATH       = $(CORE_PATH)/cal
+CORE_FAL_PATH       = $(CORE_PATH)/fal
+CORE_HAL_PATH       = $(CORE_PATH)/hal
+CORE_DRV_PATH       = $(CORE_PATH)/drv
+CORE_SW_CTRL_PATH   = $(CORE_DRV_PATH)/sw_ctrl
+CORE_DRV_ETH_PATH      = $(CORE_DRV_PATH)/eth
+CORE_FAL_PROJECT_PATH   = $(CORE_FAL_PATH)/$(SWITCH_SERIES)
+INCLUDE_PATH        = ${SDK_ROOT_PATH}/include
+OSAL_PATH           = ${SDK_ROOT_PATH}/osal
+COMMON_PATH         = ${SDK_ROOT_PATH}/common
+BOARDPROFILE_PATH   = $(COMMON_PATH)/boardprofile
+COMMON_PATH_INC     = $(COMMON_PATH)/include
+COMMON_PATH_SRC     = $(COMMON_PATH)/src
+CORE_CHIP_DEF_PATH   = $(CORE_FAL_PATH)/chipdef
+CORE_MAC_DRV_PATH      = $(CORE_DRV_PATH)/mac
+CORE_PHY_DRV_PATH      = $(CORE_DRV_PATH)/phy
+
+$(info xxxx>>>COMMON_PATH=$(COMMON_PATH))
+OUTPT_PATH          = ${SDK_ROOT_PATH}/release
+
+# Menuconfig tool parameter
+MENU_CONFIG_TOOL_PATH                 = ./configs

@@ -1,0 +1,12 @@
+###################	demo_ubus_uci_wifi_cfg	###############################
+Why:
+	Demo how to cfg Wi-Fi params using ubus and uci in OpenWrt platform.
+
+How:
+	(a) get using uci directly.
+	(b) set using ubus uci, leveraging ucitrack/reload_trigger of procd to
+	    apply the changed configuration.
+
+Usage:
+	demo_ubus_uci_wifi_cfg <ssid> <get|set> <ifname> [value]
+

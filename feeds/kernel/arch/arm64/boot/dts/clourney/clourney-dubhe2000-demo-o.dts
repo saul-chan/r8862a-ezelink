@@ -1,0 +1,328 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Device Tree Include file for Clourney dubhe2000 family SoC.
+ *
+ * Copyright (C) 2022-2024 Clourney Semiconductor - All Rights Reserved.
+ *
+ */
+
+/dts-v1/;
+#include "clourney-dubhe2000.dtsi"
+
+/ {
+	model = "Clourney Semiconductor DUBHE2000 DEMO-O Board";
+	compatible = "clsemi,dubhe2000-demo-o", "clsemi,dubhe2000";
+
+	aliases {
+		serial0 = &duart1;
+		serial1 = &duart2;
+		serial2 = &duart0;
+		spinand = &spiflash;
+		pwm0 = &pwm0;
+		pwm1 = &pwm1;
+		pwm2 = &pwm2;
+		pwm3 = &pwm3;
+		pwm4 = &pwm4;
+		pwm5 = &pwm5;
+		led-boot = &led_system;
+		led-failsafe = &led_system;
+		led-running = &led_system;
+		led-upgrade = &led_system;
+	};
+
+	chosen {
+		stdout-path = "serial0:115200n8";
+	};
+	ytesw@0 {
+		compatible = "clourney,yt_switch";
+		mdio-bus = <&mdio>;
+		port-isolation="oooooox";
+		/* rgmii. txc delay = txc_2ns_en * 2ns + txc_delay * 0.15ns;rxc delay = rxc_delay * 0.15ns */
+		rgmii-rxc_delay = <1>;
+		rgmii-txc_delay = <2>;
+		rgmii-txc_2ns_en = <1>;
+		reset-gpio = <&gpio0 4 GPIO_ACTIVE_LOW>;
+	};
+
+
+};
+
+
+&i2c1 {
+        label = "I2C1";
+        status = "okay";
+};
+
+&spiflash {
+	rx-sample-delay-ns = <8>;
+	status = "ok";
+
+	nand_flash: flash@0 {
+		compatible = "spi-nand";
+		/* Avoid interference with 5G and 2.4G, not setting clk to  41.67MHz  */
+		spi-max-frequency = <31250000>;
+		reg = <0>;
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		/*0.5MB*/
+		partition@0 {
+			label = "sbl";
+			reg = <0x0 0x80000>;
+		};
+
+		/*0.5MB*/
+		partition@1 {
+			label = "atf";
+			reg = <0x80000 0x80000>;
+		};
+
+		/*1MB*/
+		partition@2 {
+			label = "platformdata";
+			reg = <0x100000 0x100000>;
+		};
+
+		/*2MB*/
+		partition@3 {
+			label = "uboot";
+			reg = <0x200000 0x200000>;
+		};
+
+		/*1MB*/
+		partition@4 {
+			label = "caldata";
+			reg = <0x400000 0x100000>;
+		};
+
+		/*1MB*/
+		partition@5 {
+			label = "caldata2";
+			reg = <0x500000 0x100000>;
+		};
+
+		/*1.5MB*/
+                partition@6 {
+                        label = "ubootenv";
+                        reg = <0x600000 0x180000>;
+                };
+
+		/*1.5MB*/
+                partition@7 {
+                        label = "boarddata";
+                        reg = <0x780000 0x180000>;
+                };
+
+		/*32MB*/
+                partition@8 {
+                        label = "fw1";
+                        reg = <0x900000 0x2000000>;
+                };
+
+		/*32MB*/
+                partition@9 {
+                        label = "fw2";
+                        reg = <0x2900000 0x2000000>;
+                };
+
+		/*55MB*/
+                partition@10 {
+                        label = "reserved";
+                        reg = <0x4900000 0x3700000>;
+                };
+	};
+};
+
+&npe  {
+	status = "ok";
+	switch-pause = <4>;
+	mdio: mdio {
+		compatible = "clourney,mdio";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		device_type = "mdio";
+		id = <0>;
+		clk_csr = <1>;
+		status = "okay";
+		regs,phys_reset_init = <0x90410054 0xFFFF 0x6008>;
+	};
+};
+&xpcs0 {
+	status = "disabled";
+};
+
+&xpcs1 {
+	phy-mode = "2500base-x";
+	status = "okay";
+};
+
+&xgmac0 {
+	status = "disabled";
+};
+
+&xgmac1 {
+	mode = "non-rgmii";
+	mac-address = [a0 c0 ab 39 cc f3];
+	max-speed = <2500>;
+	status = "okay";
+	fixed-link {
+		speed = <2500>;
+		full-duplex;
+		pause;
+	};
+};
+
+&xgmac2 {
+        status = "disabled";
+};
+
+&xgmac3 {
+        status = "disabled";
+};
+
+&xgmac4 {
+	mode = "rgmii";
+	max-speed = <1000>;
+	rgmii-rx-delay = <0>;
+	rgmii-tx-delay = <2>;
+	status = "okay";
+	fixed-link {
+		speed = <1000>;
+		full-duplex;
+		pause;
+	};
+};
+
+&wifi0 { status = "ok"; };
+
+&wifi1 { status = "ok"; };
+
+&wifiarm { status = "disabled"; };
+
+&wifiarc { status = "ok"; };
+
+&crgwdt {
+        timeout-sec = <WDT_TIMEOUT_S>;
+        status = "ok";
+};
+
+//新增SLK-R710 
+&duart0 {
+	status = "ok";
+};
+&duart1 {
+	status = "ok";
+};
+
+&duart2 {
+	status = "ok";
+};
+
+&gpio_keys {
+	reset {
+		label = "reset";
+		gpios = <&gpio1 12 GPIO_ACTIVE_LOW>; /* gpio1->32, 32 + 12 = 44(GPIO_DR3) */
+		linux,code = <KEY_RESTART>;
+	};
+};
+
+&gpio_leds {
+	status = "ok";
+
+	led_system: system {
+		label = "led_system";
+		gpios = <&gpio1 0 GPIO_ACTIVE_LOW>; /* gpio1->32, 32 + 0 = 32 (GPIO_R14) */
+		default-status = "on";
+	};
+
+	led_modem: modem {
+		label = "modem:5G";
+		gpios = <&gpio1 1 GPIO_ACTIVE_LOW>; /* gpio1->0, 32 + 1 = 33 (GPIO_R15) */
+		default-status = "off";
+	};
+
+	led_wifi2g: wifi_2g {
+		label = "wifi:2G";
+		gpios = <&gpio0 25 GPIO_ACTIVE_LOW>; /* gpio0->0, 0 + 25 = 25 (GPIO_R7) */
+		default-status = "off";
+	};
+	
+	led_wifi5g: wifi_5g {
+		label = "wifi:5G";
+		gpios = <&gpio0 26 GPIO_ACTIVE_LOW>; /* gpio0->0, 0 + 26 = 26 (GPIO_R8) */
+		default-status = "off";
+	};
+	
+	led_rssi1: rssi1 {
+		label = "led_rssi1";
+		gpios = <&gpio0 27 GPIO_ACTIVE_LOW>; /* gpio0->0, 0 + 27 = 27(GPIO_R9) */
+		default-status = "off";
+	};
+
+	led_rssi2: rssi2 {
+		label = "led_rssi2";
+		gpios = <&gpio0 31 GPIO_ACTIVE_LOW>; /* gpio0->0, 0 + 31 = 31(GPIO_R13) */
+		default-status = "off";
+	};
+
+	led_rssi3: rssi3 {
+		label = "led_rssi3";
+		gpios = <&gpio0 30 GPIO_ACTIVE_LOW>; /* gpio0->0, 0 + 30 = 30(GPIO_R12) */
+		default-status = "off";
+	};
+
+	led_rssi4: rssi4 {
+		label = "led_rssi4";
+		gpios = <&gpio0 24 GPIO_ACTIVE_LOW>; /* gpio0->0, 0 + 24 = 24(GPIO_R6) */
+		default-status = "off";
+	};
+};
+
+&gpio0 { status = "ok"; };
+
+&gpio1 { status = "ok"; };
+
+&usbdrd3 { status = "ok";};
+
+&usb {status = "ok"; };
+
+&pwm0 { status = "ok"; };
+
+&pvt_sensor {
+	status = "ok";
+        // T2
+        temp_rise_alarm2_L = "102000";
+        temp_rise_alarm2_H = "110000";
+        temp_fall_alarm2_H = "110000";
+        temp_fall_alarm2_L = "102000";
+        // T0
+        temp_rise_alarm0_L = "110000";
+        temp_rise_alarm0_H = "118000";
+        temp_fall_alarm0_H = "118000";
+        temp_fall_alarm0_L = "110000";
+        // T1
+        temp_rise_alarm1_L = "118000";
+        temp_rise_alarm1_H = "126000";
+        temp_fall_alarm1_H = "126000";
+        temp_fall_alarm1_L = "118000";
+};
+
+&cls_tsens {
+	status = "ok";
+        // T2
+        temp_rise_alarm2_L = "102000";
+        temp_rise_alarm2_H = "110000";
+        temp_fall_alarm2_H = "110000";
+        temp_fall_alarm2_L = "102000";
+        // T0
+        temp_rise_alarm0_L = "110000";
+        temp_rise_alarm0_H = "118000";
+        temp_fall_alarm0_H = "118000";
+        temp_fall_alarm0_L = "110000";
+        // T1
+        temp_rise_alarm1_L = "118000";
+        temp_rise_alarm1_H = "126000";
+        temp_fall_alarm1_H = "126000";
+        temp_fall_alarm1_L = "118000";
+};
+

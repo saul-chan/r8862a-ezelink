@@ -1,0 +1,302 @@
+<%+themes/argon/out_header_login%>
+<%
+%>
+<head>
+</head>
+<body>
+    <div class="wd-main">
+        <div class="wd-top">
+            <img src="<%=media%>/img/clsemi-login.png"></img>
+        </div>
+        <div class="wd-bottom">
+            <div class="btn-return hidden">
+                <div class="icon-left">
+                    <svg viewBox="0 -960 960 960" width="46" height="36"
+                        fill="currentColor">
+                        <path d="M561-240 320-481l241-241 43 43-198 198 198 198-43 43Z" />
+                    </svg>
+                    <div class="for-label">
+                        <label>返回</label>
+                    </div>
+                </div>
+            </div>
+            <div class="wd-container wd-page-home">
+                <h2>欢迎使用云程路由器</h2>
+				<img class="gateway" src="<%=media%>/img/gateway.png"></img>
+                <div class="wd-proto">
+                    <input type="checkbox" id="agree"/>
+                    <label for="agree">我已阅读并同意<a href="#">用户协议</a></label>
+                </div>
+                <button id="btn-start" disabled>马上体验</button>
+            </div>
+            <div class="wd-container wd-page-detect hidden">
+                <div class="wd-page-check">
+                    <div class="wd-title">网络检测</div>
+                    <div id="network-check-loading" class="loading">
+                        <div class="spinner"></div>
+                        正在检测网络链路，请稍候...
+                    </div>
+                </div>
+                <div class="wd-page-manual hidden">
+                    <div class="wd-title">未检测到入户网线</div>
+					<div class="link-page">
+						<img src="<%=media%>/img/internet.png" alt="Internet" class="icon" />
+						<div class="link-container">
+							<div class="link-line"></div>
+							<div class="link-cross"></div>
+						</div>
+						<img src="<%=media%>/img/gateway.png" alt="Gateway" class="icon" />
+					</div>
+                    <div class="wd-instructions">
+                        <ol>
+                            <li>请确保WAN口已用网线连接到主路由（如入户宽带、光猫等）。</li>
+                            <li>请确认网线是否插紧或损坏，光猫是否正常通电。</li>
+                            <li>若仍然无法连通，请联系您的<a href="#">宽带运营商</a>或<a href="#">网络管理员</a>。</li>
+                        </ol>
+                    </div>
+                    <div class="actions">
+                        <p class="alt-action">您也可以 <a id="manual" href="#">不插网线，继续配置</a></p>
+                        <button class="btn-done btn-recheck">重新检测</button>
+                    </div>
+                </div>
+            </div>
+            <div class="wd-container wd-page-mode hidden">
+                <div class="wd-title">选择上网模式</div>
+                <div class="wd-subtitle">您也可以选择<a id="btn-skip" href="#">跳过</a></div>
+                <ul class="wd-list">
+                    <li class="mode-item" data-page="wd-page-dhcp">动态获取（DHCP）<span class="arrow"></span></li>
+                    <li class="mode-item" data-page="wd-page-pppoe">宽带拨号（PPPoE）<span class="arrow"></span></li>
+                    <li class="mode-item" data-page="wd-page-static">手动方式（静态IP）<span class="arrow"></span></li>
+                    <li class="mode-item" data-page="wd-page-bridge">有线中继（AP）<span class="arrow"></span></li>
+                    <li class="mode-item" data-page="wd-page-repeater">无线中继（Repeater）<span class="arrow"></span></li>
+                </ul>
+            </div>
+            <div class="wd-container wd-conf wd-page-dhcp hidden">
+                <div class="wd-title">当前为动态获取(DHCP)</div>
+                <div class="wd-subtitle">您也可以选择<a href="#" id="btn-othermode">其他模式</a></div>
+                <div class="wd-form-container">
+                    <div class="form-group" data-valid="true">
+                        <label class="required">2.4G无线名称</label>
+                        <input type="text" name="ssid2" value="Clourney"/>
+                        <div class="error-message">2.4G无线名称不能为空</div>
+                    </div>
+                    <div class="form-group" data-valid="true">
+                        <label class="required">5G无线名称</label>
+                        <input type="text" name="ssid5" value="Clourney_5G" disabled />
+                        <div class="error-message">5G无线名称不能为空</div>
+                    </div>
+                    <div class="form-group" data-valid="true">
+                        <label class="required">无线密码</label>
+                        <input type="password" name="wifiPassword" placeholder="请输入无线密码"/>
+                        <div class="error-message">无线密码不能为空且长度不少于8个字符</div>
+                    </div>
+                    <div class="form-group form-done">
+                        <button class="btn-done">完成配置</button>
+                    </div>
+                </div>
+            </div>
+            <div class="wd-container wd-conf wd-page-pppoe hidden">
+                <div class="wd-title">当前为宽带拨号(PPPoE)</div>
+                <div class="wd-subtitle">您也可以选择<a href="#" id="btn-othermode">其他模式</a></div>
+                <div class="wd-form-container wd-form-pppoe-container sub-pppoe">
+                    <div class="form-group" data-valid="true">
+                        <label class="required">宽带账号</label>
+                        <input type="text" name="pppoeUser" placeholder="请输入宽带账号"/>
+                        <div class="error-message">宽带账号不能为空</div>
+                    </div>
+                    <div class="form-group" data-valid="true">
+                        <label class="required">宽带密码</label>
+                        <input type="text" name="pppoePass" placeholder="请输入宽带密码"/>
+                        <div class="error-message">宽带密码不能为空</div>
+                    </div>
+                    <div class="form-group" data-valid="true">
+                        <span>忘记账号或密码？请从<a href="#">旧路由器</a>获取或<a href="#">咨询运营商</a></span>
+                    </div>
+                    <div class="form-group form-done">
+                        <button class="btn-pppoe">开始拨号</button>
+                    </div>
+                </div>
+                <div class="wd-form-container wd-form-pppoe-container sub-pppoe-wifi hidden">
+                    <div class="form-group" data-valid="true">
+                        <label class="required">2.4G无线名称</label>
+                        <input type="text" name="ssid2" value="Clourney"
+                            oninput="handleInput(this); syncSSID(this)" />
+                        <div class="error-message">2.4G无线名称不能为空</div>
+                    </div>
+                    <div class="form-group" data-valid="true">
+                        <label class="required">5G无线名称</label>
+                        <input type="text" name="ssid5" value="Clourney_5G" disabled />
+                        <div class="error-message">5G无线名称不能为空</div>
+                    </div>
+                    <div class="form-group" data-valid="true">
+                        <label class="required">无线密码</label>
+                        <input type="password" name="wifiPassword" placeholder="请输入无线密码"/>
+                        <div class="error-message">无线密码不能为空且长度不少于8个字符</div>
+                    </div>
+                    <div class="form-group form-done">
+                        <button class="btn-done">完成配置</button>
+                    </div>
+                </div>
+            </div>
+            <div class="wd-container wd-conf wd-page-static hidden">
+                <div class="wd-title">当前为手动方式(静态IP)</div>
+                <div class="wd-subtitle">您也可以选择<a href="#" id="btn-othermode">其他模式</a></div>
+                <div class="wd-form-container wd-form-static-container sub-static">
+                    <div class="form-group" data-valid="true">
+                        <label class="required">IP地址</label>
+                        <input type="text" name="ipaddr" placeholder="0.0.0.0"/>
+                        <div class="error-message">IP地址不能为空或格式错误</div>
+                    </div>
+                    <div class="form-group" data-valid="true">
+                        <label class="required">子网掩码</label>
+                        <input type="text" name="netmask" placeholder="0.0.0.0"/>
+                        <div class="error-message">子网掩码不能为空或格式错误</div>
+                    </div>
+                    <div class="form-group" data-valid="true">
+                        <label class="required">默认网关</label>
+                        <input type="text" name="gateway" placeholder="0.0.0.0"/>
+                        <div class="error-message">网关地址不能为空或格式错误</div>
+                    </div>
+                    <div class="form-group" data-valid="true">
+                        <label class="required">首选DNS</label>
+                        <input type="text" name="dns1" placeholder="0.0.0.0"/>
+                        <div class="error-message">DNS不能为空或格式错误</div>
+                    </div>
+                    <div class="form-group" data-valid="true">
+                        <label class="required">备用DNS(可留空)</label>
+                        <input type="text" name="dns2" placeholder="0.0.0.0"/>
+                        <div class="error-message">DNS格式错误</div>
+                    </div>
+                    <div class="form-group form-done">
+                        <button class="btn-next">下一步</button>
+                    </div>
+                </div>
+                <div class="wd-form-container wd-form-static-container sub-static-wifi hidden">
+                    <div class="form-group" data-valid="true">
+                        <label class="required">2.4G无线名称</label>
+                        <input type="text" name="ssid2" value="Clourney"
+                            oninput="handleInput(this); syncSSID(this)" />
+                        <div class="error-message">2.4G无线名称不能为空</div>
+                    </div>
+                    <div class="form-group" data-valid="true">
+                        <label class="required">5G无线名称</label>
+                        <input type="text" name="ssid5" value="Clourney_5G" disabled />
+                        <div class="error-message">5G无线名称不能为空</div>
+                    </div>
+                    <div class="form-group" data-valid="true">
+                        <label class="required">无线密码</label>
+                        <input type="password" name="wifiPassword" placeholder="请输入无线密码"/>
+                        <div class="error-message">无线密码不能为空且长度不少于8个字符</div>
+                    </div>
+                    <div class="form-group form-done">
+                        <button class="btn-done">完成配置</button>
+                    </div>
+                </div>
+            </div>
+            <div class="wd-container wd-conf wd-page-bridge hidden">
+                <div class="wd-title">当前为有线中继(AP)</div>
+                <div class="wd-subtitle">您也可以选择<a href="#" id="btn-othermode">其他模式</a></div>
+                <div class="wd-form-container">
+                    <div class="form-group" data-valid="true">
+                        <label class="required">2.4G无线名称</label>
+                        <input type="text" name="ssid2" value="Clourney"/>
+                        <div class="error-message">2.4G无线名称不能为空</div>
+                    </div>
+                    <div class="form-group" data-valid="true">
+                        <label class="required">5G无线名称</label>
+                        <input type="text" name="ssid5" value="Clourney_5G" disabled/>
+                        <div class="error-message">5G无线名称不能为空</div>
+                    </div>
+                    <div class="form-group" data-valid="true">
+                        <label class="required">无线密码</label>
+                        <input type="password" name="wifiPassword" placeholder="请输入无线密码"/>
+                        <div class="error-message">无线密码不能为空且长度不少于8个字符</div>
+                    </div>
+                    <div class="form-group form-done">
+                        <button class="btn-done">完成配置</button>
+                    </div>
+                </div>
+            </div>
+            <div class="wd-container wd-conf wd-page-repeater hidden">
+                <div class="wd-title">当前为无线中继(Repeater)</div>
+                <div class="wd-subtitle">您也可以选择<a id="btn-othermode" href="#">其他模式</a></div>
+                <div class="sub-repeater">
+                    <div class="instruction">
+                        请选择您要中继的无线网络：
+                        <span class="btn-refresh">刷新</span>
+                    </div>
+                    <div id="loading" class="loading">
+                        <div class="spinner"></div>
+                        正在扫描可用网络...
+                    </div>
+                    <div id="wifiList" class="wifi-list" style="display:none;"></div>
+                </div>
+                <div class="wd-form-container wd-form-repeater-container sub-repeater-wifi hidden">
+                    <div class="form-group" data-valid="true">
+                        <label class="required">无线名称</label>
+                        <input type="text" name="ssid2" value="Clourney" disabled/>
+                    </div>
+                    <div class="form-group" data-valid="true" hidden>
+                        <label class="required">加密方式</label>
+                        <input type="text" name="encryption" placeholder="请输入无线加密方式"/>
+                    </div>
+					<div class="form-group" data-valid="true">
+                        <label class="required">无线密码</label>
+                        <input type="password" name="wifiPassword" placeholder="请输入无线密码"/>
+                        <div class="error-message">无线密码不能为空</div>
+                    </div>
+                    <div class="form-group" data-valid="true">
+                        <input id="btn-sync" name="btn-sync" type="checkbox" checked>无线配置与上级路由保持一致</input>
+                    </div>
+                    <div class="sub-form hidden">
+                        <div class="form-group" data-valid="true">
+                            <label class="required">本机无线名称</label>
+                            <input type="text" name="localSsid" value="Clourney" />
+                            <div class="error-message">无线名称不能为空</div>
+                        </div>
+                        <div class="form-group" data-valid="true">
+                            <label class="required">本机无线密码</label>
+                            <input type="password" name="localPassword" placeholder="请输入无线密码"/>
+                            <div class="error-message">无线密码不能为空且长度不少于8个字符</div>
+                        </div>
+                    </div>
+                    <div class="form-group form-done">
+                        <button class="btn-repeater">一键中继</button>
+                    </div>
+                </div>
+            </div>
+            <div class="wd-container wd-page-info hidden">
+                <div class="title">
+                    <h1>正在下发配置，请稍候...</h1>
+                    <p>Wi-Fi 重启中，再次连接 Wi-Fi 即可访问互联网</p>
+                </div>
+                <div class="tip">📌 Wi-Fi 密码如下，建议截图保存</div>
+                <div class="wifi-block">
+                    <div class="label"><span class="dot green"></span>2.4G 无线</div>
+                    <div class="ssid2">Clourney</div>
+                    <div class="info-label">无线密码</div>
+                    <div class="info-value">123456789</div>
+                </div>
+                <div class="wifi-block">
+                    <div class="label"><span class="dot blue"></span>5G 无线</div>
+                    <div class="ssid5">Clourney_5G</div>
+                    <div class="info-label">无线密码</div>
+                    <div class="info-value">123456789</div>
+                </div>
+                <div class="footer">
+                    管理后台地址：192.168.1.1<br />
+                    管理密码：!QAZ2wsx
+                </div>
+            </div>
+        </div>
+		<div id="errorDialog" class="dialog hidden">
+			<div class="dialog-mask"></div>
+			<div class="dialog-box">
+				<p class="dialog-msg"></p>
+				<button id="dialogConfirm">知道了</button>
+			</div>
+		</div>
+    </div>
+	<script>window.__TOKEN = '<%=sessiontoken%>'</script>
+	<script src="<%=media%>/js/wizard.js"></script>
+</body>

@@ -1,0 +1,8 @@
+#!/bin/sh
+
+uci -q batch <<-EOF >/dev/null
+	set luci.wifi_dualband=internal
+	commit luci
+EOF
+
+exit 0

@@ -1,0 +1,38 @@
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2023-11-02 11:00+0000\n"
+"Last-Translator: Jinfeng Hu <jfh106@clsemi.com>\n"
+"Language: zh_Hans\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.6-dev\n"
+
+#: package/clsemi/luci-app-opmode/root/usr/share/luci/menu.d/luci-app-opmode.json:3
+#: package/clsemi/luci-app-opmode/htdocs/luci-static/resources/view/clsemi/cls-opmode.js:25
+msgid "Operation Mode"
+msgstr "工作模式"
+
+#: package/clsemi/luci-app-opmode/htdocs/luci-static/resources/view/clsemi/cls-opmode.js:18
+msgid "Operation Mode Settings"
+msgstr "工作模式设置"
+
+#: package/clsemi/luci-app-opmode/htdocs/luci-static/resources/view/clsemi/cls-opmode.js:27
+msgid "Router"
+msgstr "路由器"
+
+#: package/clsemi/luci-app-opmode/htdocs/luci-static/resources/view/clsemi/cls-opmode.js:30
+msgid "Auto select UltraMesh Role"
+msgstr "自动选择UltraMesh角色"
+
+#: package/clsemi/luci-app-opmode/htdocs/luci-static/resources/view/clsemi/cls-opmode.js:35
+msgid "UltraMesh Mode"
+msgstr "UltraMesh 模式"
+
+#: package/clsemi/luci-app-opmode/htdocs/luci-static/resources/view/clsemi/cls-opmode.js:41
+msgid "Controller"
+msgstr "控制器"
+
+#: package/clsemi/luci-app-opmode/htdocs/luci-static/resources/view/clsemi/cls-opmode.js:42
+msgid "Agent"
+msgstr "代理"

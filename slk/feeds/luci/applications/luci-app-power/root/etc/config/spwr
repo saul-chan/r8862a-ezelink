@@ -1,0 +1,4 @@
+
+config serial_power
+	option power_en 'OFF'
+

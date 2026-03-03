@@ -1,0 +1,128 @@
+#!/bin/sh /etc/rc.common
+START=91
+
+init_port_map() {
+	ori_wan_port=$(jsonfilter -i /etc/board.json -e '@.network.wan.device' | xargs)
+	ori_lan_port=$(jsonfilter -i /etc/board.json -e '@.network.lan.ports[*]' | xargs)
+	all_ports="${ori_wan_port} ${ori_lan_port}"
+}
+
+check_dhcp_port() {
+	for i in $all_ports; do
+
+		udhcpc -n -q -t 1 -i "$i" >&-
+		if [[ $? != 0 ]] ;then
+			continue
+		fi
+
+		if ping 8.8.8.8 -c 3 -W 2 -I "$i" > /dev/null; then
+			echo "$i" > /tmp/wanlan_set
+			return 0
+		fi
+	done
+
+	return 1
+}
+
+set_port() {
+	uci set network.wan.device="$1"
+	uci set network.wan6.device="$1"
+	uci delete network.@device[0].ports
+	#remove wan_port number from all_ports
+	port_lan=${all_ports/$1/''}
+	for i in $port_lan; do
+		uci add_list network.@device[0].ports="$i"
+	done
+}
+
+set_br() {
+	#remove wan_port number from all_ports
+	port_lan=${all_ports/$1/''}
+	for i in $port_lan; do
+		brctl addif br-lan $i 2>/dev/null
+	done
+}
+
+delif_bridge () {
+	for i in $all_ports; do
+		brctl delif br-lan "$i" 2>/dev/null
+	done
+}
+
+cls_get_opmode()
+{
+	local mode
+
+	# If cls-opmode package is not enabled, return directly
+	config_load cls-opmode || return
+	config_get mode globals mode
+
+	echo $mode
+}
+
+start () {
+	if [[ -f $WAN_DETERMINED ]];then
+		echo "already get dhcp ip, return"
+		return 1
+	fi
+
+	local board=$(board_name)
+	local opmode=$(cls_get_opmode)
+	local dhcp_detect=$(uci get cls-opmode.globals.dhcp_detect)
+	local wan_mode=$(uci get network.wan.proto)
+
+	if [[ "$dhcp_detect" != "1" ]];then
+		#echo "dhcp detect disabled"
+		return 1
+	fi
+
+	if [[ "$opmode" != "router" ]];then
+		#echo "mode is bridge or repeater, do nothing"
+		return 1
+	fi
+
+	if [[ "$wan_mode" != "dhcp" ]];then
+		#echo only support dhcp mode under router
+		return 1
+	fi
+
+	if [ "$board" != "clsemi,dubhe2000-rdk" ];then
+		#only support rdk board in first stage
+		return 1;
+	fi
+
+	init_port_map
+	delif_bridge
+	ifdown wan
+	sleep 1
+	check_dhcp_port
+	wan_status=$?
+	echo $wan_status
+	new_wan_port=$(cat /tmp/wanlan_set 2>/dev/null)
+	cur_wan_port=$(uci get network.wan.device)
+	if [ $wan_status == 0 ];then
+		if [ ! -e $WAN_DETERMINED ];then
+			touch $WAN_DETERMINED
+		fi
+
+		if [ "$new_wan_port" != "$cur_wan_port" ];then
+			#echo new_wan_port=$new_wan_port
+			#echo "wan port changed"
+			set_port $new_wan_port
+			set_br $new_wan_port
+			uci commit
+			ubus call service event '{"type":"config.change","data":{"package":"network"}}'
+		else
+			#wan port not change, restore old br-lan
+			set_br $cur_wan_port
+			ifup wan
+		fi
+
+		return 0
+	fi
+
+	#no dhcp server found, restore old br-lan
+	set_br $cur_wan_port
+	#loop check every 5s
+	/sbin/detect_ethport_plug.sh&
+}

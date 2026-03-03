@@ -1,0 +1,823 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <termios.h>
+#include <errno.h>
+#include <time.h>
+#include <signal.h>
+#include <sys/time.h>
+#include <mosquitto.h>
+#include <ctype.h>
+#include <libgen.h>
+#include <pthread.h>
+
+#define SERIAL_BUFFER_SIZE 1024
+#define DEFAULT_CONFIG_FILE "serial2mqtt.conf"
+#define MAX_LINE_LENGTH 256
+
+// 默认配置值
+#define DEFAULT_TOPIC "serial/data"
+#define DEFAULT_BAUDRATE B115200
+#define DEFAULT_TIMEOUT_MS 100
+#define DEFAULT_DATABITS 8
+#define DEFAULT_STOPBITS 1
+#define DEFAULT_PARITY 'N'
+#define DEFAULT_SERIAL_DEVICE "/dev/ttyUSB0"
+#define DEFAULT_MQTT_HOST "localhost"
+#define DEFAULT_MQTT_PORT 1883
+#define DEFAULT_USE_TLS 0
+
+// 数据包结构
+typedef struct {
+    char data[SERIAL_BUFFER_SIZE];
+    int len;
+    long long timestamp;
+} BufferedPacket;
+
+// 配置结构体
+typedef struct {
+    char serial_device[256];
+    int baudrate;
+    int databits;
+    int stopbits;
+    char parity;
+    int timeout_ms;
+    char mqtt_host[256];
+    int mqtt_port;
+    char mqtt_username[256];
+    char mqtt_password[256];
+    char ca_file[256];
+    char cert_file[256];
+    char key_file[256];
+    int use_tls;
+    char mqtt_topic[256];
+} Config;
+
+// 全局变量
+struct mosquitto *mosq = NULL;
+int serial_fd = -1;
+volatile sig_atomic_t running = 1;
+volatile sig_atomic_t mqtt_connected = 0;
+int mqtt_reconnect_attempts = 0;
+const int MAX_RECONNECT_ATTEMPTS = 5;
+const int RECONNECT_DELAY_MS = 5000;
+Config config;
+
+// 数据缓冲区
+BufferedPacket packet_buffer[100];
+int buffer_head = 0;
+int buffer_tail = 0;
+int buffer_count = 0;
+pthread_mutex_t buffer_mutex;
+
+// 信号处理函数
+void handle_signal(int sig) {
+    running = 0;
+}
+
+// 去除字符串首尾空白字符
+void trim(char *str) {
+    char *end;
+    
+    // 去除首部空白
+    while(isspace((unsigned char)*str)) str++;
+    
+    if(*str == 0) return;
+    
+    // 去除尾部空白
+    end = str + strlen(str) - 1;
+    while(end > str && isspace((unsigned char)*end)) end--;
+    
+    // 写入新的结束符
+    *(end+1) = 0;
+}
+
+// 从配置文件中读取配置
+int read_config_file(const char *filename) {
+    FILE *file = fopen(filename, "r");
+    if (!file) {
+        return -1; // 文件不存在不是错误，使用默认值
+    }
+    
+    char line[MAX_LINE_LENGTH];
+    char key[MAX_LINE_LENGTH];
+    char value[MAX_LINE_LENGTH];
+    
+    while (fgets(line, sizeof(line), file)) {
+        // 跳过注释和空行
+        if (line[0] == '#' || line[0] == '\n') {
+            continue;
+        }
+        
+        // 分割键值对
+        char *sep = strchr(line, '=');
+        if (!sep) {
+            continue;
+        }
+        
+        *sep = '\0';
+        strncpy(key, line, sizeof(key));
+        strncpy(value, sep + 1, sizeof(value));
+        
+        // 去除首尾空白
+        trim(key);
+        trim(value);
+        
+        // 处理各个配置项
+        if (strcmp(key, "serial_device") == 0) {
+            strncpy(config.serial_device, value, sizeof(config.serial_device));
+        } else if (strcmp(key, "baudrate") == 0) {
+            int baud = atoi(value);
+            config.baudrate = get_baudrate(baud);
+        } else if (strcmp(key, "databits") == 0) {
+            config.databits = atoi(value);
+        } else if (strcmp(key, "stopbits") == 0) {
+            config.stopbits = atoi(value);
+        } else if (strcmp(key, "parity") == 0) {
+            config.parity = toupper(value[0]);
+        } else if (strcmp(key, "timeout_ms") == 0) {
+            config.timeout_ms = atoi(value);
+        } else if (strcmp(key, "mqtt_host") == 0) {
+            strncpy(config.mqtt_host, value, sizeof(config.mqtt_host));
+        } else if (strcmp(key, "mqtt_port") == 0) {
+            config.mqtt_port = atoi(value);
+        } else if (strcmp(key, "mqtt_username") == 0) {
+            strncpy(config.mqtt_username, value, sizeof(config.mqtt_username));
+        } else if (strcmp(key, "mqtt_password") == 0) {
+            strncpy(config.mqtt_password, value, sizeof(config.mqtt_password));
+        } else if (strcmp(key, "ca_file") == 0) {
+            strncpy(config.ca_file, value, sizeof(config.ca_file));
+        } else if (strcmp(key, "cert_file") == 0) {
+            strncpy(config.cert_file, value, sizeof(config.cert_file));
+        } else if (strcmp(key, "key_file") == 0) {
+            strncpy(config.key_file, value, sizeof(config.key_file));
+        } else if (strcmp(key, "use_tls") == 0) {
+            config.use_tls = atoi(value);
+        } else if (strcmp(key, "mqtt_topic") == 0) {
+            strncpy(config.mqtt_topic, value, sizeof(config.mqtt_topic));
+        }
+    }
+    
+    fclose(file);
+    return 0;
+}
+
+// 初始化默认配置
+void init_default_config() {
+    strcpy(config.serial_device, DEFAULT_SERIAL_DEVICE);
+    config.baudrate = DEFAULT_BAUDRATE;
+    config.databits = DEFAULT_DATABITS;
+    config.stopbits = DEFAULT_STOPBITS;
+    config.parity = DEFAULT_PARITY;
+    config.timeout_ms = DEFAULT_TIMEOUT_MS;
+    strcpy(config.mqtt_host, DEFAULT_MQTT_HOST);
+    config.mqtt_port = DEFAULT_MQTT_PORT;
+    config.mqtt_username[0] = '\0';
+    config.mqtt_password[0] = '\0';
+    config.ca_file[0] = '\0';
+    config.cert_file[0] = '\0';
+    config.key_file[0] = '\0';
+    config.use_tls = DEFAULT_USE_TLS;
+    strcpy(config.mqtt_topic, DEFAULT_TOPIC);
+}
+
+// 将数字波特率转换为系统定义的波特率
+int get_baudrate(int baud) {
+    switch (baud) {
+        case 300: return B300;
+        case 600: return B600;
+        case 1200: return B1200;
+        case 1800: return B1800;
+        case 2400: return B2400;
+        case 4800: return B4800;
+        case 9600: return B9600;
+        case 19200: return B19200;
+        case 38400: return B38400;
+        case 57600: return B57600;
+        case 115200: return B115200;
+        case 230400: return B230400;
+        case 921600: return B921600;
+        default: return B115200;
+    }
+}
+
+// 初始化串口
+int init_serial() {
+    struct termios options;
+    
+    int fd = open(config.serial_device, O_RDWR | O_NOCTTY | O_NDELAY);
+    if (fd == -1) {
+        perror("Unable to open serial port");
+        return -1;
+    }
+    
+    // 确保串口不被其他进程占用
+    if (fcntl(fd, F_SETFL, 0) == -1) {
+        perror("fcntl F_SETFL");
+        close(fd);
+        return -1;
+    }
+    
+    // 获取当前串口设置
+    if (tcgetattr(fd, &options) == -1) {
+        perror("tcgetattr");
+        close(fd);
+        return -1;
+    }
+    
+    // 设置输入输出波特率
+    cfsetispeed(&options, config.baudrate);
+    cfsetospeed(&options, config.baudrate);
+    
+    // 设置数据位
+    options.c_cflag &= ~CSIZE;
+    switch (config.databits) {
+        case 5:
+            options.c_cflag |= CS5;
+            break;
+        case 6:
+            options.c_cflag |= CS6;
+            break;
+        case 7:
+            options.c_cflag |= CS7;
+            break;
+        case 8:
+        default:
+            options.c_cflag |= CS8;
+            break;
+    }
+    
+    // 设置停止位
+    if (config.stopbits == 2) {
+        options.c_cflag |= CSTOPB;
+    } else {
+        options.c_cflag &= ~CSTOPB;
+    }
+    
+    // 设置校验位
+    switch (config.parity) {
+        case 'O':  // 奇校验
+            options.c_cflag |= PARENB;
+            options.c_cflag |= PARODD;
+            break;
+        case 'E':  // 偶校验
+            options.c_cflag |= PARENB;
+            options.c_cflag &= ~PARODD;
+            break;
+        case 'N':  // 无校验
+        default:
+            options.c_cflag &= ~PARENB;
+            break;
+    }
+    
+    // 启用接收器
+    options.c_cflag |= (CLOCAL | CREAD);
+    
+    // 禁用硬件流控
+    options.c_cflag &= ~CRTSCTS;
+    
+    // 原始输入模式
+    options.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG);
+    
+    // 原始输出模式
+    options.c_oflag &= ~OPOST;
+    
+    // 设置超时
+    options.c_cc[VMIN] = 0;
+    options.c_cc[VTIME] = (config.timeout_ms + 99) / 100; // 转换为十分之一秒
+    
+    // 应用设置
+    if (tcsetattr(fd, TCSANOW, &options) == -1) {
+        perror("tcsetattr");
+        close(fd);
+        return -1;
+    }
+    
+    return fd;
+}
+
+// MQTT断开连接回调
+void on_disconnect(struct mosquitto *mosq, void *obj, int rc) {
+    printf("Disconnected from MQTT broker: %s\n", mosquitto_strerror(rc));
+    mqtt_connected = 0;
+}
+
+// MQTT消息接收回调
+void on_message(struct mosquitto *mosq, void *obj, const struct mosquitto_message *msg) {
+    if (msg->payloadlen <= 0) {
+        return;
+    }
+    
+    printf("Received %d bytes from MQTT topic %s\n", 
+           msg->payloadlen, msg->topic);
+    
+    // 将数据写入串口
+    if (serial_fd != -1) {
+        int written = 0;
+        int total_to_write = msg->payloadlen;
+        const char *data = (const char*)msg->payload;
+        
+        while (written < total_to_write && running) {
+            int n = write(serial_fd, data + written, total_to_write - written);
+            if (n < 0) {
+                if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                    usleep(1000); // 等待1ms
+                    continue;
+                }
+                perror("Failed to write to serial port");
+                break;
+            }
+            written += n;
+        }
+        
+        if (written == total_to_write) {
+            printf("Successfully wrote %d bytes to serial port\n", written);
+        } else {
+            fprintf(stderr, "Partial write to serial port: %d/%d bytes\n", 
+                    written, total_to_write);
+        }
+        
+        // 刷新输出缓冲区
+        tcdrain(serial_fd);
+    } else {
+        fprintf(stderr, "Serial port not available\n");
+    }
+}
+
+// MQTT连接回调
+void on_connect(struct mosquitto *mosq, void *obj, int rc) {
+    if (rc == 0) {
+        printf("Connected to MQTT broker\n");
+        mqtt_connected = 1;
+        mqtt_reconnect_attempts = 0; // 重置重连计数
+        
+        // 订阅主题（和发布同一个主题）
+        int subscribe_rc = mosquitto_subscribe(mosq, NULL, config.mqtt_topic, 0);
+        if (subscribe_rc == MOSQ_ERR_SUCCESS) {
+            printf("Subscribed to topic: %s (same as publish topic)\n", config.mqtt_topic);
+        } else {
+            fprintf(stderr, "Failed to subscribe to topic %s: %s\n", 
+                    config.mqtt_topic, mosquitto_strerror(subscribe_rc));
+        }
+    } else {
+        fprintf(stderr, "Failed to connect to MQTT broker: %s\n", mosquitto_connack_string(rc));
+        mqtt_connected = 0;
+    }
+}
+
+// MQTT日志回调
+void on_log(struct mosquitto *mosq, void *obj, int level, const char *str) {
+    printf("MQTT LOG: %s\n", str);
+}
+
+// 初始化MQTT客户端
+int init_mqtt() {
+    int rc;
+    
+    mosquitto_lib_init();
+    
+    mosq = mosquitto_new(NULL, true, NULL);
+    if (!mosq) {
+        fprintf(stderr, "Error: Out of memory.\n");
+        return -1;
+    }
+    
+    // 设置回调函数
+    mosquitto_connect_callback_set(mosq, on_connect);
+    mosquitto_disconnect_callback_set(mosq, on_disconnect);
+    mosquitto_log_callback_set(mosq, on_log);
+    mosquitto_message_callback_set(mosq, on_message); // 设置消息接收回调
+    
+    if (config.mqtt_username[0] != '\0') {
+        mosquitto_username_pw_set(mosq, config.mqtt_username, config.mqtt_password);
+    }
+    
+    if (config.use_tls) {
+        if (config.ca_file[0] != '\0') {
+            rc = mosquitto_tls_set(mosq, config.ca_file, NULL, 
+                                  config.cert_file[0] != '\0' ? config.cert_file : NULL, 
+                                  config.key_file[0] != '\0' ? config.key_file : NULL, 
+                                  NULL);
+            if (rc != MOSQ_ERR_SUCCESS) {
+                fprintf(stderr, "Failed to set TLS: %s\n", mosquitto_strerror(rc));
+                return -1;
+            }
+        }
+        mosquitto_tls_opts_set(mosq, 1, NULL, NULL);
+    }
+    
+    // 设置自动重连
+    mosquitto_reconnect_delay_set(mosq, 2, 30, true); // 最短2秒，最长30秒
+    
+    rc = mosquitto_connect_async(mosq, config.mqtt_host, config.mqtt_port, 60);
+    if (rc != MOSQ_ERR_SUCCESS) {
+        fprintf(stderr, "Unable to connect to MQTT broker: %s\n", mosquitto_strerror(rc));
+        // 这里不直接返回失败，让重连机制处理
+    }
+    
+    return 0;
+}
+
+// 改进的连接检查函数
+int check_and_reconnect_mqtt() {
+    int rc;
+    
+    if (!mqtt_connected) {
+        mqtt_reconnect_attempts++;
+        
+        if (mqtt_reconnect_attempts > MAX_RECONNECT_ATTEMPTS) {
+            fprintf(stderr, "Maximum reconnect attempts reached (%d). Waiting before retry...\n", 
+                   MAX_RECONNECT_ATTEMPTS);
+            
+            // 等待一段时间再重置计数器
+            for (int i = 0; i < 10 && running; i++) { // 等待10秒
+                usleep(1000000); // 1秒
+                mosquitto_loop(mosq, 0, 1);
+            }
+            mqtt_reconnect_attempts = 0;
+        }
+        
+        printf("Attempting to reconnect to MQTT broker (attempt %d/%d)...\n",
+               mqtt_reconnect_attempts, MAX_RECONNECT_ATTEMPTS);
+        
+        rc = mosquitto_reconnect_async(mosq);
+        if (rc != MOSQ_ERR_SUCCESS) {
+            fprintf(stderr, "Reconnect failed: %s\n", mosquitto_strerror(rc));
+            return 0;
+        }
+        
+        // 等待连接建立
+        for (int i = 0; i < 50 && !mqtt_connected && running; i++) { // 最多等待5秒
+            usleep(100000); // 100ms
+            mosquitto_loop(mosq, 0, 1);
+        }
+    }
+    
+    return mqtt_connected;
+}
+
+// 获取当前时间戳(毫秒)
+long long current_timestamp() {
+    struct timeval te;
+    gettimeofday(&te, NULL);
+    long long milliseconds = te.tv_sec * 1000LL + te.tv_usec / 1000;
+    return milliseconds;
+}
+
+// 向数据缓冲区添加数据包
+int add_to_buffer(const char *data, int len) {
+    pthread_mutex_lock(&buffer_mutex);
+    
+    if (buffer_count >= 100) {
+        pthread_mutex_unlock(&buffer_mutex);
+        return -1; // 缓冲区满
+    }
+    
+    BufferedPacket *packet = &packet_buffer[buffer_tail];
+    if (len > SERIAL_BUFFER_SIZE) {
+        len = SERIAL_BUFFER_SIZE;
+    }
+    
+    memcpy(packet->data, data, len);
+    packet->len = len;
+    packet->timestamp = current_timestamp();
+    
+    buffer_tail = (buffer_tail + 1) % 100;
+    buffer_count++;
+    
+    pthread_mutex_unlock(&buffer_mutex);
+    return 0;
+}
+
+// 从数据缓冲区获取数据包
+int get_from_buffer(char *data, int *len) {
+    pthread_mutex_lock(&buffer_mutex);
+    
+    if (buffer_count == 0) {
+        pthread_mutex_unlock(&buffer_mutex);
+        return -1; // 缓冲区空
+    }
+    
+    BufferedPacket *packet = &packet_buffer[buffer_head];
+    memcpy(data, packet->data, packet->len);
+    *len = packet->len;
+    
+    buffer_head = (buffer_head + 1) % 100;
+    buffer_count--;
+    
+    pthread_mutex_unlock(&buffer_mutex);
+    return 0;
+}
+
+// 处理串口数据
+void process_serial_data() {
+    char buffer[SERIAL_BUFFER_SIZE];
+    char packet[SERIAL_BUFFER_SIZE];
+    int packet_len = 0;
+    long long last_recv_time = 0;
+    long long last_mqtt_check = current_timestamp();
+    int n;
+    
+    while (running) {
+        // 定期检查MQTT连接状态（每2秒）
+        long long now = current_timestamp();
+        if (now - last_mqtt_check > 2000) {
+            last_mqtt_check = now;
+            
+            if (!mqtt_connected) {
+                printf("MQTT connection lost, attempting to reconnect...\n");
+                check_and_reconnect_mqtt();
+            }
+        }
+        
+        // 读取串口数据
+        n = read(serial_fd, buffer, sizeof(buffer));
+        if (n > 0) {
+            // 如果有缓冲的数据包，先发送缓冲区的数据
+            while (buffer_count > 0 && mqtt_connected) {
+                char buffered_data[SERIAL_BUFFER_SIZE];
+                int buffered_len;
+                
+                if (get_from_buffer(buffered_data, &buffered_len) == 0) {
+                    int rc = mosquitto_publish(mosq, NULL, config.mqtt_topic, 
+                                              buffered_len, buffered_data, 0, false);
+                    if (rc == MOSQ_ERR_SUCCESS) {
+                        printf("Published buffered data (%d bytes) to MQTT topic: %s\n", 
+                               buffered_len, config.mqtt_topic);
+                    } else {
+                        fprintf(stderr, "Failed to publish buffered message: %s\n", mosquitto_strerror(rc));
+                        // 重新放回缓冲区
+                        add_to_buffer(buffered_data, buffered_len);
+                        mqtt_connected = 0;
+                        break;
+                    }
+                }
+            }
+            
+            // 处理新接收的数据
+            if (packet_len + n < SERIAL_BUFFER_SIZE) {
+                memcpy(packet + packet_len, buffer, n);
+                packet_len += n;
+            } else {
+                fprintf(stderr, "Packet buffer overflow\n");
+                packet_len = 0;
+            }
+            last_recv_time = current_timestamp();
+        } else if (n < 0 && errno != EAGAIN) {
+            perror("read");
+            break;
+        }
+        
+        // 检查是否应该发送数据包（超时或缓冲区满）
+        if (packet_len > 0 && 
+            (current_timestamp() - last_recv_time) >= config.timeout_ms) {
+            
+            if (mqtt_connected) {
+                int rc = mosquitto_publish(mosq, NULL, config.mqtt_topic, 
+                                          packet_len, packet, 0, false);
+                if (rc != MOSQ_ERR_SUCCESS) {
+                    fprintf(stderr, "Failed to publish message: %s\n", mosquitto_strerror(rc));
+                    mqtt_connected = 0; // 标记为断开
+                    
+                    // 尝试将数据存入缓冲区
+                    if (add_to_buffer(packet, packet_len) != 0) {
+                        fprintf(stderr, "Data buffer full, discarding %d bytes\n", packet_len);
+                    } else {
+                        printf("Data buffered (%d packets in buffer)\n", buffer_count);
+                    }
+                } else {
+                    printf("Published %d bytes to MQTT topic: %s\n", packet_len, config.mqtt_topic);
+                }
+            } else {
+                // 连接断开，尝试缓冲数据
+                if (add_to_buffer(packet, packet_len) != 0) {
+                    fprintf(stderr, "Data buffer full, discarding %d bytes\n", packet_len);
+                } else {
+                    printf("Data buffered while disconnected (%d packets in buffer)\n", buffer_count);
+                }
+            }
+            
+            packet_len = 0;
+        }
+        
+        // 处理MQTT网络流量（非阻塞）
+        mosquitto_loop(mosq, 0, 1);
+        
+        // 如果连接断开，稍微降低循环频率以减少CPU占用
+        if (!mqtt_connected) {
+            usleep(100000); // 100ms
+        }
+    }
+}
+
+void print_config() {
+    printf("Current configuration:\n");
+    printf("  Serial device: %s\n", config.serial_device);
+    printf("  Baudrate: %d\n", config.baudrate == B115200 ? 115200 : config.baudrate);
+    printf("  Data bits: %d\n", config.databits);
+    printf("  Stop bits: %d\n", config.stopbits);
+    printf("  Parity: %c\n", config.parity);
+    printf("  Timeout: %d ms\n", config.timeout_ms);
+    printf("  MQTT host: %s:%d\n", config.mqtt_host, config.mqtt_port);
+    printf("  MQTT topic: %s (publish and subscribe)\n", config.mqtt_topic);
+    printf("  MQTT username: %s\n", config.mqtt_username[0] ? config.mqtt_username : "[not set]");
+    printf("  TLS: %s\n", config.use_tls ? "Enabled" : "Disabled");
+    if (config.use_tls) {
+        printf("  CA file: %s\n", config.ca_file[0] ? config.ca_file : "[not set]");
+        printf("  Cert file: %s\n", config.cert_file[0] ? config.cert_file : "[not set]");
+        printf("  Key file: %s\n", config.key_file[0] ? config.key_file : "[not set]");
+    }
+}
+
+void print_usage(const char *prog_name) {
+    fprintf(stderr, "Usage: %s [options]\n", prog_name);
+    fprintf(stderr, "Options:\n");
+    fprintf(stderr, "  -d <device>     Serial device (default: %s)\n", DEFAULT_SERIAL_DEVICE);
+    fprintf(stderr, "  -b <baudrate>   Baud rate (default: 115200)\n");
+    fprintf(stderr, "  -h <host>       MQTT broker host (default: %s)\n", DEFAULT_MQTT_HOST);
+    fprintf(stderr, "  -p <port>       MQTT broker port (default: %d)\n", DEFAULT_MQTT_PORT);
+    fprintf(stderr, "  -u <username>   MQTT username\n");
+    fprintf(stderr, "  -P <password>   MQTT password\n");
+    fprintf(stderr, "  -c <ca_file>    CA certificate file for TLS\n");
+    fprintf(stderr, "  -t <cert_file>  Client certificate file for TLS\n");
+    fprintf(stderr, "  -k <key_file>   Client key file for TLS\n");
+    fprintf(stderr, "  -T              Enable TLS\n");
+    fprintf(stderr, "  -m <timeout_ms> Serial packet timeout in milliseconds (default: %d)\n", DEFAULT_TIMEOUT_MS);
+    fprintf(stderr, "  -D <databits>   Data bits (5,6,7,8, default: %d)\n", DEFAULT_DATABITS);
+    fprintf(stderr, "  -S <stopbits>   Stop bits (1 or 2, default: %d)\n", DEFAULT_STOPBITS);
+    fprintf(stderr, "  -y <parity>     Parity (N: None, O: Odd, E: Even, default: %c)\n", DEFAULT_PARITY);
+    fprintf(stderr, "  -o <topic>      MQTT topic to publish/subscribe (default: %s)\n", DEFAULT_TOPIC);
+    fprintf(stderr, "  -f <file>       Configuration file (default: %s)\n", DEFAULT_CONFIG_FILE);
+    fprintf(stderr, "\nExample configuration file:\n");
+    fprintf(stderr, "# serial2mqtt.conf - Bidirectional bridge\n");
+    fprintf(stderr, "serial_device=/dev/ttyUSB0\n");
+    fprintf(stderr, "baudrate=115200\n");
+    fprintf(stderr, "databits=8\n");
+    fprintf(stderr, "stopbits=1\n");
+    fprintf(stderr, "parity=N\n");
+    fprintf(stderr, "timeout_ms=100\n");
+    fprintf(stderr, "mqtt_host=localhost\n");
+    fprintf(stderr, "mqtt_port=1883\n");
+    fprintf(stderr, "mqtt_username=user\n");
+    fprintf(stderr, "mqtt_password=pass\n");
+    fprintf(stderr, "mqtt_topic=serial/data\n");
+    fprintf(stderr, "use_tls=0\n");
+    fprintf(stderr, "# ca_file=/path/to/ca.crt\n");
+    fprintf(stderr, "# cert_file=/path/to/client.crt\n");
+    fprintf(stderr, "# key_file=/path/to/client.key\n");
+}
+
+int main(int argc, char *argv[]) {
+    char config_file[256] = DEFAULT_CONFIG_FILE;
+    
+    // 初始化默认配置
+    init_default_config();
+    
+    // 首先尝试从默认配置文件读取配置
+    read_config_file(config_file);
+    
+    // 解析命令行参数
+    int opt;
+    while ((opt = getopt(argc, argv, "d:b:h:p:u:P:c:k:t:T:m:D:S:y:o:f:")) != -1) {
+        switch (opt) {
+            case 'd':
+                strncpy(config.serial_device, optarg, sizeof(config.serial_device));
+                break;
+            case 'b':
+                config.baudrate = get_baudrate(atoi(optarg));
+                break;
+            case 'h':
+                strncpy(config.mqtt_host, optarg, sizeof(config.mqtt_host));
+                break;
+            case 'p':
+                config.mqtt_port = atoi(optarg);
+                break;
+            case 'u':
+                strncpy(config.mqtt_username, optarg, sizeof(config.mqtt_username));
+                break;
+            case 'P':
+                strncpy(config.mqtt_password, optarg, sizeof(config.mqtt_password));
+                break;
+            case 'c':
+                strncpy(config.ca_file, optarg, sizeof(config.ca_file));
+                break;
+            case 'k':
+                strncpy(config.key_file, optarg, sizeof(config.key_file));
+                break;
+            case 't':
+                strncpy(config.cert_file, optarg, sizeof(config.cert_file));
+                break;
+            case 'T':
+                config.use_tls = 1;
+                break;
+            case 'm':
+                config.timeout_ms = atoi(optarg);
+                if (config.timeout_ms <= 0) {
+                    fprintf(stderr, "Timeout must be positive\n");
+                    exit(EXIT_FAILURE);
+                }
+                break;
+            case 'D':
+                config.databits = atoi(optarg);
+                if (config.databits < 5 || config.databits > 8) {
+                    fprintf(stderr, "Data bits must be 5,6,7 or 8\n");
+                    exit(EXIT_FAILURE);
+                }
+                break;
+            case 'S':
+                config.stopbits = atoi(optarg);
+                if (config.stopbits != 1 && config.stopbits != 2) {
+                    fprintf(stderr, "Stop bits must be 1 or 2\n");
+                    exit(EXIT_FAILURE);
+                }
+                break;
+            case 'y':
+                config.parity = toupper(optarg[0]);
+                if (config.parity != 'N' && config.parity != 'O' && config.parity != 'E') {
+                    fprintf(stderr, "Parity must be N (None), O (Odd) or E (Even)\n");
+                    exit(EXIT_FAILURE);
+                }
+                break;
+            case 'o':
+                strncpy(config.mqtt_topic, optarg, sizeof(config.mqtt_topic));
+                break;
+            case 'f':
+                strncpy(config_file, optarg, sizeof(config_file));
+                // 重新读取配置文件
+                init_default_config();
+                if (read_config_file(config_file) != 0) {
+                    fprintf(stderr, "Failed to read config file: %s\n", config_file);
+                    exit(EXIT_FAILURE);
+                }
+                break;
+            default:
+                print_usage(argv[0]);
+                exit(EXIT_FAILURE);
+        }
+    }
+    
+    // 设置信号处理
+    signal(SIGINT, handle_signal);
+    signal(SIGTERM, handle_signal);
+    
+    // 初始化互斥锁
+    if (pthread_mutex_init(&buffer_mutex, NULL) != 0) {
+        fprintf(stderr, "Failed to initialize mutex\n");
+        exit(EXIT_FAILURE);
+    }
+    
+    // 初始化串口
+    serial_fd = init_serial();
+    if (serial_fd == -1) {
+        fprintf(stderr, "Failed to initialize serial port\n");
+        pthread_mutex_destroy(&buffer_mutex);
+        exit(EXIT_FAILURE);
+    }
+    
+    // 初始化MQTT
+    if (init_mqtt() != 0) {
+        fprintf(stderr, "Failed to initialize MQTT client\n");
+        close(serial_fd);
+        pthread_mutex_destroy(&buffer_mutex);
+        exit(EXIT_FAILURE);
+    }
+    
+    // 等待初始连接建立（最多10秒）
+    printf("Waiting for initial MQTT connection...\n");
+    for (int i = 0; i < 100 && !mqtt_connected && running; i++) { // 最多等待10秒
+        usleep(100000); // 100ms
+        mosquitto_loop(mosq, 0, 1);
+    }
+    
+    if (!mqtt_connected) {
+        printf("Initial MQTT connection failed, will continue trying in background...\n");
+        printf("Serial data will be buffered until connection is established.\n");
+    }
+    
+    // 打印当前配置
+    print_config();
+    printf("\nSerial <-> MQTT bidirectional bridge started.\n");
+    printf("Using topic: %s for both publishing and subscribing.\n", config.mqtt_topic);
+    printf("Press Ctrl+C to exit.\n");
+    
+    // 处理串口数据
+    process_serial_data();
+    
+    // 清理资源
+    if (mosq) {
+        mosquitto_disconnect(mosq);
+        mosquitto_destroy(mosq);
+    }
+    mosquitto_lib_cleanup();
+    
+    if (serial_fd != -1) {
+        close(serial_fd);
+    }
+    
+    pthread_mutex_destroy(&buffer_mutex);
+    
+    printf("Program exited cleanly\n");
+    return 0;
+}

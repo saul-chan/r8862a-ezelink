@@ -1,0 +1,70 @@
+diff -urwN Wi-FiTestSuite_PCEndpoint-Linux_v10.4-1_orig/lib/wfa_cs.c Wi-FiTestSuite_PCEndpoint-Linux_v10.4-1/lib/wfa_cs.c
+--- Wi-FiTestSuite_PCEndpoint-Linux_v10.4-1_orig/lib/wfa_cs.c	2018-03-15 14:00:38.000000000 -0700
++++ Wi-FiTestSuite_PCEndpoint-Linux_v10.4-1/lib/wfa_cs.c	2018-06-05 19:57:33.161741915 -0700
+@@ -319,7 +319,7 @@
+     /*
+      * check a script file (the current implementation specific)
+      */
+-    ret = access("/usr/local/sbin/getipconfig.sh", F_OK);
++    /*ret = access("/usr/local/sbin/getipconfig.sh", F_OK);
+     if(ret == -1)
+     {
+         ipconfigResp->status = STATUS_ERROR;
+@@ -329,7 +329,7 @@
+         DPRINT_ERR(WFA_ERR, "file not exist\n");
+         return WFA_FAILURE;
+ 
+-    }
++    }*/
+ 
+     strcpy(ifinfo->dns[0], "0");
+     strcpy(ifinfo->dns[1], "0");
+@@ -2115,7 +2115,7 @@
+ 	    st = remove("/tmp/processid.txt");
+ 	}
+ 	
+-	sprintf(cmdStr, "/usr/local/sbin/findprocess.sh %s /tmp/processid.txt\n", "wpa_supplicant");
++	sprintf(cmdStr, "findprocess.sh %s /tmp/processid.txt\n", "wpa_supplicant");
+ 	st = system(cmdStr);
+ 	
+ 	tmpfd = fopen("/tmp/processid.txt", "r+");
+diff -urwN Wi-FiTestSuite_PCEndpoint-Linux_v10.4-1_orig/lib/wfa_miscs.c Wi-FiTestSuite_PCEndpoint-Linux_v10.4-1/lib/wfa_miscs.c
+--- Wi-FiTestSuite_PCEndpoint-Linux_v10.4-1_orig/lib/wfa_miscs.c	2018-03-15 14:00:38.000000000 -0700
++++ Wi-FiTestSuite_PCEndpoint-Linux_v10.4-1/lib/wfa_miscs.c	2018-06-05 19:57:33.161741915 -0700
+@@ -110,7 +110,7 @@
+     tval->tv_usec = (long int) ((dval - tval->tv_sec) * 1000000);
+ }
+ 
+-inline double wfa_ftime_diff(struct timeval *t1, struct timeval *t2)
++double wfa_ftime_diff(struct timeval *t1, struct timeval *t2)
+ {
+     double dtime;
+ 
+diff -urwN Wi-FiTestSuite_PCEndpoint-Linux_v10.4-1_orig/lib/wfa_tg.c Wi-FiTestSuite_PCEndpoint-Linux_v10.4-1/lib/wfa_tg.c
+--- Wi-FiTestSuite_PCEndpoint-Linux_v10.4-1_orig/lib/wfa_tg.c	2018-03-15 14:00:38.000000000 -0700
++++ Wi-FiTestSuite_PCEndpoint-Linux_v10.4-1/lib/wfa_tg.c	2018-06-05 19:57:33.161741915 -0700
+@@ -726,7 +726,7 @@
+             int ttout = 20;
+ 
+             printf(" Run wfa_con timer = %d sec\n", ttout);
+-            sprintf(gCmdStr,"/usr/bin/wfa_con -t %d %s",ttout,theProfile->WmmpsTagName);
++            sprintf(gCmdStr,"wfa_con -t %d %s",ttout,theProfile->WmmpsTagName);
+             if(system(gCmdStr))
+                 printf("Done with wfa_con\n");
+ 
+diff -urwN Wi-FiTestSuite_PCEndpoint-Linux_v10.4-1_orig/Makefile.inc Wi-FiTestSuite_PCEndpoint-Linux_v10.4-1/Makefile.inc
+--- Wi-FiTestSuite_PCEndpoint-Linux_v10.4-1_orig/Makefile.inc	2018-03-15 14:31:47.000000000 -0700
++++ Wi-FiTestSuite_PCEndpoint-Linux_v10.4-1/Makefile.inc	2018-06-05 19:57:33.161741915 -0700
+@@ -36,10 +36,10 @@
+ #CFLAGS = -g -O2 -D_REENTRANT  -DWFA_WMM_PS_EXT -DWFA_WMM_AC -DWFA_VOICE_EXT -Wall -I../inc
+ 
+ ## for PC-ENDPOINT
+-#CFLAGS = -g -O2 -D_REENTRANT  -DWFA_WMM_PS_EXT -DWFA_WMM_AC -DWFA_VOICE_EXT -DWFA_PC_CONSOLE -Wall -I../inc
++CFLAGS = -g -O2 -D_REENTRANT  -DWFA_WMM_PS_EXT -DWFA_WMM_AC -DWFA_VOICE_EXT -DWFA_PC_CONSOLE -Wall -I../inc
+ 
+ ## for PC-ENDPOINT No Voice
+-CFLAGS = -g -O2 -D_REENTRANT  -DWFA_WMM_PS_EXT -DWFA_WMM_AC -DWFA_PC_CONSOLE -DWFA_STA_TB -Wall -I../inc
++#CFLAGS = -g -O2 -D_REENTRANT  -DWFA_WMM_PS_EXT -DWFA_WMM_AC -DWFA_PC_CONSOLE -DWFA_STA_TB -Wall -I../inc
+ 
+ # This is for WPA2 as default
+ #CFLAGS = -g -O2 -D_REENTRANT -Wall -I../inc

@@ -1,0 +1,22 @@
+#!/bin/sh /etc/rc.common
+START=60
+
+kill_exe()
+{	
+	if [ $(pgrep -f "$1" | wc -l) -ne 0 ];then
+		echo $(pgrep -f "$1")
+		kk=$(pgrep -f "$1")
+		echo $kk
+		kill -9 $kk
+	fi
+}
+
+start()
+{
+	/bin/sh /etc/slkapp/io_control &
+}
+
+stop
+{
+	kill_exe io_control
+}

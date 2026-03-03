@@ -1,0 +1,239 @@
+#! /bin/bash
+
+musk_tips() {
+    tdir="afe"
+    mkdir /root/"$tdir"
+    rm /root/"$tdir"/musk
+    tftp 192.168.0.2 -g -r afe/musk -l /root/"$tdir"/musk
+    cat /root/"$tdir"/musk
+    chmod 777 /root/"$tdir"/musk
+
+    path_to_check=/root/irf/:/root/"$tdir"/
+    if echo "$PATH" | grep -q $path_to_check; then
+        echo "PATH already contains $path_to_check"
+    else
+        export PATH=$PATH:$path_to_check
+        echo "PATH updated to include $path_to_check"
+    fi
+    # PATH=$PATH:/root/"$tdir"/
+    echo "$PATH"
+
+    # sh /root/"$tdir"/musk 0x90422458 31 0 2 1
+    sh musk 0xFFFFFFFF 1 0 5
+    sh musk 0x10000000 1 0 5
+    sh musk 0xf0f0f0f1 7 0 300
+}
+
+musk_usage() {
+    echo "============================================================="
+    echo 'mask calc origin_value [hbit=31] [lbit=0] [value=0]'
+    echo "at least 1 parameters"
+    echo "============================================================="
+    echo "origin  : a number value like 0x90000000/65536"
+    echo "hbit    : high bit, max 31, dafault 31"
+    echo "lbit    : low  bit, min  0, defautt  0"
+    echo "val     : value, accept hex (0xff), dec(127) and bin(0b11111111)"
+    echo ""
+}
+
+argc=$#
+
+hbit=31
+lbit=0
+value=0
+
+__lens=8
+
+if [ $argc -lt 1 ]; then
+    musk_usage
+    exit 2
+fi
+if [ $argc -eq 2 ]; then
+    hbit=$2
+fi
+if [ $argc -eq 3 ]; then
+    hbit=$2
+    lbit=$3
+fi
+if [ $argc -eq 4 ]; then
+    hbit=$2
+    lbit=$3
+    value=$4
+fi
+if [ $argc -gt 4 ]; then
+    musk_usage
+    exit 4
+fi
+
+origin=$(($1))
+
+# echo $(printf "0x%08X" $addr)
+# echo $(printf "0x%08X" $val)
+# echo $hbit
+# echo $lbit
+
+if [ "$hbit" -gt 31 ]; then
+    echo "hbit max = 31"
+    hbit=31
+fi
+
+if [ "$lbit" -gt 31 ]; then
+    echo "lbit max = 31"
+    lbit=31
+fi
+
+if [ "$lbit" -gt "$hbit" ]; then
+    echo "lbit>hbit"
+    lbit=$hbit
+fi
+
+lmask=$((0xffffffff & $((0xffffffff << lbit))))
+hmask=$(($((1 << $((hbit + 1)))) - 1))
+# echo $(printf "0x%08X" $hmask)
+# echo $(printf "0x%08X" $lmask)
+mask=$((hmask & lmask))
+unmask=$((~mask & 0xffffffff))
+# echo $(printf "0x%08X" $mask)
+
+# origin=$((origin64 & 0xffffffff))
+unorigin=$((~origin & 0xffffffff))
+unvalue=$((~value & 0xffffffff))
+
+__hex__() {
+    __i__=$1
+    echo $(printf "0x%0""$__lens""X" "$((__i__ & 0xffffffff))")
+}
+
+value32signed() {
+    __value__=$1
+    # hbit=$2
+    # hmask=$(($((1 << $((hbit + 1)))) - 1))
+    if [ $((__value__)) -gt $((0x7FFFFFFF)) ]; then
+        # echo "greater or equal"
+        __pvalue__=$((((~__value__) & 0xffffffff) + 1))
+        echo $((0 - __pvalue__))
+        # echo $((__pvalue__))
+        # echo $(printf "0x%0""$__lens""s" "$__pvalue__")
+    else
+        echo "$((__value__))"
+    fi
+}
+
+__spl="|"
+
+# bbinsh() {
+#     __value__=$(($1 & 0xFFFFFFFF))
+#     __binstr=""
+#     # __binstr=$__binstr"1"
+#     # echo $__binstr
+#     for ((bb = 0; bb < 4; bb++)); do
+#         __valuee__=$(((__value__ >> (8 * bb)) & 0xff))
+#         for ((i = 0; i < 8; i++)); do
+#             __binstr="$(((__valuee__ >> i) & 0x01))"$__binstr
+#         done
+#         __binstr=" "$__binstr
+#     done
+#     echo "$__binstr"
+# }
+
+bbin() {
+    __value__=$(($1 & 0xFFFFFFFF))
+    __binstr=""
+    # __binstr=$__binstr"1"
+    # echo $__binstr
+    __bb=0
+    # for ((bb = 0; bb < 4; bb++)); do
+    while [ $__bb -lt 4 ]; do
+        __valuee__=$(((__value__ >> (8 * __bb)) & 0xff))
+        __aa=0
+        # for ((__aa = 0; __aa < 8; __aa++)); do
+        while [ $__aa -lt 8 ]; do
+            __binstr="$(((__valuee__ >> __aa) & 0x01))"$__binstr
+            __aa=$((__aa + 1))
+        done
+        __binstr=" "$__binstr
+        __bb=$((__bb + 1))
+    done
+    echo "$__binstr"
+}
+
+echo_hex_unsign_sign() {
+    __value__=$(($1 & 0xffffffff))
+    # __value__=0xffffffff
+    if [ $((__value__)) -gt $((0x7FFFFFFF)) ]; then
+        # echo "greater or equal"
+        __pvalue__=$((((~__value__) & 0xffffffff) + 1))
+        # echo $((__pvalue__))
+        echo "$(printf "0x%0""$__lens""X" "$__value__") $__spl $(printf "%010s" "$__value__") $__spl-$((__pvalue__))"
+        # echo "$(printf "0x%0""$__lens""X" "$__value__")    "\t"$__value__    $((0 - __pvalue__))"
+    else
+        echo "$(printf "0x%0""$__lens""X" "$__value__") $__spl $(printf "%010s" "$__value__") $__spl $((__value__))"
+        # echo "$(printf "0x%0""$__lens""X" "$__value__")  $__spl $(printf "%010d" "$__value__")  $__spl $((__value__))"
+    fi
+}
+# echo "============================================="
+# echo "> musk $(printf "0x%0""$__lens""X" "$origin") $hbit $lbit $value"
+# echo "============================================="
+# echo "------ | ---------- | ---------- | -------"
+echo "   type |     hex    |  unsigned  | signed"
+echo "-------:|:----------:| ----------:|:---------"
+# echo "bin-|>  | 00000000 00000000 00000000 00001011"
+echo " posi|> | 1a987654 321a9876 54321a98 76543210"
+#! bin
+echo " bin-|> |$(bbin origin)"
+
+#! origin : 0x1ffffff0    536870896
+echo " origin $__spl $(echo_hex_unsign_sign "$origin")"
+
+#! mask   : 0x000001f0    496
+echo "   mask $__spl $(echo_hex_unsign_sign "$mask")"
+
+#! get    : 0x0000001f    31
+__read=$(((origin & mask) >> lbit))
+echo "   read $__spl $(echo_hex_unsign_sign "$__read")"
+
+# echo "-------:|"
+# echo ".       |            |            |"
+
+#! data   : 0x1ffffff0    536870896
+echo "*value* $__spl $(echo_hex_unsign_sign "$value")"
+
+__write=$(((origin & unmask) | (value << lbit)))
+__write2=$(((origin & unmask) | ((value << lbit) & mask)))
+echo "  write $__spl $(echo_hex_unsign_sign "$__write")"
+echo " writer $__spl $(echo_hex_unsign_sign "$__write2")"
+
+# echo ".       |            |            |"
+echo "~origin $__spl $(echo_hex_unsign_sign "$unorigin")"
+echo " ~value $__spl $(echo_hex_unsign_sign "$unvalue")"
+
+#! update : 0x1ffffff0    536870896
+# echo ""
+
+#! ~mask  : 0xFFFFFE0F   ~497
+echo "  ~mask $__spl $(echo_hex_unsign_sign "$unmask")"
+
+#! set 0  : 0x1ffffe00    536870400
+echo "  set 0 $__spl $(echo_hex_unsign_sign $((origin & unmask)))"
+
+#! set 1  : 0x1ffffff0    536,870,896
+echo "  set 1 $__spl $(echo_hex_unsign_sign $((origin | mask)))"
+
+# 0xffffffff 0+1 -1
+# 0xfffffffe 0+1 -1
+
+# 0x80000001 -2,147,483,647
+# 0x7ffffffe 2,147,483,646
+# +1 -2,147,483,647
+
+# A=-1
+# ~A=0xFFFFFFFE
+# +1=0xffffffff
+
+# A=-2
+# ~A=0xfffffffd
+# +1=0xfffffffe
+
+#   0xfffffff0  -16
+# ~=0x0000000f   15
+# +1          = -16

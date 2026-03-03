@@ -1,0 +1,73 @@
+###############################################################################
+###########################		CLS-CSI demo	###############################
+###############################################################################
+
+This is demo application of CLS-CSI. It will demonstrate:
+CLS-CSI reporter on RDK:
+	1) listen CLS-CSI report event from driver, by listening vendor NL80211 event.
+	2) parse CSI data (info and I/Q data).
+	3) send CSI data to CSI parser via socket.
+
+CLS-CSI parser on server, in Python3:
+	1) receive CSI data from CSI reporter.
+	2) parse, print and store CSI data (in .csv) in server.
+
+                  ---------------------------------
+                  |         CLS-CSI parser         | @ PC/Server
+                  |    (demo_clscsi_parser.py)     |
+                  ---------------------------------
+                                 ||
+                                 ||
+                               socket
+                                 ||
+                                 ||
+                  ---------------------------------
+                  |       CLS-CSI reporter         | @ RDK
+                  |    (demo_clscsi_reporterd)     |
+                  |               |                |
+                  |               |                |
+                  |           NL80211              |
+                  |               |                |
+                  |               |                |
+                  |      CLS Wi-Fi driver/FW       |
+                  ---------------------------------
+
+
+###########################	Compile and install	###############################
+This demo applications are disabled by default.
+
+Steps to enable the CLS-CSI reporter:
+On build server for SDK:
+1) Modify [openwrt_dir]/cls-prods-config/cs8862a-rdk.config to add
+   CONFIG_PACKAGE_clscsi-sample=y
+2) $ cp [openwrt_dir]/cls-prods-config/cs8862a-rdk.config [openwrt_dir]/.config
+3) $ make defconfig
+4) $ make
+
+On RDK
+1) Load the new image, executable binary 'demo_clscsi_reporterd' is expected
+   installed to /bin/ of rootfs in RDK.
+
+Steps to install the CLS-CSI parser on PC/Server:
+1) Copy ./src/demo_clscsi_parser.py to PC/Server.
+2) Intsall Python3 on PC/Server.
+
+
+###########################		Demo and Usage	###############################
+On RDK:
+	a) launch demo_clscsi_reporterd
+	   $ demo_clscsi_reporterd -s <server_ip> &
+
+	b) Enable CLS-CSI
+	   $ clsapi enable csi <phyname> 1
+
+	c) Associate a STA, and add it to CLS-CSI monitor list
+	   $ clsapi add csi_sta <phyname> <STA MAC in aa:bb:cc:dd:ee:ff>
+
+On PC/Server:
+	a) launch CLS-CSI parser.
+	   $ python3 demo_clscsi_parser.py
+
+	b) CSI info will be printed on terminal, info and I/Q data will be saved to
+	   './clscsi_data.csv'
+

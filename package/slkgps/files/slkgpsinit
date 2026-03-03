@@ -1,0 +1,23 @@
+#!/bin/sh /etc/rc.common
+START=99
+USE_PROCD=1
+#STOP=10
+#USE_PROCD=0
+BIN=slkgps
+kill_exe()
+{	
+	if [ $(pgrep -f "$1" | wc -l) -ne 0 ];then
+		echo $(pgrep -f "$1")
+		kk=$(pgrep -f "$1")
+		echo $kk
+		kill -9 $kk
+	fi
+}
+
+start_service()
+{
+	procd_open_instance
+	procd_set_param command $BIN
+	procd_set_param respawn
+	procd_close_instance
+}

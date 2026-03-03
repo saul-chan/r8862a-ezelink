@@ -1,0 +1,35 @@
+diff -urN ucert-2020-05-24-00b921d8/ucert.c ucert-2020-05-24-00b921d8-new/ucert.c
+--- ucert-2020-05-24-00b921d8/ucert.c	2020-05-17 05:04:05.000000000 +0800
++++ ucert-2020-05-24-00b921d8-new/ucert.c	2024-06-21 18:41:38.001815385 +0800
+@@ -298,8 +298,6 @@
+ 	list_for_each_entry(cobj, chain, list) {
+ 		/* blob has payload, verify that using signature */
+ 		if (cobj->cert[CERT_ATTR_PAYLOAD]) {
+-			time_t validfrom;
+-			time_t expiresat;
+ 			uint32_t certtype;
+ 
+ 			ret = cert_verify_blob(cobj->cert, chainedpubkey[0]?chainedpubkey:pubkeyfile, pubkeydir);
+@@ -331,8 +329,6 @@
+ 				goto clean_and_return;
+ 			}
+ 			certtype = blobmsg_get_u32(payloadtb[CERT_PL_ATTR_CERTTYPE]);
+-			validfrom = blobmsg_get_u64(payloadtb[CERT_PL_ATTR_VALIDFROMTIME]);
+-			expiresat = blobmsg_get_u64(payloadtb[CERT_PL_ATTR_EXPIRETIME]);
+ 
+ 			if (certtype != CERTTYPE_AUTH) {
+ 				ret = 2;
+@@ -340,13 +336,6 @@
+ 				goto clean_and_return;
+ 			}
+ 
+-			if (tv.tv_sec < validfrom ||
+-			    tv.tv_sec >= expiresat) {
+-				ret = 3;
+-				DPRINTF("certificate expired\n");
+-				goto clean_and_return;
+-			}
+-
+ 			snprintf(chainedpubkey, sizeof(chainedpubkey) - 1, "%s/%s", tmpdir, "chained-pubkey");
+ 			write_file(chainedpubkey,
+ 				   blobmsg_data(payloadtb[CERT_PL_ATTR_PUBKEY]),

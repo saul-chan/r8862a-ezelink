@@ -1,0 +1,84 @@
+/dts-v1/;
+/plugin/;
+/ {
+	fragment@0 {
+		target=<&xgmac2>;
+		__overlay__ {
+			mode = "rgmii";
+			phy-handle = <&rgmii_phy7>;
+			rgmii-rx-delay = <1>;
+			mdio-flags = <1>;
+			status = "okay";
+			mdio{
+				compatible = "clourney,mdio";
+				#address-cells = <1>;
+				#size-cells = <0>;
+				device_type="mdio";
+				regs,phys_reset_init =
+					 <0x90410064 0x7 0x0>,
+					<0x90420090 0x6 0x0>,
+					<0x90420074 0xFFFF 0x1008>,
+					<0x90420078 0xFFFF 0x1008>,
+					<0x90420030 0xFFFF 0x1008>,
+					<0x90420034 0xFFFF 0x1008>,
+					<0x90420038 0xFFFF 0x1008>,
+					<0x9042003c 0xFFFF 0x1008>,
+					<0x90420040 0xFFFF 0x1008>,
+					<0x90420044 0xFFFF 0x1008>,
+					<0x90420048 0xFFFF 0x1008>,
+					<0x9042004c 0xFFFF 0x1008>,
+					<0x90420050 0xFFFF 0x1008>,
+					<0x90420054 0xFFFF 0x1008>,
+					<0x90420058 0xFFFF 0x1008>,
+					<0x9042005c 0xFFFF 0x1008>,
+					<0x90460008 0xFFFF 0x4005>,
+					<0x9046000C 0xFFFF 0x4005>,
+					<0x90460010 0xFFFF 0x4005>,
+					<0x90460014 0xFFFF 0x4005>,
+					<0x90460018 0xFFFF 0x4005>,
+					<0x9046001C 0xFFFF 0x4005>,
+					<0x90460020 0xFFFF 0x4005>,
+					<0x90460024 0xFFFF 0x4005>,
+					<0x90460028 0xFFFF 0x4005>,
+					<0x9046002C 0xFFFF 0x4005>,
+					<0x90460030 0xFFFF 0x4005>,
+					<0x90460034 0xFFFF 0x4005>;
+
+				status = "okay";
+			 	rgmii_phy7: phy@7 {
+					compatible = "ethernet-phy-ieee802.3-c22";
+					reg = <0x5>;
+				};
+			 	rgmii_phy2: phy@2 {
+					compatible = "ethernet-phy-ieee802.3-c22";
+					reg = <0x2>;
+				};
+			};
+		};
+	};
+
+	fragment@1 {
+		target=<&xgmac0>;
+		__overlay__ {
+			status = "disable";
+		};
+	};
+
+	fragment@2 {
+		target=<&npe>;
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+		__overlay__ {
+			xgmac0@0 {
+				id = <0>;
+				compatible = "clourney,dwmac";
+				mode = "rgmii";
+				phy-handle = <&rgmii0_phy>;
+				rgmii-rx-delay = <1>;
+				reg = <0x00 0x53c00000 0x00 0x100000>;
+				status = "okay";
+			};
+		};
+	};
+};

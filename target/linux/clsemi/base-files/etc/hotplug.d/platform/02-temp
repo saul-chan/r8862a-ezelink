@@ -1,0 +1,12 @@
+#!/bin/sh
+
+[ "$EVENT" = "TEMP_HIGH" ] && {
+	echo "wifi down due to TEMP_HIGH" > /dev/console
+	logger -p warn -t hotplug "wifi down due to TEMP_HIGH"
+	wifi down
+}
+[ "$EVENT" = "TEMP_RESUME" ] && {
+	echo "wifi up due to TEMP_RESUME" > /dev/console
+	logger -p warn -t hotplug "wifi up due to TEMP_RESUME"
+	wifi up
+}

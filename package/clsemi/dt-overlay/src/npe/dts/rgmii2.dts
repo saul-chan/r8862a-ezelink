@@ -1,0 +1,43 @@
+/dts-v1/;
+/plugin/;
+/ {
+	fragment@3 {
+		target=<&xgmac2>;
+		__overlay__ {
+			mode = "rgmii";
+			phy-handle = <&rgmii_phy7>;
+			rgmii-rx-delay = <1>;
+			mdio-flags = <1>;
+			status = "okay";
+			mdio{
+				compatible = "clourney,mdio";
+				#address-cells = <1>;
+				#size-cells = <0>;
+				device_type="mdio";
+				regs,phys_reset_init = <0x90420074 0xFFFF 0x1005>,
+					<0x90420078 0xFFFF 0x1005>,
+					<0x90420030 0xFFFF 0x1005>,
+					<0x90420034 0xFFFF 0x1005>,
+					<0x90420038 0xFFFF 0x1005>,
+					<0x9042003c 0xFFFF 0x1005>,
+					<0x90420040 0xFFFF 0x1005>,
+					<0x90420044 0xFFFF 0x1005>,
+					<0x90420048 0xFFFF 0x1005>,
+					<0x9042004c 0xFFFF 0x1005>,
+					<0x90420050 0xFFFF 0x1005>,
+					<0x90420054 0xFFFF 0x1005>,
+					<0x90420058 0xFFFF 0x1005>,
+					<0x9042005c 0xFFFF 0x1005>;
+				status = "okay";
+				rgmii_phy7: phy@7 {
+					compatible = "ethernet-phy-ieee802.3-c22";
+					reg = <0x5>;
+				};
+				rgmii_phy2: phy@2 {
+					compatible = "ethernet-phy-ieee802.3-c22";
+					reg = <0x2>;
+				};
+			};
+		};
+	};
+};

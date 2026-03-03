@@ -1,0 +1,30 @@
+#!/bin/sh
+
+[ "$EVENT" = "WPU_CRASH" ] || exit
+
+reload_wifi() {
+	echo "#### reload wifi due to WPU_CRASH" > /dev/console
+	logger -p warn -t hotplug "#### reload wifi due to WPU_CRASH"
+
+	wifi down
+	/etc/init.d/wpad stop
+	# TODO: rmmod clsm_wifi_pci.ko for tri-band board
+	rmmod clsm_wifi_soc.ko
+	rmmod clsm_3addr_br.ko
+	rmmod clsm_wifi.ko
+	rmmod cfg80211.ko
+	usleep 500000
+	rm -rf /tmp/cal
+	/etc/init.d/cls-load-wifi start
+	/etc/init.d/wpad start
+	wifi up
+}
+
+save_wpu_crash_syslog() {
+	rm -rf /sys_dbg/wpu_crash_syslog
+	mkdir -p /sys_dbg/wpu_crash_syslog
+	cp /tmp/syslog* /sys_dbg/wpu_crash_syslog/
+}
+
+save_wpu_crash_syslog
+reload_wifi &

@@ -1,0 +1,102 @@
+/*
+ * Device Tree Include file for Clourneysemi Dubhe1000 family SoC.
+ *
+ * Copyright (C) 2022 - 2024 Clourney Semiconductor. All rights reserved.
+ */
+
+/dts-v1/;
+/include/ "clourneysemi-dubhe2000.dtsi"
+
+ /{
+	model = "DUBHE2000 DEMO-B Board";
+	compatible = "clourneysemi,dubhe2000_demo";
+	#size-cells = <0x2>;
+	#address-cells = <0x2>;
+
+	chosen {
+		stdout-path = &uart1;
+	};
+};
+
+&uart1 {
+        status = "okay";
+};
+
+&spiflash {
+	busclk = <250000000>;
+	spi-max-frequency = <62500000>;
+	rx-sample-delay-ns = <8>;
+	status = "okay";
+	spi-nand@0 {
+		compatible = "spi-nand";
+		reg = <0>;
+		spi-max-frequency = <62500000>;
+		status = "okay";
+	};
+};
+
+&npe {
+	ytesw@0 {
+                compatible = "clourney,yt_switch";
+                mdio-bus = <&mdio>;
+                port-isolation="oooooox";
+                /* rgmii. txc delay = txc_2ns_en * 2ns + txc_delay * 0.15ns;rxc delay = rxc_delay * 0.15ns */
+                rgmii-rxc_delay = <1>;
+                rgmii-txc_delay = <2>;
+                rgmii-txc_2ns_en = <1>;
+                reset-gpio = <4>;
+        };
+};
+
+&xpcs0 {
+	phy-mode = "sgmii";
+	status = "okay";
+};
+
+&xpcs1 {
+        phy-mode = "2500base-x";
+        status = "okay";
+};
+
+&xgmac0 { 
+	mode = "non-rgmii";
+	max-speed = <2500>;
+	clk-csr = <1>;
+	status = "okay";
+	phy-handle = <&sgmii_phy>;
+	mdio: mdio {
+                compatible = "clourney,mdio";
+                #address-cells = <1>;
+                #size-cells = <0>;
+                device_type = "mdio";
+                id = <0>;
+                clk_csr = <1>;
+                status = "okay";
+                regs,phys_reset_init = <0x90410054 0xFFFF 0x6008>;
+                sgmii_phy: ethernet-phy@6 {
+                        compatible = "ethernet-phy-ieee802.3-c22";
+                        reg = <0x6>;
+                };
+        };
+
+};
+
+&xgmac1 {
+	mode = "non-rgmii";
+	max-speed = <2500>;
+	mac-address = [a0 c0 ab 39 cc f3];
+	status = "okay";
+	fixed-link {
+		speed = <2500>;
+		full-duplex;
+		pause;
+	};
+};
+
+&xgmac4 {
+	status = "disabled";
+};
+
+&xgmac2 { status = "disabled";};
+
+&xgmac3 { status = "disabled";};

@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: GPL-2.0-only
+config NET_DSA_MOTORCOMM
+	tristate "Motorcomm Ethernet switch family support"
+	depends on NET_DSA
+	select FIXED_PHY
+	select NET_DSA_TAG_MOTORCOMM
+	help
+	  This enables support for the Motorcomm mdio-based switch
+	  chips currently only YT9215
+config NET_DSA_VLAN_MOTORCOMM
+	tristate "Motorcomm Ethernet switch family vlan tag support"
+	depends on NET_DSA
+	select FIXED_PHY
+	select NET_DSA_VLAN_TAG_MOTORCOMM
+	help
+	  This enables support for the Motorcomm mdio-based switch
+	  chips currently only YT9215 series and YT9218 series

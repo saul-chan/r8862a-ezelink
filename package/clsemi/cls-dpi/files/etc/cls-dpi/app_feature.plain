@@ -1,0 +1,4 @@
+#type	name:[proto;sport;dport;host url;request;dict]
+1	WZRY:[tcp;;6000-9000;;;00:33|1:66|02:00|03:0a]
+2	DouYin:[tcp;;;-dy-;;,tcp;;;-dy.;;,tcp;;;douyin;;]
+31	XunLei:[udp;12345;;;;,udp;15000;;;;,tcp;;54321;;;,tcp;;12345;;;,udp;6881;;;;,udp;;12346;;;,udp;12346;;;;]

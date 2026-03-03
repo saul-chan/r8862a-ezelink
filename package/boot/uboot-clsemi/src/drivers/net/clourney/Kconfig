@@ -1,0 +1,45 @@
+#
+# Clourneysemi network device configuration
+#
+
+config CLOURNEY_ETH
+	bool "Clourneysemi devices"
+	default y
+	help
+	  If you have a network (Ethernet) card belonging to this class, say Y.
+
+	  Note that the answer to this question doesn't directly affect the
+	  kernel: saying N will just cause the configurator to skip all
+	  the questions about Intel cards. If you say Y, you will be asked for
+	  your specific card in the following questions.
+
+if CLOURNEY_ETH
+
+config CLS_PHYLINK
+	bool "PHY function"
+	help
+		Contains phy setting, mdio.
+
+config CLS_RTKSDK
+	bool "realtek phy sdk"
+	depends on CLS_PHYLINK
+	help
+		Contains realtek (rtl8214fc/rtl8261BE/rtl8221B) phys setting.
+
+config CLOURNEY_ETH_DBG
+	bool "debug the clourney's ethernet"
+	help
+		print the cls_edma log.
+
+config CLS_YTSWITCH
+	bool "yt switch support"
+	depends on CLS_PHYLINK
+	help
+		yt switch (yt9215s) support
+
+config CLS_NPE
+	tristate "Clourneysemi Dubhe1000 support"
+        help
+	  This driver supports Clourneysemi adapters.  
+
+endif # CLOURNEY_ETH

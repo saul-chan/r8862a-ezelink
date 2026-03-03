@@ -1,0 +1,24 @@
+#!/bin/sh
+
+. /lib/functions.sh
+
+retrieve_bridge_vlan_section() {
+	local vid
+
+	config_get vid "$1" "vlan"
+	if [ "$vid" = "$2" ]; then
+		BRIDGE_VLAN_SECTION=$1
+	fi
+}
+
+vid=$1
+config_load network
+config_foreach retrieve_bridge_vlan_section "bridge-vlan" "$vid"
+
+if [ -z "$BRIDGE_VLAN_SECTION" ]; then
+	BRIDGE_VLAN_SECTION=$(uci add network "bridge-vlan")
+	uci set network.$BRIDGE_VLAN_SECTION.device="br-lan"
+	uci set network.$BRIDGE_VLAN_SECTION.vlan="$vid"
+fi
+
+echo $BRIDGE_VLAN_SECTION

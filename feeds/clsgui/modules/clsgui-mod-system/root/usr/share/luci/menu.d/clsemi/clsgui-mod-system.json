@@ -1,0 +1,133 @@
+{
+    "admin/system/general": {
+        "title": "General",
+        "order": 1,
+        "action": {
+            "type": "view",
+            "path": "system/cls-account"
+        },
+        "depends": {
+            "acl": [ "clsgui-mod-system" ]
+        }
+    },
+
+    "admin/system/general/account": {
+        "title": "Account Management",
+        "order": 1,
+        "action": {
+            "type": "view",
+            "path": "system/cls-account"
+        },
+        "depends": {
+            "acl": [ "clsgui-mod-system" ]
+        }
+    },
+
+    "admin/system/general/webgui": {
+        "title": "WebGUI Switching",
+        "order": 2,
+        "action": {
+            "type": "view",
+            "path": "system/cls-switch"
+        },
+        "depends": {
+            "acl": [ "clsgui-mod-system" ]
+        }
+    },
+
+    "admin/system/general/timezone": {
+        "title": "Time Zone",
+        "order": 3,
+        "action": {
+            "type": "view",
+            "path": "system/cls-timezone"
+        },
+        "depends": {
+            "acl": [ "clsgui-mod-system" ]
+        }
+    },
+
+    "admin/system/firmware": {
+        "title": "Firmware",
+        "order": 2,
+        "action": {
+            "type": "view",
+            "path": "system/cls-info"
+        },
+        "depends": {
+            "acl": [ "clsgui-mod-system" ]
+        }
+    },
+
+    "admin/system/firmware/info": {
+        "title": "Firmware Information",
+        "order": 1,
+        "action": {
+            "type": "view",
+            "path": "system/cls-info"
+        },
+        "depends": {
+            "acl": [ "clsgui-mod-system" ]
+        }
+    },
+
+    "admin/system/firmware/upgrade": {
+        "title": "Firmware Upgrade",
+        "order": 2,
+        "action": {
+            "type": "view",
+            "path": "system/cls-upgrade"
+        },
+        "depends": {
+            "acl": [ "clsgui-mod-system" ]
+        }
+    },
+
+    "admin/system/restore": {
+        "title": "Restore",
+        "order": 3,
+        "action": {
+            "type": "view",
+            "path": "system/cls-backup"
+        },
+        "depends": {
+            "acl": [ "clsgui-mod-system" ]
+        }
+    },
+
+    "admin/system/restore/backup": {
+        "title": "Configuration Backup",
+        "order": 1,
+        "action": {
+            "type": "view",
+            "path": "system/cls-backup"
+        },
+        "depends": {
+            "acl": [ "clsgui-mod-system" ]
+        }
+    },
+
+    "admin/system/restore/restore": {
+        "title": "Restore to Factory Default",
+        "order": 2,
+        "action": {
+            "type": "view",
+            "path": "system/cls-restore"
+        },
+        "depends": {
+            "acl": [ "clsgui-mod-system" ]
+        }
+    },
+
+    "admin/system/reboot": {
+        "title": "Reboot",
+        "order": 4,
+        "action": {
+            "type": "view",
+            "path": "system/cls-reboot"
+        },
+        "depends": {
+            "acl": [ "clsgui-mod-system" ]
+        }
+    }
+}

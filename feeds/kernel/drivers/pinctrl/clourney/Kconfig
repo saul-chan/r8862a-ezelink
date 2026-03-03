@@ -1,0 +1,10 @@
+config PINCTRL_CLOURNEY
+	bool "Clourney dubhe pinctrl driver"
+	depends on (ARM || ARM64)
+	default y
+	select GENERIC_PINCTRL_GROUPS
+	select GENERIC_PINMUX_FUNCTIONS
+	select GENERIC_PINCONF
+	select REGMAP
+	help
+	  Say Y here to enable the clourney dubhe pinctrl driver

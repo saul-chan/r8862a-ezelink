@@ -1,0 +1,338 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Device Tree Include file for Clourney dubhe2000 family SoC.
+ *
+ * Copyright (C) 2022-2024 Clourney Semiconductor - All Rights Reserved.
+ *
+ */
+
+/dts-v1/;
+#include "clourney-dubhe2000.dtsi"
+
+/ {
+	model = "Clourney Semiconductor DUBHE2000 EVB-B Board";
+	compatible = "clsemi,dubhe2000-evb-b", "clsemi,dubhe2000";
+
+	aliases {
+		serial0 = &duart0;
+		spidev0 = &spi0;
+                spidev1 = &spi1;
+		spidev2 = &spi2;
+		spinand = &spiflash;
+	};
+
+	chosen {
+		stdout-path = "serial0:115200n8";
+	};
+	 ytesw@0 {
+		compatible = "clourney,yt_switch";
+		mdio-bus = <&mdio>;
+		port-isolation="xooooox";
+		/* rgmii. txc delay = txc_2ns_en * 2ns + txc_delay * 0.15ns;rxc delay = rxc_delay * 0.15ns */
+		rgmii-rxc_delay = <1>;
+		rgmii-txc_delay = <2>;
+		rgmii-txc_2ns_en = <1>;
+		reset-gpio = <&gpio0 4 GPIO_ACTIVE_LOW>;
+	};
+};
+
+&duart0 {
+	status = "ok";
+};
+
+&spi0 {
+	status = "ok";
+	spidev@0 {
+		spi-max-frequency = <5000000>;
+		reg = <0>;
+		compatible = "linux,spidev";
+	};
+};
+
+&spi1 {
+	status = "ok";
+	spidev@0 {
+		spi-max-frequency = <5000000>;
+		reg = <0>;
+		compatible = "linux,spidev";
+	};
+};
+
+&spi2 {
+	status = "ok";
+	spidev@0 {
+		spi-max-frequency = <5000000>;
+		reg = <0>;
+		compatible = "linux,spidev";
+	};
+};
+
+&i2c0 {
+        label = "I2C0";
+        status = "okay";
+};
+
+&i2c1 {
+	label = "I2C1";
+	status = "okay";
+};
+
+&i2c2 {
+        label = "I2C2";
+        status = "okay";
+};
+
+
+&as1630b {
+        status = "okay";
+};
+
+&i2s0 {
+        #sound-dai-cells = <0>;
+        top_sysclk_frequence = <49152000>;
+        status = "disabled";
+};
+
+&tdm0 {
+        #sound-dai-cells = <0>;
+        snps,tdm-slots = <8>;
+        top_sysclk_frequence = <49152000>;
+        status = "okay";
+};
+
+&sound0 {
+        status = "okay";
+        simple-audio-card,format = "dsp_a";
+        simple-audio-card,name = "slic-tdm8";
+
+        simple-audio-card,cpu {
+                sound-dai = <&tdm0>;
+                frame-master;
+                bitclock-master;
+        };
+
+        simple-audio-card,codec {
+                sound-dai = <&as1630b>;
+        };
+};
+
+&spiflash {
+	rx-sample-delay-ns = <8>;
+	status = "ok";
+
+	nand_flash: flash@0 {
+		compatible = "spi-nand";
+		/* Avoid interference with 5G and 2.4G, not setting clk to  41.67MHz  */
+		spi-max-frequency = <31250000>;
+		reg = <0>;
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		/*0.5MB*/
+		partition@0 {
+			label = "sbl";
+			reg = <0x0 0x80000>;
+		};
+
+		/*0.5MB*/
+		partition@1 {
+			label = "atf";
+			reg = <0x80000 0x80000>;
+		};
+
+		/*1MB*/
+		partition@2 {
+			label = "platformdata";
+			reg = <0x100000 0x100000>;
+		};
+
+		/*2MB*/
+		partition@3 {
+			label = "uboot";
+			reg = <0x200000 0x200000>;
+		};
+
+		/*1MB*/
+		partition@4 {
+			label = "caldata";
+			reg = <0x400000 0x100000>;
+		};
+
+		/*1MB*/
+		partition@5 {
+			label = "caldata2";
+			reg = <0x500000 0x100000>;
+		};
+
+		/*1.5MB*/
+                partition@6 {
+                        label = "ubootenv";
+                        reg = <0x600000 0x180000>;
+                };
+
+		/*1.5MB*/
+                partition@7 {
+                        label = "boarddata";
+                        reg = <0x780000 0x180000>;
+                };
+
+		/*32MB*/
+                partition@8 {
+                        label = "fw1";
+                        reg = <0x900000 0x2000000>;
+                };
+
+		/*32MB*/
+                partition@9 {
+                        label = "fw2";
+                        reg = <0x2900000 0x2000000>;
+                };
+
+		/*55MB*/
+                partition@10 {
+                        label = "reserved";
+                        reg = <0x4900000 0x3700000>;
+                };
+	};
+};
+
+&npe  {
+	status = "ok";
+	switch-pause = <4>;
+
+	mdio: mdio {
+		compatible = "clourney,mdio";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		device_type = "mdio";
+		id = <0>;
+		clk_csr = <1>;
+		status = "okay";
+		regs,phys_reset_init = <0x90410054 0xFFFF 0x6008>;
+	};
+};
+&xpcs0 {
+	status = "disabled";
+};
+
+&xpcs1 {
+	phy-mode = "2500base-x";
+	status = "okay";
+};
+&xgmac0 {
+	status = "disabled";
+};
+
+&xgmac1 {
+	mode = "non-rgmii";
+	mac-address = [a0 c0 ab 39 cc f3];
+	max-speed = <2500>;
+	status = "okay";
+	fixed-link {
+		speed = <2500>;
+		full-duplex;
+		pause;
+	};
+};
+
+&xgmac2 {
+	mode = "rgmii";
+	max-speed = <1000>;
+	rgmii-rx-delay;
+	phy-handle = <&rgmii2_phy>;
+	rgmii-rx-delay = <1>;
+	status = "okay";
+	mdio@2 {
+	compatible = "clourney,mdio";
+	#address-cells = <1>;
+	#size-cells = <0>;
+	device_type = "mdio";
+	pse-bitmap = <0>;
+	status = "okay";
+	clk_csr = <1>;
+	regs,phys_reset_init = <0x90420090 0x6 0x6>,
+				<0x90420094 0xF 0x2>;
+	rgmii2_phy: ethernet-phy@5 {
+		compatible = "ethernet-phy-ieee802.3-c22";
+		reg = <0x5>;
+		};
+	};
+};
+
+&xgmac3 {
+	status = "disabled";
+};
+
+&xgmac4 {
+	mode = "rgmii";
+	max-speed = <1000>;
+	rgmii-rx-delay = <0>;
+	rgmii-tx-delay = <2>;
+	status = "okay";
+	fixed-link {
+		speed = <1000>;
+		full-duplex;
+		pause;
+	};
+};
+
+&wifi0 { status = "ok"; };
+
+&wifi1 { status = "ok"; };
+
+&wifiarm { status = "disabled"; };
+
+&wifiarc { status = "ok"; };
+
+&crgwdt {
+        timeout-sec = <WDT_TIMEOUT_S>;
+        status = "ok";
+};
+
+&watchdog0 {
+	timeout-sec = <WDT_TIMEOUT_S>;
+	status = "ok";
+};
+
+&usbdrd3 { status = "ok";};
+
+&usb {status = "ok"; };
+
+&pvt_sensor {
+	status = "ok";
+        // T2
+        temp_rise_alarm2_L = "102000";
+        temp_rise_alarm2_H = "110000";
+        temp_fall_alarm2_H = "110000";
+        temp_fall_alarm2_L = "102000";
+        // T0
+        temp_rise_alarm0_L = "110000";
+        temp_rise_alarm0_H = "118000";
+        temp_fall_alarm0_H = "118000";
+        temp_fall_alarm0_L = "110000";
+        // T1
+        temp_rise_alarm1_L = "118000";
+        temp_rise_alarm1_H = "126000";
+        temp_fall_alarm1_H = "126000";
+        temp_fall_alarm1_L = "118000";
+};
+
+&cls_tsens {
+	status = "ok";
+        // T2
+        temp_rise_alarm2_L = "102000";
+        temp_rise_alarm2_H = "110000";
+        temp_fall_alarm2_H = "110000";
+        temp_fall_alarm2_L = "102000";
+        // T0
+        temp_rise_alarm0_L = "110000";
+        temp_rise_alarm0_H = "118000";
+        temp_fall_alarm0_H = "118000";
+        temp_fall_alarm0_L = "110000";
+        // T1
+        temp_rise_alarm1_L = "118000";
+        temp_rise_alarm1_H = "126000";
+        temp_fall_alarm1_H = "126000";
+        temp_fall_alarm1_L = "118000";
+};
+

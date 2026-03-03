@@ -1,0 +1,11 @@
+# Classic QoS configuration simple example, more details please refer to application notes
+# config rule
+#       option name		'name of the rule'
+#       list src_device		'eth0'
+#       list src_mac		'00:11:22:33:44:55'
+#       list src_ip		'192.168.1.10'
+#       list proto		'tcp'
+#       option dest_port	'80'
+#       option family		'any'
+#       option set_dscp		'cs2'
+#       option set_priority	'1'

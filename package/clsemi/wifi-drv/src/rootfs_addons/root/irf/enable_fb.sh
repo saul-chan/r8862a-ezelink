@@ -1,0 +1,6 @@
+#!/bin/bash
+devmem 0x90422110 32 0x016A0101
+sleep 1
+devmem 0x90422060 32 0x016A0101
+sleep 1
+devmem 0x90422148 32 0xE3186508

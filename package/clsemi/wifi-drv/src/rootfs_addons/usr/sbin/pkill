@@ -1,0 +1,11 @@
+#!/bin/bash
+
+prcess_name=$1
+process_array=$(pgrep $prcess_name)
+
+for process_no in $process_array;
+do
+	if [ $process_no != "" ]; then
+		kill -9 $process_no
+	fi
+done

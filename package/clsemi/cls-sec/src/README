@@ -1,0 +1,9 @@
+###################	cls     ##############################
+Why:
+	The user application can modify the hostapd configure file of wifi interface.
+How:
+	(a) get the config file path according to the interface
+	(b) modify the value of the parameter
+
+Usage:
+	cls set|remove ifname param_name param_value

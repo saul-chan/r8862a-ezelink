@@ -1,0 +1,10 @@
+Package: spidev-test
+Version: 5.10.146-5.10.146
+Depends: libc, kmod-spi-dev
+Source: package/utils/spidev_test
+SourceName: spidev-test
+Section: utils
+SourceDateEpoch: 1757658041
+Architecture: aarch64_cortex-a53
+Installed-Size: 4771
+Description:  SPI testing utility.

@@ -1,0 +1,15 @@
+{
+	"luci-app-cls-qos": {
+		"description": "Grant UCI access for luci-app-cls-qos",
+		"read": {
+			"uci": [ "cls-qos" ],
+			"ubus": {
+				"clmesh.api": [ "*" ],
+				"clsqos": [ "*" ]
+			}
+		},
+		"write": {
+			"uci": [ "cls-qos" ]
+		}
+	}
+}

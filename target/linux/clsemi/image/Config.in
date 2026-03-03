@@ -1,0 +1,9 @@
+config EXTRA_IMAGE_NAME
+	string "Extra image name"
+	depends on TARGET_clsemi
+	default ""
+
+config EXTRA_VERSION_NUMBER
+	string "Extra version number"
+	depends on TARGET_clsemi
+	default ""

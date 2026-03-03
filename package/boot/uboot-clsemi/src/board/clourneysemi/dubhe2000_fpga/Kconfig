@@ -1,0 +1,41 @@
+if TARGET_DUBHE2000_FPGA
+
+config CLOURNEY_SEMI
+        bool "ClourneySemi WIFI AP CPUs Variants"
+
+config SYS_BOARD
+	default "dubhe2000_fpga"
+
+config SYS_VENDOR
+	default "clourneysemi"
+
+config SYS_SOC
+	default "dubhe2000"
+
+config SYS_CONFIG_NAME
+	default "dubhe2000_fpga"
+
+config BRD_BOOT_FLASH_VARIANT
+	depends on MTD
+        int "board boot from flash variant"
+        default 1
+        help
+          This defines board bootup flash variant.
+	  BRD_BOOT_FROM_PNAND    1
+	  BRD_BOOT_FROM_SPINAND  2
+	  BRD_BOOT_FROM_SPINOR   3
+
+config BRD_PLAT_RUN_CLK_VARIANT
+	int "board platform running clock variant"
+	default 2
+	help
+	  This defines board platform running clock variant.
+	  BRD_PLAT_RUN_EMU_CLK    1
+	  BRD_PLAT_RUN_FPGA_CLK   2
+	  BRD_PLAT_RUN_SOC_CLK    3
+
+config BOARD_SDRAM_SIZE
+        hex
+        default 0x20000000
+
+endif

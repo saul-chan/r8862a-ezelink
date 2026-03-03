@@ -1,0 +1,51 @@
+/dts-v1/;
+
+/ {
+	description = "dummy fit";
+	#address-cells = <1>;
+
+	images {
+		kernel {
+			description = "dummy kernel";
+			data = /incbin/("/dev/null");
+			type = "kernel";
+			arch = "arm64";
+			os = "linux";
+			compression = "lzma";
+			load = <0x10000000>;
+			entry = <0x10000000>;
+			hash-1 {
+				algo = "crc32";
+			};
+			hash-2 {
+				algo = "sha1";
+			};
+		};
+		fdt-1 {
+			description = "dummy dtb";
+			data = /incbin/("/dev/null");
+			type = "flat_dt";
+			arch = "arm64";
+			compression = "none";
+			hash-1 {
+				algo = "crc32";
+			};
+			hash-2 {
+				algo = "sha1";
+			};
+		};
+	};
+
+	configurations {
+		default = "conf-1";
+		conf-1 {
+			description = "dummy conf";
+			kernel = "kernel";
+			fdt = "fdt-1";
+			signature {
+				algo = "sha1,rsa2048";
+				key-name-hint = "${key_name}";
+			};
+		};
+	};
+};

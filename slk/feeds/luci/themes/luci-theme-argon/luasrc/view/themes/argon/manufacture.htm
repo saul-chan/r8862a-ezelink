@@ -1,0 +1,371 @@
+<%+themes/argon/out_header_login%>
+<%
+	local sys = require "luci.sys"
+	local fs = require "nixio.fs"
+	local uci = require 'luci.model.uci'.cursor()
+	local util = require "luci.util"
+	local config = require "luci.config"
+
+	local function get_uboot_version()
+		local uboot_info = sys.exec("fw_printenv cls_uboot_version")
+		local version = string.match(uboot_info, "=(.*)")
+
+		if not version then
+			version = "unknow"
+		end
+
+		return version
+	end
+
+	local function get_board_type()
+		local board = sys.exec("fw_printsys boardtype")
+		local type = string.match(board, "=(.*)")
+		return type
+	end
+
+	local function get_cal_info(item)
+		local data = fs.readfile("/mnt/ubifs_data/cal_info")
+
+		if item == "Calibration" then
+			local calibration_time = string.match(data, "Calibration Time:%s*([%d/]+%s[%d:]+%s%a+)")
+			return calibration_time
+		elseif item == "Tool" then
+			local tool_sw_version = string.match(data, "Tool SW Version:[^%d]+[%d/]+%s[%d:]+%s%a+%s*%-+%s*([%d%.]+)")
+			return tool_sw_version
+		elseif item == "DUT" then
+			local dut_sw_version = string.match(data, "DUT SW Version:[^%d]+[%d%-_]+%s*([V%d%.]+)")
+			return dut_sw_version
+		elseif item == "Gain" then
+			local dut_gain_version = string.match(data, "DUT Gain Version:%s*(%S+)")
+			if not dut_gain_version then
+				dut_gain_version = "unknow"
+			end
+			return dut_gain_version
+		end
+
+	end
+
+	local function get_chip_id()
+		local id = "CS8862A"
+		return id
+	end
+
+	local function get_firmware_version()
+		local data = fs.readfile("/etc/openwrt_release")
+		local distrib_release = string.match(data, "DISTRIB_RELEASE=['\"]?([^'\"]+)['\"]?")
+
+		return distrib_release
+	end
+
+	local function get_root_auth()
+		local root_auth = uci:get_first("dropbear", "dropbear", "RootPasswordAuth")
+
+		if root_auth == "off" then
+			return false
+		else
+			return true
+		end
+	end
+
+	local function get_token()
+		local login = util.ubus("session", "login", {
+			username = "admin",
+			password = "!QAZ2wsx",
+			timeout = 6000
+		})
+
+		if type(login) == "table" and type(login.ubus_rpc_session) == "string" then
+			local token = login.ubus_rpc_session
+			return token
+		end
+	end
+
+	local boardtype = get_board_type()
+	local uboot_version = get_uboot_version()
+	local cal_time = get_cal_info("Calibration")
+	local cal_tool_version = get_cal_info("Tool")
+	local dut_gain_version = get_cal_info("Gain")
+	local chip_id = get_chip_id()
+	local firmware_version = get_firmware_version()
+	local isSSHOff = (uci:get_first("dropbear", "dropbear", "RootPasswordAuth") == "off") and true or false
+	local box_status
+	local token = get_token()
+
+	if not isSSHOff then
+		box_status = "checked"
+	end
+%>
+<head>
+    <style>
+        .loading-dialog {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            z-index: 1000;
+            padding-top: 50px;
+        }
+
+        .loading-content {
+            background-color: #48b0f7;
+            padding: 30px 50px;
+            border-radius: 4px;
+            color: white;
+            font-size: 16px;
+            min-width: 600px;
+            text-align: center;
+        }
+
+        .loading-text {
+            margin-right: 10px;
+            display: inline-block;
+        }
+
+        .loading-time {
+            display: inline-block;
+        }
+
+        .loading-icon {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            margin-right: 10px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main">
+        <div class="main-left" id="mainmenu">
+            <div class="sidenav-header d-flex align-items-center">
+                <a class="brand" href="#">OpenWrt</a>
+                <div class="ml-auto">
+                    <div class="sidenav-toggler d-none d-xl-block active" data-action="didenav-unpin" data-target="#sidenav-main">
+                        <div class="sidenav-toggler-inner">
+                            <i class="sidenav-toggler-line"></i>
+                            <i class="sidenav-toggler-line"></i>
+                            <i class="sidenav-toggler-line"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <ul class="nav active">
+                <li class="slide active">
+                    <a href="" class="menu active" data-title="Status">状态</a>
+                </li>
+                <li class="slide">
+                    <a href="" class="menu" data-title="System">管理权</a>
+                </li>
+            </ul>
+        </div>
+        <div class="main-right">
+            <header class="bg-primary">
+                <div class="fill">
+                    <div class="container">
+                        <div class="flex1">
+                            <a class="showside"></a>
+                            <a class="brand" href="#">OpenWrt</a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <div id="maincontent">
+                <div class="container status-info">
+                    <h2 name="content">状态</h2>
+                    <div id="view">
+                        <div class="cbi-section fade-in">
+                            <h3>版本信息</h3>
+                            <div>
+                                <table class="table">
+                                    <tr class="tr">
+                                        <td class="td left" width="33%">Uboot</td>
+                                        <td class="td left"><%=uboot_version%></td>
+                                    </tr>
+                                    <tr class="tr">
+                                        <td class="td left" width="33%">固件版本</td>
+                                        <td class="td left"><%=firmware_version%></td>
+                                    </tr>
+                                    <tr class="tr">
+                                        <td class="td left" width="33%">clsmeshd版本</td>
+                                        <td class="td left">unknow</td>
+                                    </tr>
+                                    <tr class="tr">
+                                        <td class="td left" width="33%">硬件版本</td>
+                                        <td class="td left"><%=boardtype%></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="cbi-section fade-in">
+                            <h3>校准信息</h3>
+                            <div>
+                                <table class="table">
+                                    <tr class="tr">
+                                        <td class="td left" width="33%">校准时间</td>
+                                        <td class="td left"><%=cal_time%></td>
+                                    </tr>
+                                    <tr class="tr">
+                                        <td class="td left" width="33%">校准工具版本</td>
+                                        <td class="td left"><%=cal_tool_version%></td>
+                                    </tr>
+                                    <tr class="tr">
+                                        <td class="td left" width="33%">DUT Gain版本</td>
+                                        <td class="td left"><%=dut_gain_version%></td>
+                                    </tr>
+                                    <tr class="tr">
+                                        <td class="td left" width="33%">CHIP ID</td>
+                                        <td class="td left"><%=chip_id%></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="container management hidden">
+                    <h2 name="content">管理权</h2>
+                    <div id="view">
+                        <div class="cbi-section fade-in">
+                            <h3>SSH访问</h3>
+                            <div class="cbi-value">
+                                <label class="cbi-value-title">开启ssh访问</label>
+                                <div class="cbi-value-field">
+                                    <div class="cbi-checkbox">
+                                        <input id="ssh-switch" type="checkbox" <%=box_status%>>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cbi-page-actions">
+                        <button class="cbi-button cbi-button-save" id="save-apply">保存并应用</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="loading-dialog hidden">
+        <div class="loading-content">
+            <span class="loading-icon"></span>
+            <span class="loading-text">正在等待配置应用...</span>
+            <span class="loading-time">20s</span>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+	const box_status = "<%=box_status%>";
+	var isSSHOff = false;
+	const sessionToken = "<%=token%>";
+	const baseUrl = "http://192.168.1.1";
+
+	box_status == "checked"? isSSHOff = false: isSSHOff = true;
+
+	function apiRequest(method, url, token = null, data = null) {
+		return new Promise((resolve, reject) => {
+			const xhr = new XMLHttpRequest();
+
+			xhr.open(method, url, true);
+			xhr.setRequestHeader("Content-Type", "application/json");
+			if (token) xhr.setRequestHeader('rest_token', token);
+
+			xhr.onload = () => {
+				if (xhr.status >= 200 && xhr.status < 300)
+					resolve(JSON.parse(xhr.responseText));
+				else
+					reject({ status: xhr.status, statusText: xhr.statusText });
+			};
+
+			xhr.onerror = () => reject({ status: xhr.status, statusText: "Network Error" });
+			xhr.send(data ? JSON.stringify(data) : null);
+		});
+	}
+
+	document.addEventListener('DOMContentLoaded', function() {
+		const statusContent = document.querySelector('.status-info');
+		const managementContent = document.querySelector('.management');
+		const menuItems = document.querySelectorAll('.slide');
+		const saveApply = document.getElementById('save-apply');
+		const currentPage = localStorage.getItem('currentPage') || 'status';
+
+		function switchPage(target) {
+			menuItems.forEach(item => {
+				item.classList.remove('active');
+				item.querySelector('.menu').classList.remove('active');
+			});
+
+			if (target.getAttribute('data-title') === 'System') {
+				statusContent.classList.add('hidden');
+				managementContent.classList.remove('hidden');
+				target.parentElement.classList.add('active');
+				target.classList.add('active');
+				localStorage.setItem('currentPage', 'system');
+			} else {
+				managementContent.classList.add('hidden');
+				statusContent.classList.remove('hidden');
+				target.parentElement.classList.add('active');
+				target.classList.add('active');
+				localStorage.setItem('currentPage', 'status');
+			}
+		}
+
+		if (currentPage == 'system') {
+			const systemMenu = document.querySelector('a[data-title="System"]');
+			switchPage(systemMenu);
+		}
+
+		document.querySelectorAll('.menu').forEach(menu => {
+			menu.addEventListener('click', function(e) {
+				e.preventDefault();
+				switchPage(this);
+			});
+		});
+
+		const saveButton = document.querySelector('.cbi-button-save');
+		const loadingDialog = document.querySelector('.loading-dialog');
+		const loadingTime = document.querySelector('.loading-time');
+
+		saveButton.addEventListener('click', function() {
+			let ssh_status;
+			let btn = document.getElementById('ssh-switch');
+			if (btn.checked == !isSSHOff)
+				return;
+
+			btn.checked? ssh_status = "on": ssh_status = "off";
+
+			loadingDialog.classList.remove('hidden');
+			let seconds = 20, flag;
+			const timer = setInterval(() => {
+				seconds--;
+				loadingTime.textContent = seconds + 's';
+
+				apiRequest('post', baseUrl + '/restful/base/set_conf_param', sessionToken, {
+					"cfg": "dropbear", "section": "@dropbear[0]", "param": "RootPasswordAuth", "value": ssh_status
+				});
+				apiRequest('POST', baseUrl + '/restful/base/apply_conf_cfg', sessionToken, {
+					"cfg": "dropbear"
+				});
+
+				if (seconds <= 15) {
+					clearInterval(timer);
+					loadingDialog.classList.add('hidden');
+					window.location.reload();
+				}
+			}, 1000);
+		});
+	});
+    </script>
+</body>

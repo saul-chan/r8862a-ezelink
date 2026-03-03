@@ -1,0 +1,288 @@
+#
+# jfh106 <jfh106@clsemi.com>, 2024
+#
+msgid ""
+msgstr ""
+"PO-Revision-Data: "
+"Last-Translator: "
+"Language-Team: Chinese (Simplified) Clourneysemi/clsgui/zh_Hans/"
+"Language: zh_Hans\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4014.1\n"
+
+#modules/clsgui-mod-overview/htdocs/luci-static/resource/view/overview
+msgid "No Encryption"
+msgstr "未加密"
+
+msgid "WPA-PSK/WPA2-PSK Mixed Mode"
+msgstr "WPA-PSK/WPA2-PSK混合加密"
+
+msgid "WPA2-PSK/WPA3-SAE Mixed Mode"
+msgstr "WPA2-PSK/WPA3-SAE混合加密"
+
+msgid "days"
+msgstr "天"
+
+msgid "hours"
+msgstr "小时"
+
+msgid "hour"
+msgstr "小时"
+
+msgid "minutes"
+msgstr "分钟"
+
+msgid "Connected"
+msgstr "已连接"
+
+msgid "Unconnected"
+msgstr "未连接"
+
+msgid "Unknow"
+msgstr "未知"
+
+msgid "Device Information"
+msgstr "设备信息"
+
+msgid "Hardware Version"
+msgstr "硬件版本"
+
+msgid "Software Version"
+msgstr "软件版本"
+
+msgid "MAC Address"
+msgstr "MAC地址"
+
+msgid "Up Time"
+msgstr "运行时间"
+
+msgid "Network State"
+msgstr "网络状态"
+
+msgid "Internet State"
+msgstr "连接状态"
+
+msgid "Internet Type"
+msgstr "连接类型"
+
+msgid "Uplink Rate"
+msgstr "上行速率"
+
+msgid "Downlink Rate"
+msgstr "下行速率"
+
+msgid "Wireless Information"
+msgstr "无线信息"
+
+msgid "SSID"
+msgstr "无线名称"
+
+msgid "Encryption"
+msgstr "加密方式"
+
+msgid "Passphrase"
+msgstr "无线密码"
+
+msgid "Host Name"
+msgstr "主机名称"
+
+msgid "Link Type"
+msgstr "连接类型"
+
+msgid "Topology"
+msgstr "拓扑图"
+
+#modules/clsgui-mod-overview/htdocs/luci-static/resource/view/network
+msgid "WAN"
+msgstr "上网设置"
+
+msgid "Operation Configuration"
+msgstr "工作模式配置"
+
+msgid "Router"
+msgstr "路由器"
+
+msgid "Bridge"
+msgstr "桥接"
+
+msgid "Static IP"
+msgstr "静态IP"
+
+msgid "WAN Configuration"
+msgstr "上网设置"
+
+msgid "WAN Connection Type"
+msgstr "连接类型"
+
+msgid "User Name"
+msgstr "用户名"
+
+msgid "Password"
+msgstr "密码"
+
+msgid "IP Address"
+msgstr "IP地址"
+
+msgid "Subnet Mask"
+msgstr "子网掩码"
+
+msgid "Default Gateway"
+msgstr "默认网关"
+
+msgid "DNS Server"
+msgstr "DNS服务器"
+
+msgid "LAN"
+msgstr "局域网"
+
+msgid "LAN Configuration"
+msgstr "局域网配置"
+
+msgid "Enable DHCP"
+msgstr "启用DHCP"
+
+msgid "Address Pool"
+msgstr "地址池"
+
+msgid "Lease Time"
+msgstr "租约时间"
+
+msgid "seconds"
+msgstr "秒"
+
+msgid "DHCP Clients"
+msgstr "DHCP客户端"
+
+msgid "General"
+msgstr "基础设置"
+
+msgid "Traffic rule"
+msgstr "流量规则"
+
+msgid "Allow Ping WAN"
+msgstr "启用Ping WAN"
+
+msgid "Advanced"
+msgstr "高级设置"
+
+msgid "Ultra QoS is an advanced network service quality management technology primarily used to optimize and improve network performance."
+msgstr "Ultra QoS是一种高级的网络服务质量管理技术，主要用于优化和提升网络性能。"
+
+#modules/clsgui-mod-overview/htdocs/luci-static/resource/view/wireless
+msgid "Wireless Settings"
+msgstr "无线设置"
+
+msgid "Unified Wi-Fi Dual-band"
+msgstr "Wi-Fi双频合一"
+
+msgid "Turn on/off 2.4G Wi-Fi."
+msgstr "开启/关闭 2.4G Wi-Fi。"
+
+msgid "Turn on/off 5G Wi-Fi."
+msgstr "开启/关闭 5G Wi-Fi。"
+
+msgid "Turn on/off Wi-Fi."
+msgstr "开启/关闭 Wi-Fi。"
+
+msgid "Access Permision"
+msgstr "访问控制"
+
+#modules/clsgui-mod-overview/htdocs/luci-static/resource/view/system
+msgid "Account Management"
+msgstr "账号管理"
+
+msgid "Time Zone"
+msgstr "时区管理"
+
+msgid "Old Password"
+msgstr "旧密码"
+
+msgid "Please input old password"
+msgstr "请输入旧密码"
+
+msgid "Please input new password"
+msgstr "请输入新密码"
+
+msgid "Please confirm new password"
+msgstr "请确认新密码"
+
+msgid "New Password"
+msgstr "新密码"
+
+msgid "Confirm New Password"
+msgstr "确认新密码"
+
+msgid "Error Password"
+msgstr "密码错误"
+
+msgid "The passwords entered twice are inconsistent"
+msgstr "两次输入的密码不一致"
+
+msgid "WebGUI Switching"
+msgstr "WebGUI切换"
+
+msgid "Original WebGUI"
+msgstr "原始WebGUI"
+
+msgid "Clsemi WebGUI"
+msgstr "云程WebGUI"
+
+msgid "Firmware"
+msgstr "固件管理"
+
+msgid "Back up default configuration to local PC."
+msgstr "配置备份是将路由器的默认配置备份到本地。"
+
+msgid "Restore previously saved default configuration from local PC. Reboot to apply changes."
+msgstr "从本地电脑恢复以前保存的配置。重新启动以应用更改。"
+
+msgid "Reset the router configuration to the initial installation state, clear all user settings and custom configurations."
+msgstr "将路由器的配置重置为初始安装状态，清除所有用户设置和自定义配置。"
+
+msgid "Update the version of the operating system on the router."
+msgstr "更新路由器上操作系统的版本。"
+
+msgid "Firmware Information"
+msgstr "固件信息"
+
+msgid "The current firmware version number."
+msgstr "当前固件版本号。"
+
+msgid "Current Version"
+msgstr "当前版本："
+
+msgid "Firmware Upgrade"
+msgstr "固件升级"
+
+msgid "The current firmware version number."
+msgstr "当前固件的版本号。"
+
+msgid "Manual upgrade"
+msgstr "手动升级"
+
+msgid "Configuration Backup"
+msgstr "配置备份"
+
+msgid "Restore Backup Configuration"
+msgstr "恢复备份配置"
+
+msgid "Restore to Factory Default"
+msgstr "恢复出厂设置"
+
+msgid "Restore Factory"
+msgstr "恢复出厂"
+
+msgid "Reboots the operating system of your device."
+msgstr "重启设备的操作系统。"
+
+msgid "Perform Reboot"
+msgstr "执行重启"
+
+msgid "Are you sure to reboot this device?"
+msgstr "您确定要重启该设备吗？"
+
+msgid "Confirm"
+msgstr "确认"
+

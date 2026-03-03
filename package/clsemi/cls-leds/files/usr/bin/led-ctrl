@@ -1,0 +1,93 @@
+#!/bin/sh
+
+. /lib/functions/leds.sh
+. /lib/functions/system.sh
+
+domains=" \
+        www.baidu.com \
+        www.qq.com \
+        www.163.com \
+"
+resolv_conf=/tmp/resolv.conf.d/resolv.conf.auto
+
+check_board() {
+	local board
+
+	board=$(board_name)
+
+	case $board in
+	clsemi,dubhe2000-rdk|\
+	clsemi,dubhe2000-demo-a)
+		internet_up_led_on="green:status"
+		internet_up_led_off="red:status"
+		internet_down_led_on="red:status"
+		internet_down_led_off="green:status"
+		;;
+	clsemi,dubhe2000-demo-b)
+		internet_up_led_on="green:internet"
+		internet_down_led_off="green:internet"
+		;;
+	*)
+		echo "Unknown board: $board, please add support if it has Internet LED"
+		exit 1
+		;;
+	esac
+}
+
+internet_led_on()
+{
+        status_led="$1"
+        status_led_on
+}
+
+internet_led_off()
+{
+        status_led="$1"
+        status_led_off
+}
+
+internet_up_led_action()
+{
+	[ -n $internet_up_led_on ] && internet_led_on $internet_up_led_on
+	[ -n $internet_up_led_off ] && internet_led_off $internet_up_led_off
+}
+
+internet_down_led_action()
+{
+	[ -n $internet_down_led_on ] && internet_led_on $internet_down_led_on
+	[ -n $internet_down_led_off ] && internet_led_off $internet_down_led_off
+}
+
+/usr/sbin/led_notify &
+check_board
+while true; do
+        sleep 3
+	wan_dev=$(uci -q get network.wan.device)
+	# if wan_dev is zero length, the router may be in bridge mode
+	if [ -n "$wan_dev" ]; then
+		ifconfig $wan_dev | grep -q RUNNING
+		[ "$?" != "0" ] && {
+			ubus send internet_event '{"status":"disconnected"}'
+			continue
+		}
+	fi
+
+        success=0
+	while read line; do
+		dns_server=`echo $line | awk  '$1 == "nameserver" {print $2}'`
+		[ -z "${dns_server}" ] && continue
+
+		for domain in ${domains}; do
+			nslookup $domain $dns_server >/dev/null && {
+				success=1
+				break 2
+			}
+		done
+	done <${resolv_conf}
+
+        if [ "$success" = "1" ]; then
+		ubus send internet_event '{"status":"connected"}'
+        else
+		ubus send internet_event '{"status":"disconnected"}'
+        fi
+done

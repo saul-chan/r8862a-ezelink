@@ -1,0 +1,75 @@
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2024-07-15 11:00+0000\n"
+"Last-Translator: Jinfeng Hu <jfh106@clsemi.com>\n"
+"Language: zh_Hans\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.6-dev\n"
+
+msgid "CLS-QoS setting"
+msgstr "CLS-QoS设置"
+
+msgid "General settings"
+msgstr "通用设置"
+
+msgid "Action settings"
+msgstr "操作设置"
+
+msgid "Source Lan Device"
+msgstr "源Lan设备"
+
+msgid "Destination Lan Device"
+msgstr "目标Lan设备"
+
+msgid "Source MAC"
+msgstr "源MAC"
+
+msgid "Destination MAC"
+msgstr "目标MAC"
+
+msgid "IP family"
+msgstr "IP族"
+
+msgid "Source IP"
+msgstr "源IP"
+
+msgid "Destination IP"
+msgstr "目标IP"
+
+msgid "Priority value"
+msgstr "优先级"
+
+msgid "The range of Priority value is 0~7"
+msgstr "优先级范围为0到7。"
+
+msgid "DSCP Value"
+msgstr "DSCP值"
+
+msgid "Vlan priority"
+msgstr "Vlan优先级"
+
+msgid "The range of Vlan priority is 0~7"
+msgstr "Vlan优先级范围为0到7。"
+
+msgid "Bandwidth Limit"
+msgstr "带宽限制"
+
+msgid "Online applications"
+msgstr "在线应用"
+
+msgid "APP type"
+msgstr "应用类型"
+
+msgid "State"
+msgstr "状态"
+
+msgid "-- add Lan Device --"
+msgstr "添加Lan设备"
+
+msgid "Invalid data! Please enter an integer of 0~7"
+msgstr "无效数据！请输入0~7之间的整数。"
+
+msgid "Invalid data! Please enter an value from 0.5 to 1000"
+msgstr "无效数据！请输入不小于0.5的数。"

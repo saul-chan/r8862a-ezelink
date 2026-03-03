@@ -1,0 +1,1899 @@
+'''
+
+Copyright (C) 2023 Clourney Semiconductor - All Rights Reserved.
+SPDX-License-Identifier: BSD-3-Clause
+https://spdx.org/licenses
+
+'''
+
+import re
+import sys
+import ctypes
+from pprint import pprint
+
+file_to_be_generated = sys.argv[1]
+class_name = str(file_to_be_generated.split('.')[0]).replace('clsapi_', '')
+ubus_file = "ubus_%s.c" %class_name
+fixed_header_file1 = "../clsapi_common.h"
+fixed_header_file2 = "../cls_common.h"
+path_out_c = sys.argv[2]
+
+fixed_header = """\
+/* Automatically generated file; DO NOT EDIT. */
+/*
+ * Copyright (C) 2023 Clourney Semiconductor - All Rights Reserved.
+ * SPDX-License-Identifier: BSD-3-Clause
+ * https://spdx.org/licenses
+ *
+ */
+
+"""
+
+mem_cl_str = 'str'
+blobmsg = None
+mac_str_flag = True
+
+dict_basic_type = {
+			'char *':'BLOBMSG_TYPE_STRING',
+			'const char *':'BLOBMSG_TYPE_STRING',
+			'bool':'BLOBMSG_TYPE_BOOL',
+			'bool*':'BLOBMSG_TYPE_BOOL',
+			'bool *':'BLOBMSG_TYPE_BOOL',
+			'char':'BLOBMSG_TYPE_STRING',
+			'unsigned char':'BLOBMSG_TYPE_STRING',
+			"short":"BLOBMSG_TYPE_INT32",
+			"unsigned short":"BLOBMSG_TYPE_INT32",
+			"enum":"BLOBMSG_TYPE_INT32",
+			"int":"BLOBMSG_TYPE_INT32",
+			"int *":"BLOBMSG_TYPE_INT32",
+			"unsigned short":"BLOBMSG_TYPE_INT32",
+			"long":"BLOBMSG_TYPE_INT64",
+			"unsigned long":"BLOBMSG_TYPE_INT64",
+			"unsigned long long":"BLOBMSG_TYPE_INT64",
+			"string_8":'BLOBMSG_TYPE_STRING',
+			"string_16":'BLOBMSG_TYPE_STRING',
+			"string_32":'BLOBMSG_TYPE_STRING',
+			"string_64":'BLOBMSG_TYPE_STRING',
+			"string_128":'BLOBMSG_TYPE_STRING',
+			"string_256":'BLOBMSG_TYPE_STRING',
+			"string_512":'BLOBMSG_TYPE_STRING',
+			"string_1024":'BLOBMSG_TYPE_STRING',
+			'uint8_t':'BLOBMSG_TYPE_INT32',
+			'int8_t':'BLOBMSG_TYPE_INT32',
+			'int32_t':'BLOBMSG_TYPE_INT32',
+			'uint16_t':'BLOBMSG_TYPE_INT32',
+			'uint32_t':'BLOBMSG_TYPE_INT32',
+			'uint64_t':'BLOBMSG_TYPE_INT64',
+			'int64_t':'BLOBMSG_TYPE_INT64',
+			'uint64_t *':'BLOBMSG_TYPE_INT64',
+			'int64_t *':'BLOBMSG_TYPE_INT64',
+			'int32_t *':'BLOBMSG_TYPE_INT32',
+			'uint32_t *':'BLOBMSG_TYPE_INT32',
+			'int8_t *':'BLOBMSG_TYPE_INT32',
+			'uint8_t *':'BLOBMSG_TYPE_INT32',
+			'int16_t *':'BLOBMSG_TYPE_INT32',
+			'uint16_t *':'BLOBMSG_TYPE_INT32',
+		}
+
+dict_all_type = {
+			'char *':'BLOBMSG_TYPE_STRING',
+			'const char *':'BLOBMSG_TYPE_STRING',
+			'bool':'BLOBMSG_TYPE_BOOL',
+			'bool*':'BLOBMSG_TYPE_BOOL',
+			'bool *':'BLOBMSG_TYPE_BOOL',
+			#'bool *':'BLOBMSG_TYPE_ARRAY',
+			'char':'BLOBMSG_TYPE_STRING',
+			'unsigned char':'BLOBMSG_TYPE_STRING',
+			"short":"BLOBMSG_TYPE_INT32",
+			"unsigned short":"BLOBMSG_TYPE_INT32",
+			"enum":"BLOBMSG_TYPE_INT32",
+			"int":"BLOBMSG_TYPE_INT32",
+			"int *":"BLOBMSG_TYPE_ARRAY",
+			"unsigned short":"BLOBMSG_TYPE_INT32",
+			"long":"BLOBMSG_TYPE_INT64",
+			"unsigned long":"BLOBMSG_TYPE_INT64",
+			"unsigned long long":"BLOBMSG_TYPE_INT64",
+			"string_8":'BLOBMSG_TYPE_STRING',
+			"string_16":'BLOBMSG_TYPE_STRING',
+			"string_32":'BLOBMSG_TYPE_STRING',
+			"string_64":'BLOBMSG_TYPE_STRING',
+			"string_128":'BLOBMSG_TYPE_STRING',
+			"string_256":'BLOBMSG_TYPE_STRING',
+			"string_512":'BLOBMSG_TYPE_STRING',
+			"string_1024":'BLOBMSG_TYPE_STRING',
+			'uint8_t':'BLOBMSG_TYPE_INT32',
+			'int8_t':'BLOBMSG_TYPE_INT32',
+			'int32_t':'BLOBMSG_TYPE_INT32',
+			'uint32_t':'BLOBMSG_TYPE_INT32',
+			'int32_t *':'BLOBMSG_TYPE_ARRAY',
+			'uint32_t *':'BLOBMSG_TYPE_ARRAY',
+			'uint16_t':'BLOBMSG_TYPE_INT32',
+			'uint64_t':'BLOBMSG_TYPE_INT64',
+			'int64_t':'BLOBMSG_TYPE_INT64',
+			#'uint64_t *':'BLOBMSG_TYPE_INT64',
+			#'int64_t *':'BLOBMSG_TYPE_INT64',
+			'uint64_t *':'BLOBMSG_TYPE_ARRAY',
+			'int64_t *':'BLOBMSG_TYPE_ARRAY',
+			'size_t':'BLOBMSG_TYPE_INT32',
+			"union":'BLOBMSG_TYPE_STRING',
+			'struct':'BLOBMSG_TYPE_TABLE'
+			}
+
+dict_param_out = {}
+dict_param_in = {}
+dict_function_param_in = {}
+unknown_array = {}
+
+phases = list()
+phases_head = list()
+
+list_functions = list()
+private_struct = dict()
+private_external_enum = dict()
+
+array = dict()
+array_size = dict()
+array_size_2d = dict()
+
+mem_cl= {'bool':'','int':'','str':'','mac':''}
+
+macaddr_list = ['mac_addr','bssid','macaddr','sta_mac','vap_mac']
+private_struct_exception_list = ['clsapi_net_firewall_rule', 'union clsapi_fw_rule_target_option', 'enum']
+struct_name_list = []
+
+outputfile = open(path_out_c, "w", encoding='utf-8')
+
+def init():
+	"""
+	Purpose: initialize all needed parameters
+	"""
+	with open(file_to_be_generated) as f:
+		content = f.read().split(r'brief')
+
+	for phase in content:
+		if 'int clsapi_' in phase:
+			phases.append(phase)
+		else :
+			phases_head.append(phase)
+
+	with open(fixed_header_file1) as f1:
+		content1 = f1.read()
+		phases_head.append(content1)
+	with open(fixed_header_file2) as f2:
+		content2 = f2.read()
+		phases_head.append(content2)
+# end def
+
+def get_members(line, c):
+	"""
+	Purpose: Get all the members from the lines
+	Param [in]: line every line will be parsed
+	Param [in]: c the lines generated by iterator
+	"""
+	struct_start_flag = True
+	struct_list = {}
+
+	while True:
+		try:
+			if "struct" in line or 'union' in line or 'enum' in line:
+				if '{' in line:
+					if struct_start_flag:
+						struct_start_flag = False
+						name =	line,
+						struct_list[name] = []
+					else:
+						struct_list[name].append(get_members(line, c))
+				else:
+					if 'typedef' in line:
+						break
+					struct_list[name].append(line)
+				line = next(c)
+			else:
+				if not struct_start_flag:
+					struct_list[name].append(line)
+					if re.search("}.*;", line):
+						struct_start_flag = True
+						return struct_list
+				line = next(c)
+
+		except StopIteration:
+			break
+
+	return struct_list
+# end def
+
+def parse_code(c_code):
+	"""
+	Purpose: parse the code into sevel parts of 'struct'/'union'/'enum'
+	Param [in]: c_code the codes will be parsed
+	"""
+	temp_list = []
+	struct_list = []
+	data_structures = []
+
+	c_code = re.split(r'\n', c_code)
+	for line in c_code:
+	    if line.startswith('};'):
+		    struct_list.append(line)
+		    temp_str = '\n'.join(struct_list)
+		    data_structures.append(temp_str)
+		    struct_list.clear()
+	    else:
+		    struct_list.append(line)
+
+	pattern = re.compile(r'}.+;')
+
+	if data_structures :
+		for struct_block in data_structures:
+			lines = str(struct_block).split('\n')
+			if pattern.match(lines[-1]):
+			    typedef_struct_name = str(lines[-1]).replace('}', '').replace(';', '')
+			    lines[0] = str(lines[0]).replace('{', '%s {' %typedef_struct_name)
+
+			c = iter(lines)
+			first_line = next(c)
+			temp_list.append(get_members(first_line, c))
+		return temp_list
+	else:
+		return None
+# end def
+
+def remove_struct_and_braces(data):
+	"""
+	Purpose: delete all the useless quatoes like 'struct'/'{}'
+	Param [in]:data the data which will be delete quatoes.
+	"""
+	result = {}
+
+	for key, value in data.items():
+		new_key = re.sub(r'struct |{|}|;|\(\)|\"', '', key[0]).strip()
+		result[new_key] = value
+
+	return result
+
+def clean_useless_quatoes(temp_dict = {}):
+	"""
+	Purpose: delete all the useless quatoes
+	Param [in]:temp_dict the dictionary which will be delete quatoes.
+	"""
+	for struct_name, struct_member_list in temp_dict.items():
+		for index, struct_member in enumerate(struct_member_list):
+			if isinstance(struct_member, dict):
+				struct_member_list[index] = clean_useless_quatoes(struct_member)
+			else:
+				struct_member_list[index] = struct_member.replace('}', '').replace(';', '').strip()
+			temp_dict[struct_name] = struct_member_list
+
+	return temp_dict
+# end def
+
+def get_dict(temp_dict = {}):
+	"""
+	Purpose:
+	Param [in]:temp_dict the dictionary which will be delete quatoes.
+	"""
+	dict_f = {}
+	global private_external_enum
+
+	for struct_name, struct_member_list in temp_dict.items():
+		flag_enum = False
+		flag_struct = False
+		if struct_member_list[-1]:
+		    #Use typedef define a structure
+			if "enum" in struct_name:
+			    flag_enum = True
+			else:
+			    flag_struct = True
+			temp_k = struct_member_list[-1]
+
+		else:
+		    #Not use typedef define a structure
+			if "enum" in struct_name:
+			    flag_enum = True
+			else:
+			    flag_struct = True
+			temp_k = struct_name
+		del struct_member_list[-1]
+
+		for index, member in enumerate(struct_member_list):
+			if isinstance(member, dict):
+				struct_member_list[index] = get_dict(member)
+			else:
+				struct_member_list[index] = member.replace('}', '').replace(';', '').strip().split(' ')
+			if flag_enum:
+			    private_external_enum[temp_k] = struct_member_list
+			elif flag_struct:
+			    dict_f[temp_k] = struct_member_list
+	return dict_f
+# end def
+
+def clean_code(input_string):
+	"""
+	Purpose: Clean all the macro definition or include
+	Param [in]: Input_string the code will be deleted from
+	Return : The whole string whose definitions were deleted
+	"""
+	cleaned_string = re.sub(r'#\s*define\s+.*|^\s*#ifdef\s+.*|^\s*#include\s+.*|^\s*#ifndef\s+.*', '', input_string, flags=re.MULTILINE)
+	cleaned_string = re.sub(r'\n\s*\n', '\n', cleaned_string)
+	lines = cleaned_string.split('\n')
+	filtered_lines = []
+
+	for line in lines:
+		if not re.match(r'\s*typedef\s+\w+\s+\w+\s*;', line) and '\\' not in line:
+			filtered_lines.append(line)
+
+	cleaned_string = '\n'.join(filtered_lines)
+	cleaned_string = cleaned_string.strip()
+	cleaned_string = cleaned_string.replace(' STRUCT_PACKED', '')
+	cleaned_string = cleaned_string.replace('unsigned', '')
+	cleaned_string = cleaned_string.replace('long long', 'uint64_t')
+	cleaned_string = cleaned_string.replace('long', 'uint64_t')
+	cleaned_string = cleaned_string.replace('sa_family_t', 'uint32_t')
+	cleaned_string = re.sub(r'\t+', '\t', cleaned_string)
+	cleaned_string = cleaned_string.replace('\t', ' ')
+	#print(f'{cleaned_string}')
+	lines = cleaned_string.splitlines()
+	cleaned_lines = lines[:-2]
+
+	return '\n'.join(cleaned_lines)
+# end def
+
+def get_private_struct(c_code):
+	"""
+	Purpose: Get all the private structures from the c code
+	Param [in]: c_code the code will be gotten private structures from
+	Return : None or dictionary
+	"""
+	struct_dict = {}
+	structs_list = parse_code(c_code)
+
+	if structs_list :
+		for struct in structs_list:
+			struct_dict.update(struct)
+
+		struct_dict = remove_struct_and_braces(struct_dict)
+		struct_dict = get_dict(clean_useless_quatoes(struct_dict))
+		return struct_dict
+	else:
+		return None
+# end def
+
+def detect_array_type(c_string):
+	"""
+	Purpose: Get all the array information from private structures
+	Param [in]: c_string the code will be gotten array information from
+	Return : None or string
+	"""
+	if '[' in c_string:
+		parts = c_string.split('[')
+		if len(parts) == 2:
+			array_name = parts[0].strip().split(' ')[1]
+			array_type = parts[0].strip().split(' ')[0]
+			if ']' in parts[1]:
+				array_size_t = parts[1].split(']')[0].strip()
+				array[array_name] = array_type
+				array_size[array_name] = array_size_t
+				return f"{array_name} is a one-dimensional array of size {array_size}"
+			else:
+				return f"{array_name} is not a valid array declaration"
+		elif len(parts) == 3:
+			array_name = parts[0].strip().split(' ')[1]
+			array_type = parts[0].strip().split(' ')[0]
+			dimensions_row = parts[1]
+			dimensions_col = parts[2]
+			if ']' in dimensions_row and ']' in dimensions_col:
+				array[array_name] = array_type
+				rows = dimensions_row.split(']')[0]
+				cols = dimensions_col.split(']')[0]
+				array_size_2d[array_name] = [rows,cols]
+				return f"{array_name} is a two-dimensional array with {rows} rows {cols} columns"
+			else:
+				return f"{array_name} is not a valid array declaration"
+	return "Not an array declaration"
+#end def
+
+def get_array_info(temp_dict = {}):
+	"""
+	Purpose: Get all the array information from private structures
+	Param [in]: temp_dict the dictionary will be gotten array information from
+	Return : None or string
+	"""
+	global array
+
+	for key, members_list in temp_dict.items():
+		for member in members_list:
+			struct_name = ''.join(member).replace('struct', '').split(' ')[0]
+			if isinstance(member, dict):
+				get_array_info(member)
+			elif struct_name in private_struct.keys():
+				get_array_info(member)
+			else:
+				member_string = ' '.join(member)
+				detect_array_type(member_string)
+# end def
+
+def parse_head():
+	"""
+	Purpose: parse all other the header files
+	"""
+	global private_struct
+	global array
+
+	heads = ' '.join(phases_head)
+	cleaned_string = re.sub(r'/\*.*?\*/', '', heads, flags=re.DOTALL)
+	cleaned_string = re.sub(r'//.*', '', cleaned_string)
+	heads = clean_code(cleaned_string)
+	private_struct = get_private_struct(heads)
+	if private_struct:
+	    get_array_info(private_struct)
+	#pprint(private_struct)
+# end def
+
+def fixed_content_implement(file, content):
+	"""
+	Purpose: write down all the fixed parameters
+	Param [in]:file the file which needs to be written in.
+	Param [in]:content the contents will be written in
+	"""
+	file.write(content)
+	file.write("""\
+#include <libubus.h>
+#include <syslog.h>
+#include <stdarg.h>
+#include <libubox/blobmsg.h>
+#include <libubox/blobmsg_json.h>
+#include "../clsapi_util.h"
+#include \"%s\"
+
+""" %(file_to_be_generated))
+	file.write("""\
+static char **result_str;
+static uint8_t result_bool[128];
+static uint32_t result_int[128];
+static struct blob_buf buf;
+static uint8_t hex_mac[6];
+
+#define MACFMT "%02x:%02x:%02x:%02x:%02x:%02x"
+
+extern int blobmsg_check_array(const struct blob_attr *attr, int type);
+
+#ifdef AUTOGEN_DEBUG
+static void ubus_log(const char *format, ...)
+{
+	va_list vl;
+
+	va_start(vl, format);
+	vsyslog(4, format, vl);//warn level
+	va_end(vl);
+}
+#endif
+""")
+#end def
+
+def write_in_fixed_functions(file):
+	"""
+	Purpose: write in fixed functions
+	Param [in] file the file which will be written
+	"""
+	file.write("""
+/**
+ * @brief Get array of string from blobmsg
+ * \param [in] msg The blobmsg which is inputed in
+ * @return result_str The pointer of string's array
+ */
+__attribute__((unused)) static char **blobmsg_get_string_array(struct blob_attr *msg)
+{
+	int rem = 0;
+	int i = 0;
+	int type = blobmsg_type(msg);
+	int length = blobmsg_check_array(msg, type);
+	struct blob_attr *attr;
+
+	result_str = (char **)calloc(length, sizeof(char *));
+
+	for (int i = 0; i < length; i++) {
+	    result_str[i] =(char *)malloc(128 * sizeof(char));
+        }
+
+	blobmsg_for_each_attr(attr, msg, rem) {
+	    cls_strncpy(result_str[i], blobmsg_get_string(attr), 128);
+	    i++;
+	}
+
+	return result_str;
+}
+
+/**
+ * @brief Get array of bool from blobmsg
+ * \param [in] msg The blobmsg which is inputed in
+ * @return result_bool The pointer of bool's array
+ */
+__attribute__((unused)) static void *blobmsg_get_bool_array(struct blob_attr *msg)
+{
+	int rem = 0;
+	int i = 0;
+	struct blob_attr *attr;
+
+	blobmsg_for_each_attr(attr, msg, rem) {
+		result_bool[i++] = blobmsg_get_u8(attr);
+	}
+
+	return result_bool;
+}
+
+/**
+ * @brief Get array of integer from blobmsg
+ * \param [in] msg The blobmsg which is inputed in
+ * @return result_str The pointer of integer's array
+ */
+__attribute__((unused)) static void *blobmsg_get_integer_array(struct blob_attr *msg)
+{
+	int rem = 0;
+	int i = 0;
+	struct blob_attr *attr;
+
+	blobmsg_for_each_attr(attr, msg, rem) {
+		result_int[i++] = blobmsg_get_u32(attr);
+	}
+
+	return result_int;
+}
+
+/**
+ * @brief Free the useless memory
+ * \param [in] length The length of Array
+ * @return None
+ */
+__attribute__((unused)) static int free_string_memory(int length)
+{
+    for (int i = 0; i < length; i++) {
+	    free(result_str[i]);
+    }
+    free(result_str);
+    return 0;
+}
+
+/**
+ * @brief Translate string of MAC to hex integers
+ * \param [in] str_mac[in] The string of MAC
+ * @return hex_mac The hex integers of MAC
+ */
+__attribute__((unused)) static uint8_t *handle_get_mac_string_to_int(char *str_mac)
+{
+    int ret = 0;
+    ret = mac_aton(str_mac, hex_mac);
+    return hex_mac;
+    if (ret == 0) {
+    } else {
+	    return NULL;
+    }
+}
+
+/**
+ * @brief Add array of string into blobmsg buf
+ * \param [in] array_name The name of an array
+ * \param [in] array The array which will be added in
+ * \param [in] array_len The length of an array
+ */
+__attribute__((unused)) static int blobmsg_add_string_array(char *array_name, char *array[], int array_len)
+{
+	void *p;
+
+	p = blobmsg_open_array(&buf, array_name);
+	for (int i = 0; i < array_len; i++) {
+		blobmsg_add_string(&buf, NULL, array[i]);
+	}
+	blobmsg_close_array(&buf, p);
+	return 0;
+}
+/**
+ * @brief Add array of bool into blobmsg buf
+ * \param [in] array_name The name of an array
+ * \param [in] array The array which will be added in
+ * \param [in] array_len The length of an array
+ */
+__attribute__((unused)) static int blobmsg_add_uint8_t_array(char *array_name, uint8_t array[], int array_len)
+{
+	void *p;
+
+	p = blobmsg_open_array(&buf, array_name);
+	for (int i = 0; i < array_len; i++) {
+		blobmsg_add_u32(&buf, NULL, array[i]);
+	}
+	blobmsg_close_array(&buf, p);
+	return 0;
+}
+/**
+ * @brief Add array of uint16 into blobmsg buf
+ * \param [in] array_name The name of an array
+ * \param [in] array The array which will be added in
+ * \param [in] array_len The length of an array
+ */
+__attribute__((unused)) static int blobmsg_add_uint16_t_array(char *array_name, uint16_t array[], int array_len)
+{
+	void *p;
+
+	p = blobmsg_open_array(&buf, array_name);
+	for (int i = 0; i < array_len; i++) {
+		blobmsg_add_u32(&buf, NULL, array[i]);
+	}
+	blobmsg_close_array(&buf, p);
+	return 0;
+}
+
+/**
+ * @brief Add array of uint32 into blobmsg buf
+ * \param [in] array_name The name of an array
+ * \param [in] array The array which will be added in
+ * \param [in] array_len The length of an array
+ */
+__attribute__((unused)) static int blobmsg_add_uint32_t_array(char *array_name, uint32_t array[], int array_len)
+{
+	void *p;
+
+	p = blobmsg_open_array(&buf, array_name);
+	for (int i = 0; i < array_len; i++) {
+		blobmsg_add_u32(&buf, NULL, array[i]);
+	}
+	blobmsg_close_array(&buf, p);
+	return 0;
+}
+
+/**
+ * @brief Add array of uint64 into blobmsg buf
+ * \param [in] array_name The name of an array
+ * \param [in] array The array which will be added in
+ * \param [in] array_len The length of an array
+ */
+__attribute__((unused)) static int blobmsg_add_uint64_t_array(char *array_name, uint64_t array[], int array_len)
+{
+	void *p;
+
+	p = blobmsg_open_array(&buf, array_name);
+	for (int i = 0; i < array_len; i++) {
+		blobmsg_add_u64(&buf, NULL, array[i]);
+	}
+	blobmsg_close_array(&buf, p);
+	return 0;
+}
+
+
+/**
+ * @brief Add array of uint8_t into blobmsg buf
+ * \param [in] array_name The name of an array
+ * \param [in] rows The row numbers of the array
+ * \param [in] cols The colum numbers of the array
+ * \param [in] array The array which will be added in
+ */
+__attribute__((unused)) static int blobmsg_add_uint8_t_array_2d(char *array_name, int rows, int cols, uint8_t array[rows][cols])
+{
+	void *p1 = NULL;
+	void *p2 = NULL;
+
+	p1 = blobmsg_open_array(&buf, array_name);
+	for (int i = 0; i < rows; i++) {
+		p2 = blobmsg_open_array(&buf, array_name);
+		for (int j = 0; j < cols; j++) {
+			blobmsg_add_u32(&buf, NULL, array[i][j]);
+		}
+		blobmsg_close_array(&buf, p2);
+	}
+	blobmsg_close_array(&buf, p1);
+	return 0;
+}
+/**
+ * @brief Add array of uint16_t into blobmsg buf
+ * \param [in] array_name The name of an array
+ * \param [in] rows The row numbers of the array
+ * \param [in] cols The colum numbers of the array
+ * \param [in] array The array which will be added in
+ */
+__attribute__((unused)) static int blobmsg_add_uint16_t_array_2d(char *array_name, int rows, int cols, uint16_t array[rows][cols])
+{
+	void *p1 = NULL;
+	void *p2 = NULL;
+
+	p1 = blobmsg_open_array(&buf, array_name);
+	for (int i = 0; i < rows; i++) {
+		p2 = blobmsg_open_array(&buf, array_name);
+		for (int j = 0; j < cols; j++) {
+			blobmsg_add_u16(&buf, NULL, array[i][j]);
+		}
+		blobmsg_close_array(&buf, p2);
+	}
+	blobmsg_close_array(&buf, p1);
+	return 0;
+}
+/**
+ * @brief Add array of uint32_t into blobmsg buf
+ * \param [in] array_name The name of an array
+ * \param [in] rows The row numbers of the array
+ * \param [in] cols The colum numbers of the array
+ * \param [in] array The array which will be added in
+ */
+__attribute__((unused)) static int blobmsg_add_uint32_t_array_2d(char *array_name, int rows, int cols, uint32_t array[rows][cols])
+{
+	void *p1 = NULL;
+	void *p2 = NULL;
+
+	p1 = blobmsg_open_array(&buf, array_name);
+	for (int i = 0; i < rows; i++) {
+		p2 = blobmsg_open_array(&buf, array_name);
+		for (int j = 0; j < cols; j++) {
+			blobmsg_add_u32(&buf, NULL, array[i][j]);
+		}
+		blobmsg_close_array(&buf, p2);
+	}
+	blobmsg_close_array(&buf, p1);
+	return 0;
+}
+/**
+ * @brief Add array of uint64_t into blobmsg buf
+ * \param [in] array_name The name of an array
+ * \param [in] rows The row numbers of the array
+ * \param [in] cols The colum numbers of the array
+ * \param [in] array The array which will be added in
+ */
+__attribute__((unused)) static int blobmsg_add_uint64_t_array_2d(char *array_name, int rows, int cols, uint64_t array[rows][cols])
+{
+	void *p1 = NULL;
+	void *p2 = NULL;
+
+	p1 = blobmsg_open_array(&buf, array_name);
+	for (int i = 0; i < rows; i++) {
+		p2 = blobmsg_open_array(&buf, array_name);
+		for (int j = 0; j < cols; j++) {
+			blobmsg_add_u64(&buf, NULL, array[i][j]);
+		}
+		blobmsg_close_array(&buf, p2);
+	}
+	blobmsg_close_array(&buf, p1);
+	return 0;
+}
+
+/**
+ * @brief Add array of string into blobmsg buf
+ * \param [in] array_name The name of an array
+ * \param [in] rows The row numbers of the array
+ * \param [in] cols The colum numbers of the array
+ * \param [in] array The array which will be added in
+ */
+__attribute__((unused)) static int blobmsg_add_string_array_2d(char *array_name, int rows, int cols, char *array[rows][cols])
+{
+	void *p1 = NULL;
+	void *p2 = NULL;
+
+	p1 = blobmsg_open_array(&buf, array_name);
+	for (int i = 0; i < rows; i++) {
+		p2 = blobmsg_open_array(&buf, array_name);
+		for (int j = 0; j < cols; j++) {
+			blobmsg_add_string(&buf, NULL, array[i][j]);
+		}
+		blobmsg_close_array(&buf, p2);
+	}
+	blobmsg_close_array(&buf, p1);
+	return 0;
+}
+
+""" )
+# end def
+
+def m2str(list_mem):
+	"""
+	Purpose: convert_list_mem_to_str return the member with handled of the list
+	Param [in]:list_mem the member needed to be handled of the list
+	Return string which is translated
+	"""
+	return str(list_mem).strip('\[\'\'\]').strip()
+# end def
+
+def turn_blobmsg_to_C(func_name, file, para_in, flag):
+	"""
+	Purpose: return blobmsg_get function by s_param
+	Param [in] func_name the name of functions
+	Param [in] file the file is written
+	Param [in] para_in the input parameters
+	Param [in] flag the flag to judge if the ',' will be added
+	"""
+	for i in mem_cl.keys():
+		mem_cl[i] = '0'
+	param_in= m2str(str(para_in))
+	param_in_t = str(dict_param_in[param_in]).replace('struct ', '').replace('enum ', '').strip()
+	if param_in_t in private_struct.keys():
+		memlist = private_struct[param_in_t]
+		for m in memlist:
+			member_type = m[0]
+			member_data = m[1]
+			if '[' in  member_data:
+				if 'bool' in member_data:
+					file.write('blobmsg_get_bool_array(tb[%s])' %(func_name.upper()+'_'+str(para_in).upper()))
+				elif 'int16' in member_data or 'int8_t' in member_data or 'int32' in member_data or 'int64' in member_data or 'uint16_t' in member_data or 'uint8_t' in member_data or 'uint32_t' in member_data or 'uint64_t' in member_data:
+					if member_data in macaddr_list:
+						file.write('handle_get_mac_string_to_int(blobmsg_get_string(tb[%s]))' %(func_name.upper()+'_'+str(para_in).upper()))
+					else :
+						file.write('blobmsg_get_integer_array(tb[%s])' %(func_name.upper()+'_'+str(para_in).upper()))
+				elif 'char *' in member_data:
+					file.write('blobmsg_get_string_array(tb[%s])' %(func_name.upper()+'_'+str(para_in).upper()))
+					global blobmsg
+					blobmsg = f"tb[{func_name.upper()+'_'+str(para_in).upper()}]"
+					mem_cl[mem_cl_str] = '1'
+			elif 'bool' in member_data :
+					file.write('blobmsg_get_u8(tb[%s])' %(func_name.upper()+'_'+str(para_in).upper()))
+			elif 'uint16_t' in member_data or 'int16' in member_data :
+					file.write('blobmsg_get_u32(tb[%s])' %(func_name.upper()+'_'+str(para_in).upper()))
+			elif 'uint8_t' in member_data or'uint32_t' in member_data or 'int8_t' in member_data or'int32' in member_data :
+					file.write('blobmsg_get_u32(tb[%s])' %(func_name.upper()+'_'+str(para_in).upper()))
+			elif 'uint64_t' in member_data or 'int64' in member_data:
+					file.write('blobmsg_get_u64(tb[%s])' %(func_name.upper()+'_'+str(para_in).upper()))
+			elif 'char' in member_data:
+					file.write('blobmsg_get_string(tb[%s])' %(func_name.upper()+'_'+str(para_in).upper()))
+			else:
+				turn_blobmsg_to_C(func_name ,file, m2str(str(member_data)), flag)
+	else:
+		para_in_blob_type = dict_all_type[dict_param_in[para_in]]
+		if 'BOOL' in para_in_blob_type :
+				file.write('blobmsg_get_bool(tb[%s])' %(func_name.upper()+'_'+str(para_in).upper()))
+		elif 'INT16' in para_in_blob_type or 'INT8' in para_in_blob_type :
+				file.write('blobmsg_get_u32(tb[%s])' %(func_name.upper()+'_'+str(para_in).upper()))
+		elif 'INT32' in para_in_blob_type :
+				file.write('blobmsg_get_u32(tb[%s])' %(func_name.upper()+'_'+str(para_in).upper()))
+		elif 'INT64' in para_in_blob_type :
+				file.write('blobmsg_get_u64(tb[%s])' %(func_name.upper()+'_'+str(para_in).upper()))
+		elif 'STRING' in para_in_blob_type :
+				file.write('blobmsg_get_string(tb[%s])' %(func_name.upper()+'_'+str(para_in).upper()))
+		elif 'ARRAY' in para_in_blob_type :
+				if 'bool' in param_in_t .split(' ')[0]:
+					file.write('blobmsg_get_bool_array(tb[%s])' %(func_name.upper()+'_'+str(para_in).upper()))
+				elif 'int' in param_in_t.split(' ')[0]:
+					if para_in in macaddr_list:
+						file.write('handle_get_mac_string_to_int(blobmsg_get_string(tb[%s]))' %(func_name.upper()+'_'+str(para_in).upper()))
+					else:
+						file.write('blobmsg_get_integer_array(tb[%s])' %(func_name.upper()+'_'+str(para_in).upper()))
+				elif 'char *' in param_in_t.split(' ')[0]:
+					file.write('blobmsg_get_string_array(tb[%s])' %(func_name.upper()+'_'+str(para_in).upper()))
+					temp_name = func_name.upper()+'_'+str(para_in).upper()
+					blobmsg = f'tb[{temp_name}]'
+					mem_cl[mem_cl_str] = '1'
+	if flag:
+		file.write(', ')
+
+# end def
+
+def turn_C_to_blobmsg(file, m = [], s_param = '', *array_flag):
+	"""
+	Purpose: turn c data to blobmsg data
+	Param [in]:s_param the params_out or params_in
+	Param [in]:m the members list
+	Param [in]:array_flag if is array
+	"""
+	param_data = str(m[1])
+	param_type = str(m[0])
+	global mac_str_flag
+
+	if not array_flag:
+		if '[' in  param_data:
+			m[1] = str(param_data).split('[')[0]
+			array_name = str(param_data).split('[')[0]
+			if array_name in array_size.keys():
+				if 'char' in param_type:
+				    file.write('\tblobmsg_add_string_array(\"%s\", %s.%s, ARRAY_SIZE(%s));\n' %((array_name), s_param, (array_name), (array_name)))
+				elif 'uint8_t' in param_type or 'int8_t' in param_type:
+					if array_name in macaddr_list:
+						if mac_str_flag:
+							mac_str_flag = False
+							file.write('\tchar mac_str[18];\n\n')
+						file.write('\tsnprintf(mac_str, sizeof(mac_str), MACFMT, MACARG(%s.%s));\n' %(s_param, array_name))
+						file.write('\tblobmsg_add_string(&buf, \"%s\", mac_str);\n' %((array_name)))
+					else :
+						file.write('\tblobmsg_add_uint8_t_array(\"%s\", (uint8_t *)%s.%s, (int)ARRAY_SIZE(%s.%s));\n' %(array_name, s_param, array_name, s_param, array_name))
+				elif 'uint16_t' in param_type or 'int16' in param_type:
+					file.write('\tblobmsg_add_uint16_t_array(\"%s\", (uint16_t *)%s.%s, (int)ARRAY_SIZE(%s.%s));\n' %(array_name, s_param, array_name, s_param, array_name))
+				elif 'uint32_t' in param_type or 'int32' in param_type:
+					file.write('\tblobmsg_add_uint32_t_array(\"%s\", (uint32_t *)%s.%s, (int)ARRAY_SIZE(%s.%s));\n' %((array_name), s_param, (array_name), s_param, (array_name)))
+				elif 'uint64_t' in param_type or 'int64' in param_type:
+					file.write('\tblobmsg_add_uint64_t_array(\"%s\", (uint64_t *)%s.%s, ARRAY_SIZE(%s.%s));\n' %((array_name), s_param, (array_name), s_param, (array_name)))
+
+			elif array_name in array_size_2d.keys():
+				rows = array_size_2d[array_name][0]
+				cols = array_size_2d[array_name][1]
+				if 'char' in param_type:
+					file.write('\tblobmsg_add_string_array_2d(\"%s\", %s, %s, %s.%s);\n' %((array_name),rows, cols, s_param, (array_name)))
+				elif 'uint8_t' in param_type or 'int8_t' in param_type:
+					file.write('\tblobmsg_add_uint8_t_array_2d(\"%s\", %s, %s, %s.%s);\n' %((array_name),rows, cols, s_param, (array_name)))
+				elif 'uint16_t' in param_type or 'int16' in param_type:
+					file.write('\tblobmsg_add_uint16_t_array_2d(\"%s\", %s, %s, %s.%s);\n' %((array_name),rows, cols, s_param, (array_name)))
+				elif 'uint32_t' in param_type or 'int32' in param_type:
+					file.write('\tblobmsg_add_uint32_t_array_2d(\"%s\", %s, %s, %s.%s);\n' %((array_name),rows, cols, s_param, (array_name)))
+				elif 'uint64_t' in param_type or 'int64' in param_type:
+					file.write('\tblobmsg_add_uint64_t_array_2d(\"%s\", %s, %s, %s.%s);\n' %((array_name),rows, cols, s_param, (array_name)))
+
+		elif 'bool' in param_type :
+			 file.write('\tblobmsg_add_u8(&buf, \"%s\", %s.%s);\n' %((param_data), s_param, str(param_data)))
+		elif 'uint16_t' in param_type or 'int16_t' in param_type :
+			 file.write('\tblobmsg_add_u32(&buf, \"%s\", %s.%s);\n' %(str(param_data), s_param, str(param_data)))
+		elif 'uint64_t' in param_type or 'int64_t' in param_type :
+			 file.write('\tblobmsg_add_u64(&buf, \"%s\", %s.%s);\n' %(str(param_data), s_param, str(param_data)))
+		elif 'uint8_t' in param_type or 'int32_t' in param_type or 'uint32_t' in param_type or 'size_t' in param_type or 'int' in param_type or 'int8_t' in param_type:
+			 file.write('\tblobmsg_add_u32(&buf, \"%s\", %s.%s);\n' %(str(param_data), s_param, str(param_data)))
+		elif 'char' in param_type:
+			 file.write('\tblobmsg_add_string(&buf, \"%s\", %s.%s);\n' %(str(param_data), s_param, str(param_data)))
+		elif 'string_8' in param_type or 'string_16' in param_type or 'string_32' in param_type or 'string_64' in param_type:
+			 file.write('\tblobmsg_add_string(&buf, \"%s\", %s.%s);\n' %(str(param_data), s_param, str(param_data)))
+		elif 'enum' in param_type:
+			 file.write('\tblobmsg_add_u32(&buf, \"%s\", %s.%s);\n' %(str(m[2]), s_param, str(m[2])))
+		elif 'struct' in param_type:
+			 parse_table_between_buf(str(param_data).strip('[\'\']') + ' ' + ''.join(str(m[2])),file, 'out')
+		else:
+			 parse_table_between_buf(str(param_data).strip('[\'\']') + ' ' + ''.join(str(m[2])),file, 'out')
+	else :
+		if '[' in param_data:
+			m[1] = str(param_data).split('[')[0]
+			array_name = str(param_data).split('[')[0]
+			if 'char' in param_type:
+				file.write('\t\tblobmsg_add_string_array(\"%s\", %s[i].%s, ARRAY_SIZE(%s));\n' %(str(array_name), s_param, str(array_name), str(array_name)))
+			elif 'uint8_t' in param_type or 'int8_t' in param_type:
+				if array_name in macaddr_list:
+					if mac_str_flag:
+						mac_str_flag = False
+						file.write('\tchar mac_str[18];\n\n')
+					file.write('\tsnprintf(mac_str, sizeof(mac_str), MACFMT, MACARG(%s.%s));' %(s_param, array_name))
+					file.write('\tblobmsg_add_string(&buf, \"%s\", mac_str);\n' %(array_name))
+				else :
+					file.write('\t\tblobmsg_add_uint8_t_array(\"%s\", (uint8_t *)%s[i].%s, (int)ARRAY_SIZE(%s.%s));\n' %(str(array_name), s_param, str(array_name), s_param, str(array_name)))
+
+			elif 'uint16_t' in param_type or 'int16_t' in param_type:
+				file.write('\t\tblobmsg_add_uint16_t_array(\"%s\", (uint16_t *)%s[i].%s, (int)ARRAY_SIZE(%s.%s));\n' %(str(array_name), s_param, str(array_name), s_param, str(array_name)))
+			elif 'uint32_t' in param_type or 'int32_t' in param_type:
+				file.write('\t\tblobmsg_add_uint32_t_array(\"%s\", (uint32_t *)%s[i].%s, (int)ARRAY_SIZE(%s.%s));\n' %(str(array_name), s_param, str(array_name), s_param, str(array_name)))
+			elif 'uint64_t' in param_type or 'int64_t' in param_type:
+				file.write('\t\tblobmsg_add_uint64_t_array(\"%s\", (uint64_t *)%s[i].%s, (int)ARRAY_SIZE(%s.%s));\n' %(str(array_name), s_param, str(array_name), s_param, str(array_name)))
+
+		elif 'bool' in param_type :
+			 file.write('\t\tblobmsg_add_u8(&buf, \"%s\", %s[i].%s);\n' %(str(param_data), s_param, str(param_data)))
+		elif 'uint16_t' in param_type or 'int16_t' in param_type :
+			 file.write('\t\tblobmsg_add_u32(&buf, \"%s\", %s[i].%s);\n' %(str(param_data), s_param, str(param_data)))
+		elif 'uint64_t' in param_type or 'int64_t' in param_type :
+			 file.write('\t\tblobmsg_add_u64(&buf, \"%s\", %s[i].%s);\n' %(str(param_data), s_param, str(param_data)))
+		elif 'uint8_t' in param_type or 'int32_t' in param_type or 'uint32_t' in param_type or 'size_t' in param_type or 'int' in param_type or 'int8_t' in param_type:
+			 file.write('\t\tblobmsg_add_u32(&buf, \"%s\", %s[i].%s);\n' %(str(param_data), s_param, str(param_data)))
+		elif 'char' in param_type:
+			 file.write('\t\tblobmsg_add_string(&buf, \"%s\", %s[i].%s);\n' %(str(param_data), s_param, str(param_data)))
+		elif 'string_8' in param_type or 'string_16' in param_type or 'string_32' in param_type or 'string_64' in param_type:
+			 file.write('\t\tblobmsg_add_string(&buf, \"%s\", %s[i].%s);\n' %(str(param_data), s_param, str(param_data)))
+		elif 'enum' in param_type:
+			 file.write('\t\tblobmsg_add_u32(&buf, \"%s\", %s[i].%s);\n' %(str(m[2]), s_param, str(m[2])))
+		elif 'struct' in param_type:
+			 parse_table_between_buf(str(param_data).strip('[\'\']') + ' ' + ''.join(str(m[2])),file, 'out')
+		else:
+			 parse_table_between_buf(str(param_data).strip('[\'\']') + ' ' + ''.join(str(m[2])),file, 'out')
+
+# end def
+
+def add_to_blobmsg(file, m, s_param, s_param_t):
+	"""
+	Purpose: add the data to the blobmsg buf
+	Param [in]:s_param the params_out or params_in
+	Param [in]:s_param_t the type of params_out or params_in
+	"""
+	member_type = str(m[1])
+	member_data = str(m[0])
+
+	if member_type in array.keys() :
+		if 'bool' in array[member_type]:
+			file.write('\tmemcpy(%s.%s, blobmsg_get_bool_array(tb_struct_%s[STRUCT_%s_%s]), sizeof(%s.%s));\n' %(s_param, member_type, s_param.split('.')[-1], s_param_t.upper(),member_type.upper(), s_param, member_type))
+
+		elif  'uint16_t' in array[member_type] or 'uint32_t' in array[member_type]or 'uint64_t' in array[member_type] or 'uint8_t' in array[member_type] or 'int16_t' in array[member_type] or 'int32_t' in array[member_type]or 'int64_t' in array[member_type] or 'int8_t' in array[member_type]:
+			if member_type in macaddr_list:
+				file.write('\tmemcpy(%s.%s, handle_get_mac_string_to_int(blobmsg_get_string(tb_struct_%s[STRUCT_%s_%s])), sizeof(%s.%s));\n' %(s_param, member_type, s_param.split('.')[-1], s_param_t.upper(),member_type.upper(), s_param, member_type))
+			else:
+				file.write('\tmemcpy(%s.%s, blobmsg_get_integer_array(tb_struct_%s[STRUCT_%s_%s]), sizeof(%s.%s));\n' %(s_param, member_type, s_param.split('.')[-1], s_param_t.upper(),member_type.upper(), s_param, member_type))
+
+		elif 'char *' in array[member_type]:
+			global blobmsg
+			blobmsg = f"tb_struct_{s_param.split('.')[-1]}[STRUCT_{s_param_t.upper()}_{member_type.upper()}]"
+			#file.write('\tmemcpy(%s.%s, blobmsg_get_string_array(tb_struct_%s[STRUCT_%s_%s]), 128 * blobmsg_check_array({blobmsg},blobmsg_type({blobmsg})) ;\n' %(s_param, member_type, s_param.split('.')[-1], s_param_t.upper(),member_type.upper()))
+			file.write('\tmemcpy(%s.%s, blobmsg_get_string_array(tb_struct_%s[STRUCT_%s_%s]), sizeof(%s.%s)) ;\n' %(s_param, member_type, s_param.split('.')[-1], s_param_t.upper(), member_type.upper(), s_param, member_type))
+			file.write('\tif (result_str) {\n')
+			file.write(f'\t\tfree_string_memory(blobmsg_check_array({blobmsg},blobmsg_type({blobmsg})));\n')
+			file.write('\t\tresult_str = NULL;\n')
+			file.write('\t\t}\n')
+
+	elif 'bool' in member_data :
+		file.write('\t%s.%s = blobmsg_get_u8(tb_struct_%s[STRUCT_%s_%s]);\n' %(s_param, member_type, s_param.split('.')[-1], s_param_t.upper(),member_type.upper()))
+
+	elif 'uint16_t' in member_data or 'int16_t' in member_data :
+		file.write('\t%s.%s = blobmsg_get_u32(tb_struct_%s[STRUCT_%s_%s]);\n' %( s_param, member_type, s_param.split('.')[-1], s_param_t.upper(), member_type.upper()))
+
+	elif 'uint8_t' in member_data or 'int32_t' in member_data or 'uint32_t' in member_data or 'int8_t' in member_data or 'int' in member_data or 'size_t' in member_data:
+		file.write('\t%s.%s = blobmsg_get_u32(tb_struct_%s[STRUCT_%s_%s]);\n' %(s_param, member_type, s_param.split('.')[-1], s_param_t.upper(),member_type.upper()))
+
+	elif 'uint64_t' in member_data or 'int64_t' in member_data :
+		file.write('\t%s.%s = blobmsg_get_u64(tb_struct_%s[STRUCT_%s_%s]);\n' %(s_param, member_type, s_param.split('.')[-1], s_param_t.upper(),member_type.upper()))
+
+	elif 'char' in member_data:
+		file.write('\tstrcpy(%s.%s, blobmsg_get_string(tb_struct_%s[STRUCT_%s_%s]));\n' %(s_param, member_type, s_param.split('.')[-1], s_param_t.upper(),member_type.upper()))
+
+	elif 'string_8' in member_data or 'string_16' in member_data or 'string_32' in member_data or 'string_64' in member_data:
+		file.write('\tstrcpy(%s.%s, blobmsg_get_string(tb_struct_%s[STRUCT_%s_%s]));\n' %(s_param, member_type, s_param.split('.')[-1], s_param_t.upper(),member_type.upper()))
+
+
+	elif 'enum' in member_data :
+		file.write('\t%s.%s = blobmsg_get_u32(tb_struct_%s[STRUCT_%s_%s]);\n' %( s_param, str(m[2]), s_param.split('.')[-1], s_param_t.upper(),member_type.upper()))
+
+	elif 'struct' in member_data :
+		parse_table_between_buf(member_type.strip('[\'\']') + ' ' + ''.join(str(m[2])),file, 'in')
+	else:
+		parse_table_between_buf(member_type.strip('[\'\']') + ' ' + ''.join(str(m[2])),file, 'in')
+
+def parse_table_between_buf(s_param, file, direction, *array_flag):
+	"""
+	Purpose: convert C data to blobmsg data
+	Param [in]:s_param the params_out or params_in
+	Param [in]:file the file will be writed into
+	Param [in]:direction indicate the function is from C to blobmsg or from blobmsg to c
+	Param [in]:p_in the input parameter
+	"""
+	global mac_str_flag
+	mac_str_flag = True
+
+	if direction == 'out':
+		if not array_flag:
+			s_param = str(s_param).strip('[\'\']')
+			if s_param in dict_param_out.keys():
+				s_param_t = str(dict_param_out[s_param]).replace('*', '').strip().replace('struct ','')
+			elif s_param.split(' ')[0] in private_struct.keys():
+				s_param_t = s_param.split(' ')[0]
+				s_param = s_param.split(' ')[1]
+			else:
+				s_param_t = s_param
+
+			file.write('\tvoid *ptr_%s = blobmsg_open_table(&buf, "%s");\n\n' %(s_param, s_param))
+			memlists = private_struct[s_param_t]
+			#print('s_param:%s, type:%s, memlists:%s' %(s_param,s_param_t, memlists))
+			struct_name_list.append(s_param)
+			for memlist in memlists:
+				if isinstance(memlist, dict):
+					key = next(iter(memlist))
+					struct_name_list.append(key)
+					file.write('\tvoid *ptr_%s = blobmsg_open_table(&buf, "%s");\n\n' %(key, key))
+					for member2 in memlist[key]:
+						turn_C_to_blobmsg(file, member2, '.'.join(struct_name_list))
+					file.write('\tblobmsg_close_table(&buf, ptr_%s);\n' %key)
+					file.write('\n')
+					struct_name_list.pop()
+				else:
+					turn_C_to_blobmsg(file, memlist, '.'.join(struct_name_list))
+			file.write('\tblobmsg_close_table(&buf, ptr_%s);\n' %s_param)
+			file.write('\n')
+			struct_name_list.pop()
+		else:
+			s_param = str(s_param).strip('[\'\']')
+			if s_param in dict_param_out.keys():
+				s_param_t = str(dict_param_out[s_param]).replace('*', '').strip().replace('struct ','')
+			elif s_param.split(' ')[0] in private_struct.keys():
+				s_param_t = s_param.split(' ')[0]
+				s_param = s_param.split(' ')[1]
+			else:
+				s_param_t = s_param
+
+			file.write('\t\tvoid *ptr_%s = blobmsg_open_table(&buf, str);\n\n' %(s_param))
+			memlists = private_struct[s_param_t]
+			#print('s_param:%s, type:%s, memlists:%s' %(s_param,s_param_t, memlists))
+			struct_name_list.append(s_param)
+			for memlist in memlists:
+				if isinstance(memlist, dict):
+					key = next(iter(memlist))
+					struct_name_list.append(key)
+					file.write('\t\tvoid *ptr_%s = blobmsg_open_table(&buf, "%s");\n\n' %(key, key))
+					for member2 in memlist[key]:
+						turn_C_to_blobmsg(file, member2, '.'.join(struct_name_list), True)
+					file.write('\t\tblobmsg_close_table(&buf, ptr_%s);\n' %key)
+					file.write('\n')
+					struct_name_list.pop()
+				else:
+					turn_C_to_blobmsg(file, memlist, '.'.join(struct_name_list), True)
+			file.write('\t\tblobmsg_close_table(&buf, ptr_%s);\n' %s_param)
+			file.write('\n')
+			struct_name_list.pop()
+
+	elif direction == 'in':
+		s_param = str(s_param).strip()
+		#p_in = str(p_in).strip('(\'\')').strip('\'\,')
+		if s_param in dict_param_in.keys():
+			s_param_t = str(dict_param_in[s_param]).replace('*', '').strip().replace('struct ','')
+			memlists = private_struct[s_param_t]
+		elif s_param.split(' ')[0] in private_struct.keys():
+			s_param_t = s_param.split(' ')[0]
+			s_param = s_param.split(' ')[1]
+			memlists = private_struct[s_param_t]
+		else :
+			s_param_t = s_param
+			memlists = s_param
+
+		#print('s_param:%s, pin:%s, type:%s, memlists:%s' %(s_param, s_param, s_param_t, memlists))
+		struct_name_list.append(s_param)
+		for memlist in memlists:
+			if isinstance(memlist, dict):
+				key = next(iter(memlist))
+				struct_name_list.append(key)
+				#print(f'key:{key}\tjoin:{struct_name_list},s_param_t:{s_param_t}')
+				for member2 in memlist[key]:
+					add_to_blobmsg(file, member2, '.'.join(struct_name_list), key)
+				struct_name_list.pop()
+				file.write('\n')
+			else:
+				add_to_blobmsg(file, memlist, '.'.join(struct_name_list), s_param_t)
+		struct_name_list.pop()
+		file.write('\n')
+
+# end def
+def ubus_private_enum_implement(file, private_struct):
+	"""
+	Purpose: write a fixed enum structure
+	Param [in] file the file which will be written
+	Param [in] private_struct the private structures
+	"""
+	internal_struct = None
+
+	for struct_name, struct_members in private_struct.items():
+		if struct_name in private_struct_exception_list or not struct_name:
+			pass
+		else:
+			file.write("enum {\n")
+			for param in struct_members:
+				if len(param) == 2:
+					file.write("\tSTRUCT_%s_%s,\n" %(struct_name.replace('struct','').upper(), str(param[1]).replace('struct','').split('[')[0].strip('[\'\']').upper()))
+				elif isinstance(param, dict):
+					internal_struct = True
+					key = list(param.keys())[0]
+					file.write("\tSTRUCT_%s_%s,\n" %(struct_name.replace('struct','').upper(), str(key).replace('struct','').split('[')[0].strip('[\'\']').upper()))
+					pass
+				elif len(param) == 3:
+					file.write("\tSTRUCT_%s_%s,\n" %(struct_name.replace('struct','').upper(), str(param[1]).replace('struct','').split('[')[0].strip('[\'\']').upper()))
+				else:
+					pass
+			file.write("\t__STRUCT_%s_MAX,\n" %struct_name.upper())
+			file.write("};\n\n")
+			if internal_struct :
+				for param in struct_members:
+					if isinstance(param, dict):
+						ubus_private_enum_implement(file, param)
+
+# end def
+
+def ubus_enum_implement(file, func_name, param_in):
+	"""
+	Purpose: write a fixed enum structure
+	Param [in] file the file which is written
+	Param [in] func_name the name of function
+	Param [in] param_in the input parameters
+	"""
+	file.write("enum {\n")
+	for param in param_in:
+		file.write("\t%s,\n" %(str(func_name).upper()+'_'+str(param).strip().upper()))
+	file.write("\t__%s_MAX,\n" %func_name.upper())
+	file.write("};\n\n")
+#end def
+
+def ubus_private_struct_implement(file, private_struct):
+	"""
+	Purpose: write a fixed structure
+	Param [in] file the file which will be written
+	Param [in] private_struct the private structures
+	"""
+	internal_struct = None
+
+	for struct_name, struct_members in private_struct.items():
+		if struct_name in private_struct_exception_list or not struct_name:
+			pass
+		else:
+			file.write("static const struct blobmsg_policy struct_%s_policy[__STRUCT_%s_MAX] = {\n" %(struct_name.strip(), struct_name.strip().upper()))
+			for param in struct_members:
+				#print(f'param:{param}')
+				if len(param) == 2:
+					member_name = str(param[1]).split('[')[0].strip('[\'\']')
+					member_type = str(param[0])
+					if member_name in array.keys():
+						if member_name in macaddr_list:
+							file.write("\t[STRUCT_%s_%s] = { .name = \"%s\", .type = BLOBMSG_TYPE_STRING},\n" %(struct_name.strip().upper(), member_name.upper(), member_name))
+						else:
+							file.write("\t[STRUCT_%s_%s] = { .name = \"%s\", .type = BLOBMSG_TYPE_ARRAY},\n" %(struct_name.strip().upper(), member_name.upper(), member_name))
+
+					else:
+						file.write("\t[STRUCT_%s_%s] = { .name = \"%s\", .type = %s },\n" %(struct_name.strip().upper(), member_name.upper(), member_name, dict_all_type[member_type]))
+				elif isinstance(param, dict):
+					internal_struct = True
+					key = list(param.keys())[0]
+					file.write("\t[STRUCT_%s_%s] = { .name = \"%s\", .type = BLOBMSG_TYPE_TABLE },\n" %(struct_name.strip().upper(), key.upper(), key))
+					pass
+				elif len(param) == 3:
+					if 'enum' in param:
+						member_name = str(param[2]).split('[')[0].strip('[\'\']')
+						enum_type = str(param[1])
+						member_type = str(param[0])
+						file.write("\t[STRUCT_%s_%s] = { .name = \"%s\", .type = %s },\n" %(struct_name.strip().upper(), enum_type.upper(), member_name, dict_all_type[member_type]))
+					else:
+						member_name = str(param[1]).split('[')[0].strip('[\'\']')
+						member_type = str(param[0])
+						file.write("\t[STRUCT_%s_%s] = { .name = \"%s\", .type = %s },\n" %(struct_name.strip().upper(), member_name.upper(), member_name, dict_all_type[member_type]))
+				else:
+					pass
+					#file.write("\tSTRUCT_%s_%s,\n" %(struct_name.upper(), str(''.join(param)).replace(',','').strip('[\'\']').upper()))
+			file.write("};\n\n")
+			if internal_struct :
+				for param in struct_members:
+					if isinstance(param, dict):
+						ubus_private_struct_implement(file, param)
+
+# end def
+
+def ubus_struct_implement(file, func_name, param_in):
+	"""
+	Purpose: generate a enum class parameter
+	Param [in] file the file which will be written
+	Param [in] func_name the name of function
+	Param [in] param_in the input parameters
+	"""
+	file.write("static const struct blobmsg_policy %s_policy[__%s_MAX] = {\n" %(func_name, func_name.upper()))
+
+	for param in param_in:
+		param = str(param).strip()
+		param_type = str(dict_all_type[dict_param_in[param]])
+		if param in macaddr_list:
+			file.write("\t[%s_%s] = { .name = \"%s\", .type = BLOBMSG_TYPE_STRING },\n" %(str(func_name).upper(), param.upper(), param))
+		else:
+			file.write("\t[%s_%s] = { .name = \"%s\", .type = %s },\n" %(str(func_name).upper(), param.upper(), param, param_type ))
+	file.write("};\n\n")
+# end def
+
+def set_up_tb_struct(file, para_in, parameter_type):
+	"""
+	Purpose: generate table buffers
+	Param [in] file the written file
+	Param [in] param_in the input parameters
+	Param [in] parameter_type the type of input parameters
+	"""
+	#print('param in :%s, type:%s' %(para_in, parameter_type))
+	if parameter_type in private_struct.keys():
+		file.write('\tstruct blob_attr *tb_struct_%s[__STRUCT_%s_MAX];\n' %(para_in, parameter_type.upper()))
+		for struct_members in private_struct[parameter_type]:
+			#print('struct_members:%s' %struct_members)
+			if len(struct_members) == 3:
+				if struct_members[1] in private_struct.keys():
+					set_up_tb_struct(file, struct_members[2], struct_members[1])
+			elif isinstance(struct_members, dict):
+				set_up_tb_struct(file, struct_members,None)
+	elif isinstance(para_in, dict):
+		key = next(iter(para_in))
+		values = para_in[key]
+#		print('key:%s,values:%s' %(key, values))
+		file.write('\tstruct blob_attr *tb_struct_%s[__STRUCT_%s_MAX];\n' %(key, key.upper()))
+		for members in values :
+			if len(members) == 3:
+				if members[1] in private_struct.keys():
+					set_up_tb_struct(file, members[2], members[1])
+			elif isinstance(members, dict):
+				set_up_tb_struct(file, members, None)
+
+#end def
+
+def blobmsg_parse_check(file, para_in, param_type):
+	"""
+	Purpose: check the results of blobmsg parsed
+	Param [in] file the written file
+	Param [in] param_in the input parameters
+	Param [in] parameter_type the type of input parameters
+	"""
+	file.write('\tif (')
+	i = 0
+
+	for members in private_struct[param_type]:
+		file.write('!tb_struct_%s[STRUCT_%s_%s]' %(para_in.strip(),param_type.upper(), members[1].upper()))
+		i += 1
+		if i != len(private_struct[param_type.strip()]):
+			file.write(' || ')
+		else:
+			file.write(')')
+	file.write('\n\t\treturn UBUS_STATUS_INVALID_ARGUMENT;\n\n')
+
+def blob_parse_param(file, para_in, para_type, upper_para, upper_para_type):
+		"""
+		Purpose: parse the input parameters
+		Param [in] file the written file
+		Param [in] param_in the input parameters
+		Param [in] para_type the type of input parameters
+		Param [in] upper_para the upper level input parameters
+		Param [in] upper_para_type the type of upper level input parameters
+		"""
+		flag_struct = None
+
+		if para_type:
+			para_type = re.sub(r"\(|\)|\'|,",'', str(para_type))
+			#print(f'para:{para_in},type:{para_type},upper_name:{upper_para}, upper_name_type:{upper_para_type},')
+		else:
+			para_type = None
+			#print(f'para:{para_in},upper_name:{upper_para_type}')
+
+		if not isinstance(para_in, dict) and para_in in dict_param_in.keys():
+			para_type = str(dict_param_in[para_in]).replace('*','').replace('struct ','').replace('enum ','').strip()
+			if para_type in private_struct.keys():
+				file.write('\tblobmsg_parse(struct_%s_policy, __STRUCT_%s_MAX, tb_struct_%s, blobmsg_data(tb[%s_%s]), blobmsg_len(tb[%s_%s]));\n' %(para_type, para_type.upper(),para_in.strip(), upper_para_type.upper(), para_in.upper(), upper_para_type.upper(), para_in.upper()))
+				blobmsg_parse_check(file, para_in, para_type)
+				for members in private_struct[para_type]:
+					if len(members) == 3:
+					# the members is struct
+						if members[1] in private_struct.keys():
+							#print(members)
+							blob_parse_param(file, members[2], members[1],para_in, para_type)
+					elif isinstance(members, dict):
+						blob_parse_param(file, members, None, para_in, para_type)
+
+		elif para_type in private_struct.keys():
+			file.write('\tblobmsg_parse(struct_%s_policy,\
+ __STRUCT_%s_MAX,\
+ tb_struct_%s, \
+ blobmsg_data(tb_struct_%s[STRUCT_%s_%s]),\
+ blobmsg_len(tb_struct_%s[STRUCT_%s_%s]));\n'\
+					%(para_type,\
+					para_type.upper(),\
+					para_in.strip(), \
+					upper_para, upper_para_type.upper(), para_type.upper(),\
+					upper_para, upper_para_type.upper(), para_type.upper()))
+			file.write('\tif (')
+			i = 0
+			for members in private_struct[para_type]:
+				if isinstance(members, dict):
+					key = list(members.keys())[0]
+					file.write('!tb_struct_%s[STRUCT_%s_%s]' %(para_in.strip(),para_type.upper(), key.upper()))
+					i += 1
+					pass
+				else:
+					file.write('!tb_struct_%s[STRUCT_%s_%s]' %(para_in.strip(),para_type.upper(), members[1].upper()))
+					i += 1
+				if i != len(private_struct[para_type]):
+					file.write(' || ')
+				else:
+					file.write(')')
+			file.write('\n\t\treturn UBUS_STATUS_INVALID_ARGUMENT;\n\n')
+
+			for members in private_struct[para_type]:
+				if len(members) == 3:
+					if members[1] in private_struct.keys():
+						blob_parse_param(file, members[2], members[1],para_in, para_type)
+				elif isinstance(members, dict):
+					key = next(iter(members))
+					values = members[key]
+					blob_parse_param(file,members, None, para_in, para_type)
+		elif isinstance(para_in, dict):
+			key = list(para_in.keys())[0]
+			values = para_in[key]
+
+			file.write('\tblobmsg_parse(struct_%s_policy,\
+ __STRUCT_%s_MAX,\
+ tb_struct_%s, \
+ blobmsg_data(tb_struct_%s[STRUCT_%s_%s]),\
+ blobmsg_len(tb_struct_%s[STRUCT_%s_%s]));\n'\
+					%(key,\
+					key.upper(),\
+					key.strip(), \
+					upper_para, upper_para_type.upper(), key.upper(),\
+					upper_para, upper_para_type.upper(), key.upper()))
+			file.write('\tif (')
+			i = 0
+			for members in values:
+				if isinstance(members, dict):
+					key1 = list(members.keys())[0]
+					file.write('!tb_struct_%s[STRUCT_%s_%s]' %(key.strip(), key.upper(), key1.upper()))
+					pass
+				else:
+					file.write('!tb_struct_%s[STRUCT_%s_%s]' %(key.strip(), key.upper(), members[1].upper()))
+					i += 1
+					if i != len(values):
+						file.write(' || ')
+					else:
+						file.write(')')
+			file.write('\n\t\treturn UBUS_STATUS_INVALID_ARGUMENT;\n\n')
+
+#end def
+
+def prevent_memory_leak(file):
+	"""
+	Purpose: clean memory allocation
+	Param [in]:file the file will be writed into
+	"""
+	if mem_cl[mem_cl_str] == '1' :
+		file.write('\tif (result_str) {\n')
+		file.write(f'\t\tfree_string_memory(blobmsg_check_array({blobmsg},blobmsg_type({blobmsg})));\n')
+		file.write('\t\tresult_str = NULL;\n')
+		file.write('\t\t}\n')
+##clean the memory_clean flag
+	for key in mem_cl:
+		mem_cl[key] = None
+
+#end def
+
+def ubus_function_implement(file, func_name, param_in, *param_out):
+	"""
+	Purpose: generate a function
+	Param [in]:file the file will be writed into
+	Param [in]:func_name every function's name
+	Param [in]:param_in the parameters will be pass into the function
+	Param [in]:param_out the parameters will be pass into the function
+	"""
+	file.write("""\
+static int ubus_%s(struct ubus_context *ctx, struct ubus_object *obj,
+					struct ubus_request_data *req, const char *method,
+					struct blob_attr *msg)
+{
+	int ret = CLSAPI_OK;
+""" %(func_name))
+
+	if param_in:
+		file.write('\tstruct blob_attr *tb[__%s_MAX];\n' %(func_name.upper()))
+		for para_in in param_in :
+			para_in = str(para_in).strip()
+			parameter_type = str(dict_param_in[para_in]).replace('*','').replace('struct ','').replace('enum ', '').strip()
+			set_up_tb_struct(file, para_in, parameter_type)
+			#print('param in :%s, type:%s' %(para_in, parameter_type))
+			if parameter_type in private_struct.keys():
+				file.write('\tstruct %s %s;\n' %(parameter_type.replace('*','').strip(), para_in))
+	
+			if para_in in array.keys():
+				res_param = parameter_type.strip()
+				if array_size[para_in].isupper() or array_size[para_in].isdigit():
+					size = array_size[para_in]
+					#print(f'para_in:{para_in}\tres_param:{res_param}')
+					if 'sta_mac' not in para_in:
+					    file.write(f'\tint %s = {size};\n' %(str(para_in+ "_len")))
+					if parameter_type in private_struct:
+						file.write('\tvoid *ptr_%s = NULL;\n\n' %(str(para_in+ "_array")))
+				else:
+					#file.write('\t%s %s;\n' %(res_param.replace(' *','').replace('const ',''), str(para_in+ "[128]")))
+					#print(f'para_in:{para_in}\tres_param:{res_param}')
+					file.write('\tint %s = 128;\n' %(str(para_in+ "_len")))
+					if parameter_type in private_struct:
+						file.write('\tvoid *ptr_%s = NULL;\n\n' %(str(para_in+ "_array")))
+				if array_size[para_in].isupper() or array_size[para_in].isdigit():
+					size = array_size[para_in]
+
+	if param_out :
+		param_o = m2str(str(param_out[0]))
+		param_o_t = str(dict_param_out[param_o])
+		#print(f'param_o:{param_o},param_o_t:{param_o_t}')
+		if param_o in array.keys():
+			res_param = param_o_t.strip()
+			if array_size[param_o].isupper() or array_size[param_o].isdigit():
+				size = array_size[param_o]
+				file.write('\t%s %s;\n' %(res_param.replace(' *','').replace('const ',''), str(param_o + f"[{size}]")))
+				#print(f'param_o:{param_o}\tres_param:{res_param}')
+				if param_o in unknown_array.keys():
+					file.write('\tint %s = 128;\n' %(str(param_o + "_len")))
+				if param_o_t in private_struct:
+					file.write('\tvoid *ptr_%s = NULL;\n\n' %(str(param_o + "_array")))
+			else:
+				file.write('\t%s %s;\n' %(res_param.replace(' *','').replace('const ',''), str(param_o + "[128]")))
+				#print(f'param_o:{param_o}\tres_param:{res_param}')
+				file.write('\tint %s = 128;\n' %(str(param_o + "_len")))
+				if param_o_t in private_struct:
+					file.write('\tvoid *ptr_%s = NULL;\n\n' %(str(param_o + "_array")))
+
+		elif 'char' in param_o_t:
+			res_param = param_o_t.replace('[]', '').strip()
+			file.write('\t%s %s;\n' %(res_param, param_o))
+		else:
+			res_param = param_o_t.replace('*','').replace('[]', '').strip()
+			file.write('\t%s %s;\n' %(res_param, param_o))
+
+	if param_in:	
+		file.write('\n\tblobmsg_parse(%s_policy, __%s_MAX, tb, blob_data(msg), blob_len(msg));\n\tif (' %(func_name, func_name.upper()))
+		i = 0
+		for para_in in param_in:
+			file.write('!tb[%s_%s]' %(func_name.upper(), para_in.upper().strip()))
+			i += 1
+			if i != len(param_in):
+				file.write(' || ')
+			else:
+				file.write(')')
+		file.write('\n\t\treturn UBUS_STATUS_INVALID_ARGUMENT;\n\n')
+	
+		for para_in in param_in :
+			para_in = str(para_in).strip()
+			blob_parse_param(file, para_in, None, None, func_name)
+	
+		for p_in in param_in:
+				pd = str(dict_param_in[str(p_in).strip()]).replace('*','').replace('struct ','').replace('enum ','').strip()
+				if pd.strip() in private_struct.keys():
+					struct_name_list.clear()
+					parse_table_between_buf(p_in, outputfile, 'in')
+
+##clean the memory_clean flag
+	for key in mem_cl:
+		mem_cl[key] = None
+
+	file.write('\tret = clsapi_%s(' %func_name)
+	if param_in:
+		size = len(param_in)
+		i = 0
+		for para_in in param_in :
+			para_in = str(para_in).strip()
+			pd = str(dict_param_in[para_in]).replace('*','').strip().replace('struct ','').strip()
+			if i != size - 1 :
+				if pd.strip() not in private_struct.keys():
+					turn_blobmsg_to_C(func_name,file, para_in, True)
+				else:
+					file.write('&%s, ' %(para_in))
+				if para_in in array_size.keys():
+					if not array_size[para_in].isupper() and not array_size[para_in].isdigit():
+						file.write('%s_len, ' %para_in)
+			else :
+				if pd.strip() not in private_struct.keys():
+					turn_blobmsg_to_C(func_name,file, para_in, False)
+				elif 'enum' in pd.strip():
+					turn_blobmsg_to_C(func_name,file, para_in, False)
+				else:
+					file.write('&%s' %(para_in))
+	
+				if para_in in array_size.keys():
+					if not array_size[para_in].isupper() and not array_size[para_in].isdigit():
+						file.write(', %s_len' %para_in)
+			i = i+1
+
+	if not param_out:
+	   # only set-related function
+		file.write(');\n')
+		prevent_memory_leak(file)
+		#if 'set' not in func_name:
+			#file.write('\n\tif (ret)\n\t\tgoto out;\n')
+	else:
+		#triggle or scan or add other key-word
+		p_out = str(param_out).strip('()').rstrip(',').strip('\[\'\'\]')
+		#pprint(array_size)
+		#pprint(array)
+		#pprint(unknown_array)
+		#print(f'p_out:{p_out}\tp_out_t:{param_o_t}')
+		if param_in:
+			if p_out in array.keys():
+				if p_out in array_size.keys():
+					if p_out in unknown_array.keys():
+					    if '*' in unknown_array[p_out]:
+						    file.write(f', {p_out}, &{p_out}_len);\n')
+					    else:
+						    file.write(f', {p_out}, {p_out}_len);\n')
+					else:
+					    file.write(f', {p_out});\n')
+	
+				else:
+					file.write(f', {p_out});\n')
+			elif 'string' in param_o_t or 'char' in param_o_t or "*" not in param_o_t :
+				file.write(', %s);\n' %p_out)
+			elif 'uint8_t' in param_o_t and '*' in param_o_t:
+				file.write(', (uint8_t *)&%s);\n' %p_out)
+			elif 'int8_t' in param_o_t and '*' in param_o_t:
+				file.write(', (int8_t *)&%s);\n' %p_out)
+			else:
+				file.write(', &%s);\n' %p_out)
+		else:
+			if p_out in array.keys():
+				if p_out in array_size.keys():
+					if p_out in unknown_array.keys():
+						if '*' in array_size[p_out]:
+							file.write(f'{p_out}, &{p_out}_len);\n')
+						else:
+							file.write(f'{p_out}, {p_out}_len);\n')
+	
+				else:
+					file.write('%s);\n' %p_out)
+			elif 'string' in param_o_t or 'char' in param_o_t or "*" not in param_o_t:
+				file.write('%s);\n' %p_out)
+			elif 'uint8_t' in param_o_t and '*' in param_o_t:
+				file.write('(uint8_t *)&%s);\n' %p_out)
+			elif 'int8_t' in param_o_t and '*' in param_o_t:
+				file.write('(int8_t *)&%s);\n' %p_out)
+			else:
+				file.write('&%s);\n' %p_out)
+
+
+		prevent_memory_leak(file)
+
+		param_o_t = param_o_t.replace('*','').replace('struct ','').replace('enum ','').strip()
+		if param_o_t in private_struct.keys():
+			file.write('\tblob_buf_init(&buf, 0);\n')
+			para_out = ''.join(param_out[0])
+			struct_name_list.clear()
+			if para_out in array.keys():
+				#print(f'para_out:{para_out}')
+				file.write(f'\tvoid *ptr_{para_out}_array = blobmsg_open_array(&buf, "{para_out}");\n\n')
+				file.write('\tfor (int i = 0; i < %s_len; i++) {' %para_out)
+				file.write(f'''
+		char str[64];
+		memset(str, 0, sizeof(str));
+		snprintf(str, sizeof(str), "{para_out}[%d]", i);
+''')
+				parse_table_between_buf(para_out, outputfile, 'out', True)
+				file.write('\t}\n')
+				file.write(f'\tblobmsg_close_table(&buf, ptr_{para_out}_array);\n')
+
+			else:
+				parse_table_between_buf(para_out, outputfile, 'out')
+			file.write('\tret = ubus_send_reply(ctx, req, buf.head);\n\tif (ret != CLSAPI_OK)\n\t\tret = -CLSAPI_ERR_INTERNAL_ERR;\n')
+			#file.write('\n\tif (ret)\n\t\tgoto out;\n')
+		else :
+			param_o_t = param_o_t.replace('*','').strip()
+			#print(f'p_out:{p_out},param_o_t:{param_o_t}\tdict_param_out[p_out]:{dict_param_out[p_out]}')
+			file.write('\tif (ret == 0) {\n')
+			file.write('\t\tblob_buf_init(&buf, 0);\n')
+
+			if p_out in array.keys() and param_o_t != "char" and "string" not in param_o_t :
+			    file.write('\t\tchar *arrayname = "%s";\n' %p_out)
+			    #print(f'array_size:{p_out}:{array_size[p_out]}')
+			    if "enum" in dict_param_out[p_out] or param_o_t in private_external_enum.keys():
+				    file.write('\t\tblobmsg_add_uint32_t_array(arrayname, (uint32_t *)%s, (int)%s);\n' %(p_out,array_size[p_out]))
+			    elif "bool" in param_o_t :
+				    file.write('\t\tblobmsg_add_uint8_t_array(arrayname, (uint8_t *)%s, (int)%s);\n' %(p_out,array_size[p_out]))
+			    elif "16" in param_o_t  :
+				    file.write('\t\tblobmsg_add_uint16_t_array(arrayname, (uint16_t *)%s, (int)%s);\n' %(p_out,array_size[p_out]))
+			    elif "8" in param_o_t or "32" in param_o_t or param_o_t  == "int":
+				    file.write('\t\tblobmsg_add_uint32_t_array(arrayname, (uint32_t *)%s, (int)%s);\n' %(p_out,array_size[p_out]))
+			    elif "64" in param_o_t  :
+				    file.write('\t\tblobmsg_add_uint64_t_array(arrayname, (uint64_t *)%s, (int)%s);\n' %(p_out,array_size[p_out]))
+			else:
+			    if param_o_t == "char" or "string" in param_o_t :
+				    file.write('\t\tblobmsg_add_string(&buf, "%s", (char *)%s);\n' %(p_out, p_out))
+			    elif "enum" in dict_param_out[p_out] or param_o_t in private_external_enum.keys():
+				    file.write('\t\tblobmsg_add_u32(&buf, "%s", %s);\n' %(p_out, p_out))
+			    elif "bool" in param_o_t :
+				    file.write('\t\tblobmsg_add_u8(&buf, "%s", %s);\n' %(p_out, p_out))
+			    elif "16" in param_o_t  :
+				    file.write('\t\tblobmsg_add_u32(&buf, "%s", %s);\n' %(p_out, p_out))
+			    elif "8" in param_o_t or "32" in param_o_t or param_o_t  == "int":
+				    file.write('\t\tblobmsg_add_u32(&buf, "%s", %s);\n' %(p_out, p_out))
+			    elif "64" in param_o_t  :
+				    file.write('\t\tblobmsg_add_u64(&buf, "%s", %s);\n' %(p_out, p_out))
+			    else:
+				    print(f"ERROR:Invalid param_out type : invalid type {param_o_t}")
+				    raise NameError("The output parameter type not support")
+			file.write('\t\tret = ubus_send_reply(ctx, req, buf.head);\n')
+			file.write('\t}\n')
+	file.write('\treturn -ret;\n}\n\n')
+# end def
+
+def parse_ubus_file(file, functions_name):
+	with open(file, "r+") as f:
+		lines = f.readlines()
+
+	for line in lines:
+		if 'static int ubus_%s' %class_name in line:
+			functions_name.append(str(re.findall('(?<=static int ubus_).*?(?=\()', str(line))).strip('\']').strip('[\''))
+# end def
+
+def ubus_method_implement(file_name, functions_name):
+	"""
+	Purpose: implement of ubus method structure array
+	Param [in] functions_name the names of functions
+	"""
+	class_method = class_name + '_methods[]'
+
+	with open(file_name, "r+") as file:
+		content = file.readlines()
+
+	flag = 0
+	for index, line in enumerate(content):
+		if class_method in line:
+			idx = index + 1
+			flag = 1
+		if '};' in line:
+			if flag == 1:
+				end_idx = index
+				break
+
+	del content[idx:end_idx]
+	for func in functions_name :
+		if 'wifi' in func :
+			if dict_function_param_in[func]:
+				string = '\tUBUS_METHOD("%s",\tubus_%s,\t%s_policy),\n' %(func.replace("wifi_", ''),func,func)
+			else:
+				string = ('\tUBUS_METHOD_NOARG("%s",\tubus_%s),\n' %(func.replace("wifi_", ''),func))
+		elif 'sys' in func :
+			if dict_function_param_in[func]:
+				string = ('\tUBUS_METHOD("%s",\tubus_%s,\t%s_policy),\n' %(func.replace("sys_", ''),func,func))
+			else:
+				string = ('\tUBUS_METHOD_NOARG("%s",\tubus_%s),\n' %(func.replace("sys_", ''),func))
+		elif 'net' in func :
+			if dict_function_param_in[func]:
+				string = ('\tUBUS_METHOD("%s",\tubus_%s,\t%s_policy),\n' %(func.replace("net_", ''),func,func))
+			else:
+				string = ('\tUBUS_METHOD_NOARG("%s",\tubus_%s),\n' %(func.replace("net_", ''),func))
+		elif 'base' in func :
+			if dict_function_param_in[func]:
+				string = ('\tUBUS_METHOD("%s",\tubus_%s,\t%s_policy),\n' %(func.replace("base_", ''),func,func))
+			else:
+				string = ('\tUBUS_METHOD_NOARG("%s",\tubus_%s),\n' %(func.replace("base_", ''),func))
+		content.insert(idx, string)
+		idx = idx + 1
+
+	with open(file_name, 'w') as f:
+		for item in content:
+			f.write(item)
+# end def
+
+def main():
+	"""
+	Purpose:
+		1.parse all the private structures -get all the parameters and their data type
+		2.get all the function's name, parameters and so forth
+		3.according to the function, splice the strings that needed to form an C expression.
+	"""
+	init()
+	fixed_content_implement(outputfile, fixed_header)
+	parse_head()
+	ubus_private_enum_implement(outputfile, private_struct)
+	ubus_private_struct_implement(outputfile, private_struct)
+	write_in_fixed_functions(outputfile)
+	array_len_list = []
+	array_name_temp = None
+	global dict_function_param_in
+
+	functions_manual = list()
+	parse_ubus_file(ubus_file, functions_manual)
+	for f in phases:
+		param_in = re.findall('(?<=param ).*?(?= \[In\])', f)#parameters in comments
+		param_out = re.findall('(?<=param ).*?(?= \[Out\])', f)#parameters in comments
+		func_name = str(re.findall('int clsapi_[a-zA-Z0-9_]+\(', f))
+		func_name = re.sub('int clsapi_|\(', '', func_name).strip('\']').strip('[\'')
+		#print(f"function name : {func_name}\tparam_in :{param_in};\t param_out: {param_out}")
+		if not func_name:
+		    print("ERROR:Invalid function name: invalid prefix ")
+		    raise NameError("Example: clsapi_net_set_opmode")
+		if 'wifi' not in func_name and  'sys' not in func_name and 'net' not in func_name and 'base' not in func_name:
+		    print("ERROR: Invalid function name %s: module name is missing." %func_name)
+		    raise NameError("Example: clsapi_net_set_opmode")
+
+		pattern = r'int\s+\w+\s*\(.*?\);'
+		params_all = re.findall(pattern, f, re.DOTALL)
+		for param in params_all:
+			params = str(re.findall(r'\((.*?)\)', param, re.DOTALL))
+			params = params.replace('\\n', '').replace('\\t', '')
+
+		list_functions.append('%s' %func_name)
+		param_total = params.strip('[').strip(']').strip('\'').rstrip('\)').split(',')
+		array_flag = None
+		array_name = None
+		array_len_index = 0
+		if param_in :
+			dict_function_param_in[func_name] = param_in
+			i = 0
+			for a in param_in:
+					p_in = str(a).strip()
+					check_params_in = re.sub(r'\*|\[.*?\]|\(|\)', '', param_total[i])
+					if p_in in check_params_in.split(' '):
+						param_in_t = str(param_total[i]).strip().rstrip('%s' %p_in).replace('const ','').strip()
+						if param_in_t == "clsapi_ifname":
+							param_in_t = "string_32"
+						elif "in_addr" in param_in_t :
+							param_in_t = "string_32"
+						if array_flag is True:
+							array_size[array_name] = param_in_t
+							param_in.remove(p_in)
+							array_len_list.append(p_in)
+							array_flag = False
+							array_len_index = array_len_index + 1
+							pass
+						#print(f"param_in :{p_in};\ttype: {param_in_t}")
+						if not param_in_t :
+							param_in_t = p_in+param_in_t
+						elif  param_in_t == '*' :
+							param_in_t = p_in+param_in_t
+						dict_param_in[p_in]= param_in_t
+
+						if str(p_in +'_len') in params	and not re.findall('\[.*?\]$', param_in_t):
+							array_name = p_in
+							array[array_name] = param_in_t
+							array_flag = True
+						#print(f'param_in_t:{param_in_t}')
+						if param_in_t in dict_all_type.keys():
+							pass
+						elif re.findall('\[.*?\]$', param_in_t) :
+							dict_all_type[param_in_t] = "BLOBMSG_TYPE_ARRAY"
+							array_name = param_in_t.split(' ')[-1].split('[')[0]
+							array[array_name] = param_in_t.split(' ')[0]
+							if not re.findall('\[\w+\]$', param_in_t):
+								array_flag = True
+							else:
+								array_size_num = ''.join(re.findall(r'\[(\w+)\]', param_in_t))
+								array_size[array_name] = array_size_num
+						elif 'enum' in param_in_t or param_in_t.replace("*", '').strip() in private_external_enum.keys():
+							dict_all_type[param_in_t] = "BLOBMSG_TYPE_INT32"
+						else :
+							dict_all_type[param_in_t] = "BLOBMSG_TYPE_TABLE"
+					else:
+						print(f'{func_name}- comment: {p_in}, parameter:{param_total[i]}')
+						print("ERROR, parameters in comments are not same with which in functions")
+						raise NameError("Parameters are not same")
+
+					i = i+1
+		else:
+			dict_function_param_in[func_name] = None 
+
+		if param_out:
+			i = 0
+			array_flag = None
+			array_name = None
+			for b in param_out:
+					check_params_out = re.sub(r'\*|\[.*?\]|\(|\)', '', param_total[i + len(param_in)])
+					if b in check_params_out.split(' '):
+						param_out_t = str(param_total[i + len(param_in) + array_len_index]).strip().rstrip("%s" %(str(b).strip())).strip()
+						if param_out_t == "clsapi_ifname":
+							param_out_t = "string_32"
+						elif "in_addr" in param_out_t :
+							param_out_t = "string_32"
+						#print(f"param_out :{b};\ttype: {param_out_t}")
+						if array_flag is True:
+							unknown_array[array_name] = param_out_t
+							if param_out_t in dict_basic_type.keys():
+							    array_size[array_name] = "128"
+							else:
+							    array_size[array_name] = param_out_t
+							param_out.remove(b)
+							array_flag = False
+							pass
+						if not param_out_t :
+							param_out_t = b + param_out_t
+						elif  param_out_t == '*' :
+							param_out_t = b + param_out_t
+
+						if str(b+'_len') in params and not re.findall('\[.*?\]$', param_out_t):
+							param_out_t = param_out_t + '[]'
+
+						if re.findall('\[.*?\]$', param_out_t):
+							pattern = re.compile(r'\[(.*?)\]')
+							size = re.findall(pattern, param_out_t)
+							param_out_t = param_out_t.split('[')[0].rstrip("%s" %(''.join(b))).replace('const ','')
+							#print(f" array param out:{b},type:{param_out_t}")
+							if 'char' in param_out_t:
+								pass
+							else:
+								dict_all_type[param_out_t] = "BLOBMSG_TYPE_ARRAY"
+							array[b] = param_out_t
+							if not re.findall('\[\w+\]$', param_out_t):
+								array_flag = True
+							array_name = b
+							if size:
+							    array_size[array_name] = ''.join(size)
+						elif param_out_t in dict_all_type.keys():
+							pass
+						elif 'enum' in param_out_t or param_out_t.strip() in private_external_enum.keys():
+							dict_all_type[param_out_t] = "BLOBMSG_TYPE_INT32"
+						else:
+							dict_all_type[param_out_t] = "BLOBMSG_TYPE_TABLE"
+						dict_param_out[b]= param_out_t
+						#pprint(dict_param_out)
+					else:
+						print(f'{func_name} - comment: {b}, param: {str(param_total[i + len(param_in)])}')
+						print(f"ERROR, parameters in comments are not same with which in functions")
+						raise NameError("Parameters are not same")
+					i = i+1
+		#pprint(param_out)
+		#pprint(f'array:{array}')
+		#pprint(f'array_size:{array_size}')
+		#pprint(f'param_in:{param_in}')
+		#pprint(f'dict_param_in:{dict_param_in}')
+		if func_name not in functions_manual:
+			if param_in:
+				ubus_enum_implement(outputfile,func_name, param_in)
+				ubus_struct_implement(outputfile,func_name, param_in)
+			if param_out:
+				ubus_function_implement(outputfile, func_name, param_in, param_out)
+				del param_out
+				del param_out_t
+			else:
+				ubus_function_implement(outputfile, func_name, param_in)
+			dict_param_in.clear()
+		#end for loop
+	ubus_method_implement(ubus_file, list_functions)
+	outputfile.close()
+# end def
+main()
+
+#pprint(array_size_2d)
+#pprint(phases)
+#pprint(dict_all_type)

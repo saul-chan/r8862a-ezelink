@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: GPL-2.0
+dtb-$(CONFIG_ARCH_CLOURNEY) += clourney-dubhe2000-soc-pnand.dtb
+dtb-$(CONFIG_ARCH_CLOURNEY) += clourney-dubhe2000-soc-spinand.dtb
+dtb-$(CONFIG_ARCH_CLOURNEY) += clourney-dubhe2000-soc-spinor.dtb
+dtb-$(CONFIG_ARCH_CLOURNEY) += clourney-dubhe2000-evb-a.dtb
+dtb-$(CONFIG_ARCH_CLOURNEY) += clourney-dubhe2000-evb-b.dtb
+dtb-$(CONFIG_ARCH_CLOURNEY) += clourney-dubhe2000-evb-e.dtb
+dtb-$(CONFIG_ARCH_CLOURNEY) += clourney-dubhe2000-evb-m3k.dtb
+dtb-$(CONFIG_ARCH_CLOURNEY) += clourney-dubhe2000-rdk.dtb
+dtb-$(CONFIG_ARCH_CLOURNEY) += clourney-dubhe2000-rdk-v24.dtb
+dtb-$(CONFIG_ARCH_CLOURNEY) += clourney-dubhe2000-rdk-c.dtb
+dtb-$(CONFIG_ARCH_CLOURNEY) += clourney-dubhe2000-demo-r.dtb
+dtb-$(CONFIG_ARCH_CLOURNEY) += clourney-dubhe2000-demo-o.dtb
+always		:= $(dtb-y)
+subdir-y	:= $(dts-dirs)
+clean-files	:= *.dtb
+DTC_EXTRA_FLAGS += -@

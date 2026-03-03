@@ -1,0 +1,25 @@
+#!/bin/sh
+
+# Specify the file to be downloaded
+FILE_PATH="/tmp/sysinfo.md.tar.gz"
+FILE_NAME=$(basename "$FILE_PATH")
+
+# Check if the file exists
+if [ ! -f "$FILE_PATH" ]; then
+    echo "Status: 404 Not Found"
+    echo "Content-Type: text/plain"
+    echo ""
+    echo "File not found!"
+    exit 1
+fi
+
+# Send the headers for file download
+echo "Content-Type: application/x-targz"
+echo "Content-Disposition: attachment; filename=\"$FILE_NAME\""
+echo "Content-Length: $(stat -c%s "$FILE_PATH")"
+echo ""
+
+# Output the file content
+cat "$FILE_PATH"
+
+exit 0

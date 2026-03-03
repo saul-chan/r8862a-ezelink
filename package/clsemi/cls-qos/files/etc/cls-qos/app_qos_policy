@@ -1,0 +1,5 @@
+#type	name		usDSCP		dsDSCP
+0	unknown		8		16
+1	game		18		20
+2	video		26		38
+31	download	34		36

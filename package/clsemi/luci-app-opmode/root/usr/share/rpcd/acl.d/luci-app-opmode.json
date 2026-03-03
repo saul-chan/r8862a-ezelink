@@ -1,0 +1,11 @@
+{
+	"luci-app-opmode": {
+		"description": "Grant UCI access for luci-app-opmode",
+		"read": {
+			"uci": [ "cls-mesh", "cls-opmode" ]
+		},
+		"write": {
+			"uci": [ "cls-mesh", "cls-opmode" ]
+		}
+	}
+}

@@ -1,0 +1,8 @@
+[board]
+# IP and port of native control agent
+nc_port=9000
+nc_host=192.165.123.40
+
+[server]
+ca_port=9000
+ca_host=0.0.0.0

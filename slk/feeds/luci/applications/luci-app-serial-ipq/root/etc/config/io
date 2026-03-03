@@ -1,0 +1,4 @@
+
+config io
+	option enable '0'
+

@@ -1,0 +1,17 @@
+#!/usr/bin/make -f
+export DH_VERBOSE=1
+
+# This has to be exported to make some magic below work.
+export DH_OPTIONS
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+	#skip dh_auto_configure
+
+override_dh_usrlocal:
+	#skip dh_usrlocal
+
+override_dh_gencontrol:
+	currentperm=`stat -c %a debian/control`; chmod 777 debian/control; dh_gencontrol; chmod $$currentperm debian/control

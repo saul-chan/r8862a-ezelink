@@ -1,0 +1,102 @@
+/*
+ * Copyright (c) 2021-2024, Clourney Semiconductor. All rights reserved.
+ *
+ * This software and/or documentation is licensed by Clourney Semiconductor under limited terms and conditions.
+ * Reproduction and redistribution in binary or source form, with or without modification,
+ * for use solely in conjunction with a Clourney Semiconductor chipset, is permitted in condition which
+ * must retain the above copyright notice.
+ *
+ * By using this software and/or documentation, you agree to the limited terms and conditions.
+ */
+
+#ifndef _DUBHE1000_MAC_STATS_H_
+#define _DUBHE1000_MAC_STATS_H_
+
+#include "dubhe2000.h"
+
+struct dubhe1000_xgmac_stats_param {
+	char name[64];
+#define XGMAC_STATS_PARAM_TYPE_64_BIT	0
+#define XGMAC_STATS_PARAM_TYPE_32_BIT	1
+	u8 type; // 0 - 64bits; 1 - 32bits
+	u64 addr;
+	u64 value;
+};
+
+/* TX: please keep consistency with xgmac_tx_stats */
+enum {
+	TX_OCTET_COUNT_GOOD_BAD = 0,
+	TX_PACKET_COUNT_GOOD_BAD,
+	TX_BROADCAST_PACKETS_GOOD,
+	TX_MULTICAST_PACKETS_GOOD,
+	TX_64OCTETS_PACKETS_GOOD_BAD,
+	TX_65TO127OCTETS_PACKETS_GOOD_BAD,
+	TX_128TO255OCTETS_PACKETS_GOOD_BAD,
+	TX_256TO511OCTETS_PACKETS_GOOD_BAD,
+	TX_512TO1023OCTETS_PACKETS_GOOD_BAD,
+	TX_1024TOMAXOCTETS_PACKETS_GOOD_BAD,
+	TX_UNICAST_PACKETS_GOOD_BAD,
+	TX_MULTICAST_PACKETS_GOOD_BAD,
+	TX_BROADCAST_PACKETS_GOOD_BAD,
+	TX_UNDERFLOW_ERROR_PACKETS,
+	TX_OCTET_COUNT_GOOD,
+	TX_PACKET_COUNT_GOOD,
+	TX_PAUSE_PACKETS,
+	TX_VLAN_PACKETS_GOOD,
+	PRIORITY_INTERRUPT_STATUS,
+	TX_PER_PRIORITY_STATUS,
+	TX_PER_PRIORITY_PKT_GOOD_BAD,
+	TX_PER_PRIORITY_PFC_PKT_GOOD_BAD,
+	TX_PER_PRIORITY_GPFC_PKT_GOOD_BAD,
+	TX_PER_PRIORITY_OCTET_GOOD_BAD,
+	TX_LATE_COLLISION_PACKETS,
+	TX_EXCESSIVE_COLLISION_PACKETS,
+	TX_CARRIER_ERROR_PACKETS,
+	TX_EXCESSIVE_DEFERRAL_ERROR,
+};
+
+/* RX: please keep consistency with xgmac_rx_stats */
+enum {
+	RX_PACKET_COUNT_GOOD_BAD = 0,
+	RX_OCTET_COUNT_GOOD_BAD,
+	RX_OCTET_COUNT_GOOD,
+	RX_BROADCAST_PACKETS_GOOD,
+	RX_MULTICAST_PACKETS_GOOD,
+	RX_CRC_ERROR_PACKETS,
+	RX_RUNT_ERROR_PACKETS,
+	RX_JABBER_ERROR_PACKETS,
+	RX_UNDERSIZE_PACKETS_GOOD,
+	RX_OVERSIZE_PACKETS_GOOD,
+	RX_64OCTETS_PACKETS_GOOD_BAD,
+	RX_65TO127OCTETS_PACKETS_GOOD_BAD,
+	RX_128TO255OCTETS_PACKETS_GOOD_BAD,
+	RX_256TO511OCTETS_PACKETS_GOOD_BAD,
+	RX_512TO1023OCTETS_PACKETS_GOOD_BAD,
+	RX_1024TOMAXOCTETS_PACKETS_GOOD_BAD,
+	RX_UNICAST_PACKETS_GOOD,
+	RX_LENGTH_ERROR_PACKETS,
+	RX_OUTOFRANGE_PACKETS,
+	RX_PAUSE_PACKETS,
+	RX_FIFOOVERFLOW_PACKETS,
+	RX_VLAN_PACKETS_GOOD_BAD,
+	RX_WATCHDOG_ERROR_PACKETS,
+	RX_DISCARD_PACKETS_GOOD_BAD,
+	RX_DISCARD_OCTETS_GOOD_BAD,
+	RX_ALIGNMENT_ERROR_PACKETS,
+	RX_PER_PRIORITY_STATUS,
+	RX_PER_PRIORITY_PKT_GOOD_BAD,
+	RX_PER_PRIORITY_PKT_BAD,
+	RX_PER_PRIORITY_PFC_PKT_GOOD_BAD,
+	RX_PER_PRIORITY_OCTET_GOOD_BAD,
+	RX_PER_PRIORITY_DISCARD_GOOD_BAD,
+};
+
+#define XGMAC_STATS_OPTION_ALL		0
+#define XGMAC_STATS_OPTION_TX		1
+#define XGMAC_STATS_OPTION_RX		2
+
+void dubhe1000_xgmac_stats_update_option(struct dubhe1000_adapter *adapter, u8 xgmac_index, u8 option,
+					 struct dubhe1000_xgmac_stats_param **xgmac_stats);
+
+void dubhe1000_xgmac_stats_dump_per_index(struct dubhe1000_adapter *adapter, u8 xgmac_index, u8 option);
+#endif /* _DUBHE1000_MAC_STATS_H_ */

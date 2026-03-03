@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -e
+echo "### Build rtk_cli start ###"
+export ARCH=arm64
+export CROSS_COMPILE=${CROSS_COMPILE:-/opt/gcc-arm-11.2-2022.02-x86_64-aarch64-none-linux-gnu/bin/aarch64-none-linux-gnu-}
+
+mkdir -p build bin
+
+make clean
+make
+
+echo "### Build rtk_cli done ###"

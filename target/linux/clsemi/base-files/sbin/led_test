@@ -1,0 +1,24 @@
+#!/bin/sh
+
+. /lib/functions/leds.sh
+
+LED_ON_DURATION=2
+
+/etc/init.d/cls-leds stop
+
+echo "Start test LED..."
+
+for led in $(ls /sys/class/leds/); do
+	led_off $led
+done
+
+for led in $(ls /sys/class/leds/); do
+	led_name=$(echo $led | awk -F ':' '{print $1}')
+	echo "Turning on $led_name LED for $LED_ON_DURATION seconds"
+	led_on $led
+	sleep $LED_ON_DURATION
+	echo "Turning off $led_name LED"
+	led_off $led
+done
+
+/etc/init.d/cls-leds start

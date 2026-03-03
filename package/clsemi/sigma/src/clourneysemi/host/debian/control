@@ -1,0 +1,10 @@
+Source: sigma-ca-proxy
+Section: net
+Priority: optional
+Build-Depends: debhelper (>= 9), dpkg-dev
+Standards-Version: 1.0
+Homepage: http://www.clourneysemi.com/
+
+Package: clourneysemi-sigma-ca-proxy
+Architecture: any
+Description: sigma control agent proxy for control PC

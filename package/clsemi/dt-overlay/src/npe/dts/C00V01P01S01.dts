@@ -1,0 +1,59 @@
+/*C00.V01.P01.S01*/
+//RGMII0
+//RGMII1
+//RGMII2
+/dts-v1/;
+/plugin/;
+/ {
+	fragment@0 {
+		target=<&xgmac2>;
+		__overlay__ {
+			mode = "rgmii";
+			phy-handle = <&rgmii_phy7>;
+			rgmii-rx-delay = <1>;
+			mdio-flags = <1>;
+			status = "okay";
+			mdio {
+				compatible = "clourney,mdio";
+				#address-cells = <1>;
+				#size-cells = <0>;
+				device_type="mdio";
+				status = "okay";
+			 	rgmii_phy7: phy@7 {
+				compatible = "ethernet-phy-ieee802.3-c22";
+				reg = <0x5>;
+				};
+				rgmii_phy2: phy@2 {
+					compatible = "ethernet-phy-ieee802.3-c22";
+					reg = <0x2>;
+				};
+			};
+		};
+	};
+
+	fragment@1 {
+		target=<&xgmac0>;
+		__overlay__ {
+			status = "disable";
+		};
+	};
+
+	fragment@2 {
+		target=<&npe>;
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+		__overlay__ {
+			xgmac0@0 {
+				id = <0>;
+				compatible = "clourney,dwmac";
+				mode = "rgmii";
+				phy-handle = <&rgmii0_phy>;
+				rgmii-rx-delay = <1>;
+				reg = <0x00 0x53c00000 0x00 0x100000>;
+				status = "okay";
+			};
+		};
+	};
+};
+

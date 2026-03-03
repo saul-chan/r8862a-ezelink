@@ -1,0 +1,379 @@
+#!/bin/sh
+# Copyright (c) 2021-2024, Clourney Semiconductor. All rights reserved.
+#
+# This software and/or documentation is licensed by Clourney Semiconductor under limited terms and conditions.
+# Reproduction and redistribution in binary or source form, with or without modification,
+# for use solely in conjunction with a Clourney Semiconductor chipset, is permitted in condition which
+# must retain the above copyright notice.
+#
+# By using this software and/or documentation, you agree to the limited terms and conditions.
+
+VERBOSE=0
+WAIT=0
+LVL1_NUM=0
+OUTPUT=""
+BACKUP="backup-OpenWrt.tar.gz"
+WIFI_PHY_LIST=$(ls /sys/class/ieee80211/)
+ALL_AP_LIST=$(iwinfo | grep -B2 "Mode: Master" | grep ESSID | awk '{print $1}')
+PRI_AP_LIST=$(grep "^interface=" /var/run/hostapd-*.conf | awk -F '=' '{print $2}')
+DFT_CONSOLE_LOG_LEVEL=$(awk '{print $1}' /proc/sys/kernel/printk)
+
+usage_and_exit() {
+	cat  <<EOF
+Usage: gather_sysinfo [-v] [-o filename] [-w second]
+Options:
+    -v
+        print the info to stdio, suitable for scenarios where the network is unreachable
+    -o filename
+        save the info /tmp/filename.tar.gz, user can download the filename.tar to host via tftp or scp
+    -w seconds
+        clean wifi stats then sleep specified seconds before gather sysinfo
+EOF
+	exit
+}
+
+print_level_1_title() {
+	local title="$1"
+
+	printf "\n# $(($LVL1_NUM + 1)). $title\n"
+	LVL1_NUM=$(($LVL1_NUM + 1))
+	LVL2_NUM=1
+}
+
+print_level_2_title() {
+	local title="$1"
+
+	printf "\n## $LVL1_NUM.$LVL2_NUM. $title\n"
+	LVL2_NUM=$(($LVL2_NUM + 1))
+}
+
+print_introduce() {
+	cat  <<EOF
+This file uses markdown syntax, it is recommended to view it using any of the following methods:
+- mdview (https://github.com/c3er/mdview)
+- Any browser with markdown viewer extension
+- Any editor with markdown viewer extension
+EOF
+}
+
+exec_with_title() {
+	local cmd="$1"
+	local title
+
+	if [ -n "$2" ]; then
+		title="$2"
+	else
+		if [ "${cmd%% *}" = "cat" ]; then
+			title="${cmd#* }"
+		else
+			title="$cmd"
+		fi
+	fi
+
+	print_level_2_title "$title"
+
+	echo '```'
+	eval $cmd 2>&1
+	echo '```'
+}
+
+exec_with_title_and_dmesg() {
+	local cmd="$1"
+	local title
+
+	if [ -n "$2" ]; then
+		title="$2"
+	else
+		if [ "${cmd%% *}" = "cat" ]; then
+			title="${cmd#* }"
+		else
+			title="$cmd"
+		fi
+	fi
+
+	print_level_2_title "$title"
+
+	dmesg -c > /dev/null
+
+	echo '```'
+	eval $cmd 2>&1
+	dmesg
+	echo '```'
+}
+
+dump_files() {
+	local match="$1"
+
+	for file in $(ls -d -1 $match); do
+		exec_with_title "cat $file"
+	done
+}
+
+dump_bridge_status() {
+	local dev
+
+	for dev in $(ls /sys/devices/virtual/net/); do
+		[ -e /sys/devices/virtual/net/$dev/bridge ] || continue
+		exec_with_title "brctl show $dev"
+		exec_with_title "brctl showmacs $dev"
+		exec_with_title "brctl showstp $dev"
+	done
+}
+
+stop_log_and_printk_to_console() {
+	# some msg will be printed to console by printk and saved in /tmp/syslog during gather info
+	# set console log level to 0 and stop log service for this problem
+	echo 0 > /proc/sys/kernel/printk
+	/etc/init.d/log stop
+}
+
+start_log_and_printk_to_console() {
+	echo $DFT_CONSOLE_LOG_LEVEL > /proc/sys/kernel/printk
+	/etc/init.d/log start
+}
+
+gather_platform_data() {
+	local mtd_dev flash_type
+
+	print_level_1_title "platform data"
+
+	mtd_dev=$(grep "\"platformdata\"" /proc/mtd | awk -F ':' '{print $1}')
+	if [ -z "$mtd_dev" ]; then
+		echo 'cannot retrieve platformdata partition from /proc/mtd'
+		return
+	fi
+	flash_type=$(cat /sys/class/mtd/$mtd_dev/type)
+	if [ "$flash_type" = "nand" ]; then
+		nanddump --bb=skipbad -l 131072 -f /tmp/platformdata /dev/$mtd_dev 2>/dev/null
+	elif [ "$flash_type" = "nor" ]; then
+		dd if=/dev/$mtd_dev of=/tmp/platformdata bs=128k count=1
+	else
+		echo "unknown flash type of platformdata partition: $flash_type"
+		return
+	fi
+
+	tar cfz /tmp/platformdata.tar.gz platformdata -C /tmp
+	hexdump -ve '64/1 "%02x" "\n"' /tmp/platformdata.tar.gz > /tmp/platformdata.tar.gz.hex
+	exec_with_title "cat /tmp/platformdata.tar.gz.hex" "compressed platform data"
+	rm -f /tmp/platformdata /tmp/platformdata.tar.gz /tmp/platformdata.tar.gz.hex
+
+	print_level_2_title "how to revert"
+	echo 'copy compressed platform data and save into platformdata.hex, execute below commands:'
+	echo '```'
+	echo 'xxd -r -p platformdata.hex > platformdata.tar.gz'
+	echo 'tar xfz platformdata.tar.gz'
+	echo '```'
+}
+
+gather_cal_info() {
+	print_level_1_title "calibration data info"
+
+	exec_with_title "cat /mnt/ubifs_data/cal_info"
+	exec_with_title "cat /mnt/ubifs_data/verify_info"
+	exec_with_title "ls /mnt/ubifs_data/ -l"
+}
+
+gather_device_info() {
+	print_level_1_title "device info"
+
+	exec_with_title "cat /etc/fw_env.config"
+	exec_with_title "cat /etc/fw_sys.config"
+	exec_with_title "fw_printenv"
+	exec_with_title "fw_printsys"
+	exec_with_title "cat /etc/board.json"
+	dump_files "/tmp/sysinfo/*"
+}
+
+gather_firmware_info() {
+	print_level_1_title "firmware info"
+
+	dump_files "/etc/openwrt_*"
+	dump_files "/etc/build.*"
+	exec_with_title "cat /proc/version"
+}
+
+gather_config_info() {
+	print_level_1_title "configuration info"
+
+	dump_files "/etc/config/*"
+	dump_files "/etc/cls-qos/*"
+}
+
+gather_system_info() {
+	print_level_1_title "system status"
+
+	exec_with_title "ps -w"
+	exec_with_title "cat /proc/uptime"
+	exec_with_title "cat /proc/mtd"
+	exec_with_title "cat /proc/meminfo"
+	exec_with_title "cat /proc/slabinfo"
+	exec_with_title "cat /proc/vmstat "
+	exec_with_title "cat /proc/interrupts"
+	exec_with_title "cat /proc/softirqs"
+	exec_with_title "cat /proc/bus/pci/devices"
+	exec_with_title "lsmod"
+	exec_with_title "df -h"
+	exec_with_title "find /overlay/ -exec ls -ld {} \;" "overlayfs status"
+	exec_with_title "mpstat -P 0-3 -n 5 1"
+}
+
+gather_network_info() {
+	print_level_1_title "network status"
+
+	exec_with_title "ifconfig -a"
+	dump_bridge_status
+	exec_with_title "netstat -na"
+	exec_with_title "cat /proc/net/dev"
+	exec_with_title "ip neigh show"
+	exec_with_title "ip route show"
+	exec_with_title "ip -6 route show"
+	exec_with_title "nft list ruleset"
+	exec_with_title "cat /tmp/resolv.conf"
+	exec_with_title "cat /tmp/resolv.conf.d/resolv.conf.auto"
+	exec_with_title "conntrack -L"
+	exec_with_title "cat /proc/net/flowtable_fw4_ft"
+	exec_with_title_and_dmesg "echo print > /sys/kernel/debug/fwt/command" "layer 2 forwarding table"
+	exec_with_title_and_dmesg "echo switch stats > /sys/kernel/debug/cls_npe/command" "npe stats"
+	exec_with_title "ubus -t 5 call network.device status"
+	exec_with_title "ubus -t 5 call network.interface dump"
+}
+
+gather_wifi_info() {
+	local phy iface
+
+	print_level_1_title "wifi status"
+
+	exec_with_title "iwinfo"
+	exec_with_title "grep . /sys/module/clsm_wifi/parameters/*" "wifi driver parameters"
+	exec_with_title "ubus -t 5 call network.wireless status"
+	dump_files "/var/run/hostapd-*.conf"
+	for iface in $PRI_AP_LIST; do
+		exec_with_title "hostapd_cli -i $iface status"
+	done
+	for phy in $WIFI_PHY_LIST; do
+		exec_with_title_and_dmesg "cat /sys/kernel/debug/ieee80211/$phy/cls_wifi/dbgcnt" "$phy dbgcnt"
+		exec_with_title "cat /sys/kernel/debug/ieee80211/$phy/cls_wifi/stats" "$phy stats"
+		exec_with_title "cat /sys/kernel/debug/ieee80211/$phy/cls_wifi/phydfx" "$phy phydfx"
+		exec_with_title_and_dmesg "cat /sys/kernel/debug/ieee80211/$phy/cls_wifi/mib" "$phy mib"
+	done
+}
+
+gather_wifi_env_info() {
+	local iface
+
+	print_level_1_title "wifi environment"
+
+	for iface in $PRI_AP_LIST; do
+		# TODO: enable below two commands after #5276 is fixed
+		# exec_with_title "iw dev $iface scan"
+		# exec_with_title "ubus -t 5 call iwinfo scan '{\"device\":\"$iface\"}'"
+		exec_with_title "iw dev $iface survey dump"
+		exec_with_title "ubus -t 5 call iwinfo survey '{\"device\":\"$iface\"}'"
+	done
+}
+
+gather_client_info() {
+	local iface sta
+
+	print_level_1_title "client info"
+
+	for iface in $ALL_AP_LIST; do
+		exec_with_title "iw dev $iface station dump"
+	done
+	for iface in $ALL_AP_LIST; do
+		exec_with_title "iwinfo $iface assoclist"
+	done
+	for phy in $WIFI_PHY_LIST; do
+		for sta in $(ls /sys/kernel/debug/ieee80211/$phy/cls_wifi/stations); do
+			exec_with_title "cat /sys/kernel/debug/ieee80211/$phy/cls_wifi/stations/$sta/rc/stats" "$phy $sta stats"
+			exec_with_title "cat /sys/kernel/debug/ieee80211/$phy/cls_wifi/stations/$sta/rc/tx_rate" "$phy $sta tx_rate"
+			exec_with_title "cat /sys/kernel/debug/ieee80211/$phy/cls_wifi/stations/$sta/rc/rx_rate" "$phy $sta rx_rate"
+		done
+	done
+}
+
+gather_mesh_info() {
+	print_level_1_title "mesh info"
+
+	exec_with_title "ubus -t 5 call clmesh.api topology"
+	exec_with_title "ubus -t 5 call clmesh.de network"
+}
+
+gather_other_info() {
+	print_level_1_title "other info"
+
+	exec_with_title "cat /sys/kernel/debug/wifi_traffic_monitor"
+	exec_with_title "devmem 0x90444218; devmem 0x90444214" "Reset history"
+	exec_with_title_and_dmesg "cat /sys/kernel/debug/cls_tsens/tsens_cmd" "T-Sensor info"
+	[ -f /tmp/syslog.old ] && exec_with_title "cat /tmp/syslog.old"
+	exec_with_title "cat /tmp/syslog"
+}
+
+while [ "$#" -gt 0 ]; do
+	case "$1" in
+		-v)
+			VERBOSE=1
+			shift
+			;;
+		-o)
+			[ -z "$2" ] && usage_and_exit
+			OUTPUT=$(basename $2)
+			[ "${OUTPUT##*.}" != "md" ] && OUTPUT=$OUTPUT.md
+			shift 2
+			;;
+		-w)
+			[ -z "$2" ] && usage_and_exit
+			test $2 -eq 0 2>/dev/null
+			if [ $? -gt 1 ]; then
+				echo "$2 is not a number"
+				usage_and_exit
+			fi
+			WAIT=$2
+			shift 2
+			;;
+		*)
+			usage_and_exit
+			;;
+	esac
+done
+
+if [ -n "$OUTPUT" ]; then
+	[ -e /tmp/$OUTPUT ] && { echo "/tmp/$OUTPUT already exists, please change to use another filename"; exit; }
+	[ -e /tmp/$OUTPUT.tar.gz ] && { echo "/tmp/$OUTPUT.tar already exists, please change to use another filename"; exit; }
+	REDIRECT=">> /tmp/$OUTPUT"
+fi
+
+if [ $WAIT -gt 0 ]; then
+	for phy in $WIFI_PHY_LIST; do
+		echo 0 > /sys/kernel/debug/ieee80211/$phy/cls_wifi/stats
+		for sta in $(ls /sys/kernel/debug/ieee80211/$phy/cls_wifi/stations); do
+			echo 0 > /sys/kernel/debug/ieee80211/$phy/cls_wifi/stations/$sta/rc/tx_rate
+			echo 0 > /sys/kernel/debug/ieee80211/$phy/cls_wifi/stations/$sta/rc/rx_rate
+		done
+	done
+	sleep $WAIT
+fi
+
+eval print_introduce $REDIRECT
+eval gather_platform_data $REDIRECT
+eval gather_cal_info $REDIRECT
+eval gather_device_info $REDIRECT
+eval gather_firmware_info $REDIRECT
+eval gather_config_info $REDIRECT
+eval gather_system_info $REDIRECT
+stop_log_and_printk_to_console
+eval gather_network_info $REDIRECT
+eval gather_wifi_info $REDIRECT
+eval gather_wifi_env_info $REDIRECT
+eval gather_client_info $REDIRECT
+eval gather_mesh_info $REDIRECT
+eval gather_other_info $REDIRECT
+start_log_and_printk_to_console
+
+[ $VERBOSE -eq 1 ] && exit
+
+cd /tmp
+sysupgrade -b $BACKUP
+tar cfz $OUTPUT.tar.gz $OUTPUT $BACKUP
+rm -f $OUTPUT $BACKUP
+echo "system info has been saved in /tmp/$OUTPUT.tar.gz, you can download to host via tftp or scp"

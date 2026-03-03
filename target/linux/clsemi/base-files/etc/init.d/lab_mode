@@ -1,0 +1,28 @@
+#!/bin/sh /etc/rc.common
+
+# lab_mode must be called before network
+START=18
+
+__set_bridge_ageing_time() {
+	local device="$1"
+	local ageing_time="$2"
+
+	config_get type "$device" type
+	[ "$type" != "bridge" ] && return
+
+	uci set network.$device.ageing_time=$ageing_time
+}
+
+set_bridge_ageing_time() {
+	config_load network
+	config_foreach __set_bridge_ageing_time device "$@"
+	uci commit network
+}
+
+start() {
+	if [ "$(fw_printenv -n lab_mode 2>/dev/null)" = "1" ]; then
+		set_bridge_ageing_time 30000
+	else
+		set_bridge_ageing_time 300
+	fi
+}

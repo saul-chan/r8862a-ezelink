@@ -1,0 +1,83 @@
+.cbi-page-actions {
+	padding-top: 0;
+	padding-right: 1rem;
+}
+.network-lan {
+    width: 100%;
+    background-color: #f4f4f9;
+    border-radius: 5px;
+    display: flex-column;
+}
+
+.column {
+    flex: 1;
+    background-color: #fff;
+    border: 1px solid #fff;
+    border-radius: 5px;
+}
+
+h3 {
+    margin-top: 0;
+}
+
+.form-group {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    padding-left: 20%;
+}
+
+.form-group label {
+    display: inline-block;
+    width: 150px;
+}
+
+.form-group input[type="text"] {
+    width: 200px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+.dhcp-apply {
+    background-color: #5e72e4;
+    width: auto;
+    color: #fff;
+    white-space: nowrap;
+}
+
+.dhcp-apply:hover {
+    background-color: #0056b3;
+}
+
+.dhcp-lease {
+        align-items: flex-end;
+}
+
+.dhcp-lease > span {
+        margin-left: 2px;
+        color: gray;
+}
+
+.division-line {
+    border-top: 1px solid #ccc;
+    margin: 20px 0;
+}
+
+.ip-prefix {
+    margin-right: 5px;
+}
+
+.inline-group {
+    display: flex;
+    align-items: center;
+}
+
+.inline-group input[type="text"] {
+    width: 58px;
+    margin: 0 5px;
+}
+
+.hidden {
+    display: none;
+}

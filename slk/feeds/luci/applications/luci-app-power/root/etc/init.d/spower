@@ -1,0 +1,28 @@
+#!/bin/sh /etc/rc.common
+START=92
+USE_PROCD=1
+
+start_instance()
+{
+	local s="$1"
+	config_get power_en "$s" power_en
+	if [ -n "$power_en" ];then
+		echo 1 > /sys/class/gpio/gpio35/value
+		sleep 1
+		if [ "$power_en" == "ON" ]; then
+			 echo 0 > /sys/class/gpio/gpio35/value
+		elif [ "$power_en" == "OFF" ]; then
+			 echo 1 > /sys/class/gpio/gpio35/value
+		fi
+	fi
+}
+
+start_service()
+{
+	config_load 'spwr'
+	config_foreach start_instance 'serial_power'
+}
+
+service_triggers() {
+	procd_add_reload_trigger spwr
+}

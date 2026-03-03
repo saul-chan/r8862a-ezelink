@@ -1,0 +1,15 @@
+#!/bin/sh
+
+[ -f /tmp/.wifi_lab_mode_configured ] && exit
+[ "$ACTION" = add ] || exit
+[ "$DEVICENAME" = wlan1 ] || exit
+[ "$(fw_printenv -n lab_mode 2>/dev/null)" = 1 ] || exit
+
+echo "enable ofdma and anti-attack for lab_mode" > /dev/console
+
+echo 1 > /sys/kernel/debug/ieee80211/phy1/cls_wifi/dl_ofdma/dl_on
+
+clsapi enable anti_mgmt_attack wlan1 1
+clsapi set anti_mgmt_attack_interval wlan1 600
+
+touch /tmp/.wifi_lab_mode_configured

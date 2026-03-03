@@ -1,0 +1,18 @@
+#!/usr/bin/lua
+
+local gathersysinfo = "/sbin/gather_sysinfo -o sysinfo"
+local handle = io.popen(gathersysinfo)
+local result = handle:read("*a")
+local filename = "sysinfo.md.tar.gz"
+
+handle:close()
+
+local fileExist = io.open("/tmp/sysinfo.md.tar.gz", "r")
+if fileExist then
+        local res, exit, code = os.execute("/usr/libexec/downloadsysinfo")
+else
+        error("File not exist")
+end
+
+os.execute("sleep 5")
+os.remove("/tmp/sysinfo.md.tar.gz")

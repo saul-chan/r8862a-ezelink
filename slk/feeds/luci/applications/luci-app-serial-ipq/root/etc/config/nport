@@ -1,0 +1,50 @@
+
+config ttyS0
+	option localport '4001'
+	option timeout '300'
+	option baud '115200'
+	option data '8DATABITS'
+	option stop '1STOPBIT'
+	option parity 'NONE'
+	option netpro 'tcpserver'
+	option maxconn '6'
+	option tranpro 'raw'
+	option enable '1'
+
+config ttyS1
+	option localport '4002'
+	option timeout '300'
+	option baud '115200'
+	option data '8DATABITS'
+	option stop '1STOPBIT'
+	option parity 'NONE'
+	option netpro 'tcpserver'
+	option maxconn '6'
+	option tranpro 'raw'
+	option enable '1'
+
+config ttyS2
+	option localport '3030'
+	option timeout '300'
+	option baud '115200'
+	option data '8DATABITS'
+	option stop '1STOPBIT'
+	option parity 'NONE'
+	option netpro 'tcpserver'
+	option maxconn '6'
+	option tranpro 'raw'
+	option enable '1'
+
+config ttyS3
+	option localport '4003'
+	option timeout '300'
+	option baud '115200'
+	option data '8DATABITS'
+	option stop '1STOPBIT'
+	option parity 'NONE'
+	option netpro 'tcpserver'
+	option maxconn '6'
+	option tranpro 'raw'
+	option enable '1'
+
+
