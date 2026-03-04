@@ -87,8 +87,8 @@ int detectProcessByName(char * processName)
 */
 void cmd_recieve_str(char *cmd, char *respond)
 {
-	if(strcmp(name_config,"SIM")==0)
-		detectProcessByName("cmdat");
+	// if(strcmp(name_config,"SIM")==0)
+		// detectProcessByName("cmdat");
     FILE * p_file = NULL;
 	char msg[1024];
 	memset(msg,0,sizeof(msg));
@@ -98,9 +98,17 @@ void cmd_recieve_str(char *cmd, char *respond)
 	if(strstr(cmd,"cmdat"))
 	{
 		find_ttyUSB();
+		
 	}
 	// 使用popen函数则用pclose 关闭文件
-	sprintf(tmp_cmd,"%s | awk '{printf$0}' | sed 's/[[:space:]]*$//'",cmd);
+	if(strstr(cmd,"cmdat"))
+	{
+		sprintf(tmp_cmd,"timeout 30 %s | awk '{printf$0}' | sed 's/[[:space:]]*$//'",cmd);
+	}
+	else
+	{
+		sprintf(tmp_cmd,"%s | awk '{printf$0}' | sed 's/[[:space:]]*$//'",cmd);
+	}
     if((p_file=popen(tmp_cmd,"r"))==NULL)
     {
         perror("popen error");
@@ -137,15 +145,26 @@ void cmd_recieve_str(char *cmd, char *respond)
 */
 int cmd_recieve_int(char * cmd)
 {
-	if(strcmp(name_config,"SIM")==0)
-		detectProcessByName("cmdat");
+	// if(strcmp(name_config,"SIM")==0)
+		// detectProcessByName("cmdat");
     FILE * p_file = NULL;
+	char tmp_cmd[1024];
+	memset(tmp_cmd,0,sizeof(tmp_cmd));
+	
 	if(strstr(cmd,"cmdat"))
 	{
 		find_ttyUSB();
 	}
 	char msg[1024];
 	memset(msg,0,sizeof(msg));
+	if(strstr(cmd,"cmdat"))
+	{
+		sprintf(tmp_cmd,"timeout 30 %s",cmd);
+	}
+	else
+	{
+		sprintf(tmp_cmd,"%s",cmd);
+	}
 	// 使用popen函数则用pclose 关闭文件
     if((p_file=popen(cmd,"r"))==NULL)
     {

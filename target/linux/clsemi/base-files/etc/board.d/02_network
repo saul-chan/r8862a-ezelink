@@ -15,7 +15,7 @@ clsemi_setup_interfaces()
 		ucidef_set_interfaces_lan_wan "eth1 eth2 eth3 eth4" "eth0"
 		;;
 	clsemi,dubhe2000-demo-o)
-		ucidef_set_interfaces_lan_wan "eth1"
+		ucidef_set_interface_lan "eth1"
 		;;
 	clsemi,dubhe2000-demo-a)
 		ucidef_set_interfaces_lan_wan "eth4" "eth1"

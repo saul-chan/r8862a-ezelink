@@ -1,0 +1,2137 @@
+make[2]: Entering directory '/home/slk/SLK-R8862A/clsemi-openwrt/scripts/config'
+make[2]: 'conf' is up to date.
+make[2]: Leaving directory '/home/slk/SLK-R8862A/clsemi-openwrt/scripts/config'
+make[1]: Entering directory '/home/slk/SLK-R8862A/clsemi-openwrt'
+make[2]: Entering directory '/home/slk/SLK-R8862A/clsemi-openwrt/package/libs/toolchain'
+echo "libc" >> /home/slk/SLK-R8862A/clsemi-openwrt/staging_dir/target-aarch64_cortex-a53_musl/pkginfo/toolchain.default.install
+echo "libgcc" >> /home/slk/SLK-R8862A/clsemi-openwrt/staging_dir/target-aarch64_cortex-a53_musl/pkginfo/toolchain.default.install
+echo "libstdcpp" >> /home/slk/SLK-R8862A/clsemi-openwrt/staging_dir/target-aarch64_cortex-a53_musl/pkginfo/toolchain.default.install
+echo "libpthread" >> /home/slk/SLK-R8862A/clsemi-openwrt/staging_dir/target-aarch64_cortex-a53_musl/pkginfo/toolchain.default.install
+echo "librt" >> /home/slk/SLK-R8862A/clsemi-openwrt/staging_dir/target-aarch64_cortex-a53_musl/pkginfo/toolchain.default.install
+make[2]: Leaving directory '/home/slk/SLK-R8862A/clsemi-openwrt/package/libs/toolchain'
+time: package/libs/toolchain/compile#0.28#0.18#0.40
+make[2]: Entering directory '/home/slk/SLK-R8862A/clsemi-openwrt/package/libs/libiconv'
+make[2]: Leaving directory '/home/slk/SLK-R8862A/clsemi-openwrt/package/libs/libiconv'
+time: package/libs/libiconv/compile#0.27#0.23#0.41
+make[2]: Entering directory '/home/slk/SLK-R8862A/clsemi-openwrt/package/custom/dialing'
+rm -f /home/slk/SLK-R8862A/clsemi-openwrt/build_dir/target-aarch64_cortex-a53_musl/dialing/.built
+touch /home/slk/SLK-R8862A/clsemi-openwrt/build_dir/target-aarch64_cortex-a53_musl/dialing/.built_check
+CFLAGS="-Os -pipe -mcpu=cortex-a53 -fno-caller-saves -fno-plt -fhonour-copts -Wno-error=unused-but-set-variable -Wno-error=unused-result -fdiagnostics-color=always -fmacro-prefix-map=/home/slk/SLK-R8862A/clsemi-openwrt/build_dir/target-aarch64_cortex-a53_musl/dialing=dialing -Wformat -Werror=format-security -fstack-protector -D_FORTIFY_SOURCE=1 -Wl,-z,now -Wl,-z,relro -I/home/slk/SLK-R8862A/clsemi-openwrt/staging_dir/target-aarch64_cortex-a53_musl/usr/lib/libiconv-stub/include -I/home/slk/SLK-R8862A/clsemi-openwrt/staging_dir/target-aarch64_cortex-a53_musl/usr/lib/libintl-stub/include  -I/home/slk/SLK-R8862A/clsemi-openwrt/staging_dir/toolchain-aarch64_cortex-a53_gcc-11.2.0_musl/usr/include -I/home/slk/SLK-R8862A/clsemi-openwrt/staging_dir/toolchain-aarch64_cortex-a53_gcc-11.2.0_musl/include/fortify -I/home/slk/SLK-R8862A/clsemi-openwrt/staging_dir/toolchain-aarch64_cortex-a53_gcc-11.2.0_musl/include -I/home/slk/SLK-R8862A/clsemi-openwrt/staging_dir/target-aarch64_cortex-a53_musl/usr/lib/libiconv-stub/include -I/home/slk/SLK-R8862A/clsemi-openwrt/staging_dir/target-aarch64_cortex-a53_musl/usr/lib/libintl-stub/include " CXXFLAGS="-Os -pipe -mcpu=cortex-a53 -fno-caller-saves -fno-plt -fhonour-copts -Wno-error=unused-but-set-variable -Wno-error=unused-result -fdiagnostics-color=always -fmacro-prefix-map=/home/slk/SLK-R8862A/clsemi-openwrt/build_dir/target-aarch64_cortex-a53_musl/dialing=dialing -Wformat -Werror=format-security -fstack-protector -D_FORTIFY_SOURCE=1 -Wl,-z,now -Wl,-z,relro -I/home/slk/SLK-R8862A/clsemi-openwrt/staging_dir/target-aarch64_cortex-a53_musl/usr/lib/libiconv-stub/include -I/home/slk/SLK-R8862A/clsemi-openwrt/staging_dir/target-aarch64_cortex-a53_musl/usr/lib/libintl-stub/include  -I/home/slk/SLK-R8862A/clsemi-openwrt/staging_dir/toolchain-aarch64_cortex-a53_gcc-11.2.0_musl/usr/include -I/home/slk/SLK-R8862A/clsemi-openwrt/staging_dir/toolchain-aarch64_cortex-a53_gcc-11.2.0_musl/include/fortify -I/home/slk/SLK-R8862A/clsemi-openwrt/staging_dir/toolchain-aarch64_cortex-a53_gcc-11.2.0_musl/include -I/home/slk/SLK-R8862A/clsemi-openwrt/staging_dir/target-aarch64_cortex-a53_musl/usr/lib/libiconv-stub/include -I/home/slk/SLK-R8862A/clsemi-openwrt/staging_dir/target-aarch64_cortex-a53_musl/usr/lib/libintl-stub/include " LDFLAGS="-L/home/slk/SLK-R8862A/clsemi-openwrt/staging_dir/toolchain-aarch64_cortex-a53_gcc-11.2.0_musl/usr/lib -L/home/slk/SLK-R8862A/clsemi-openwrt/staging_dir/toolchain-aarch64_cortex-a53_gcc-11.2.0_musl/lib -znow -zrelro -L/home/slk/SLK-R8862A/clsemi-openwrt/staging_dir/target-aarch64_cortex-a53_musl/usr/lib/libiconv-stub/lib -Wl,-rpath-link=/home/slk/SLK-R8862A/clsemi-openwrt/staging_dir/target-aarch64_cortex-a53_musl/usr/lib/libiconv-stub/lib -L/home/slk/SLK-R8862A/clsemi-openwrt/staging_dir/target-aarch64_cortex-a53_musl/usr/lib/libintl-stub/lib -Wl,-rpath-link=/home/slk/SLK-R8862A/clsemi-openwrt/staging_dir/target-aarch64_cortex-a53_musl/usr/lib/libintl-stub/lib " make -j1 -C /home/slk/SLK-R8862A/clsemi-openwrt/build_dir/target-aarch64_cortex-a53_musl/dialing/. AR="aarch64-openwrt-linux-musl-gcc-ar" AS="aarch64-openwrt-linux-musl-gcc -c -Os -pipe -mcpu=cortex-a53 -fno-caller-saves -fno-plt -fhonour-copts -Wno-error=unused-but-set-variable -Wno-error=unused-result -fdiagnostics-color=always -fmacro-prefix-map=/home/slk/SLK-R8862A/clsemi-openwrt/build_dir/target-aarch64_cortex-a53_musl/dialing=dialing -Wformat -Werror=format-security -fstack-protector -D_FORTIFY_SOURCE=1 -Wl,-z,now -Wl,-z,relro -I/home/slk/SLK-R8862A/clsemi-openwrt/staging_dir/target-aarch64_cortex-a53_musl/usr/lib/libiconv-stub/include -I/home/slk/SLK-R8862A/clsemi-openwrt/staging_dir/target-aarch64_cortex-a53_musl/usr/lib/libintl-stub/include" LD=aarch64-openwrt-linux-musl-ld NM="aarch64-openwrt-linux-musl-gcc-nm" CC="aarch64-openwrt-linux-musl-gcc" GCC="aarch64-openwrt-linux-musl-gcc" CXX="aarch64-openwrt-linux-musl-g++" RANLIB="aarch64-openwrt-linux-musl-gcc-ranlib" STRIP=aarch64-openwrt-linux-musl-strip OBJCOPY=aarch64-openwrt-linux-musl-objcopy OBJDUMP=aarch64-openwrt-linux-musl-objdump SIZE=aarch64-openwrt-linux-musl-size CROSS="aarch64-openwrt-linux-musl-" ARCH="aarch64" ;
+make[3]: Entering directory '/home/slk/SLK-R8862A/clsemi-openwrt/build_dir/target-aarch64_cortex-a53_musl/dialing'
+aarch64-openwrt-linux-musl-gcc -I -DUSE_DEBUG -c -Wall main.c -o main.o
+cc1: note: someone does not honour COPTS correctly, passed 0 times
+In file included from main.c:1:
+function.h: In function 'cmd_recieve_str':
+function.h:100:17: warning: implicit declaration of function 'find_ttyUSB' [-Wimplicit-function-declaration]
+  100 |                 find_ttyUSB();
+      |                 ^~~~~~~~~~~
+function.h:118:59: warning: argument to 'sizeof' in 'strncat' call is the same expression as the source; did you mean to use the size of the destination? [-Wsizeof-pointer-memaccess]
+  118 |                                 strncat(respond,msg,sizeof(msg));
+      |                                                           ^
+function.h:97:13: warning: unused variable 'len' [-Wunused-variable]
+   97 |         int len = 0;
+      |             ^~~
+function.h: In function 'cmd_recieve_int':
+function.h:160:21: error: 'msg' undeclared (first use in this function)
+  160 |         while(fgets(msg,sizeof(msg),p_file)!=NULL)
+      |                     ^~~
+function.h:160:21: note: each undeclared identifier is reported only once for each function it appears in
+In file included from main.c:1:
+function.h: In function 'cmdat':
+function.h:439:32: warning: argument to 'sizeof' in 'memset' call is the same expression as the destination; did you mean to provide an explicit length? [-Wsizeof-pointer-memaccess]
+  439 |         memset(respond,0,sizeof(respond));
+      |                                ^
+function.h: In function 'isInt':
+function.h:485:9: warning: statement with no effect [-Wunused-value]
+  485 |         for(i;i<len-1;i++)
+      |         ^~~
+function.h: In function 'func_loop':
+function.h:542:17: warning: implicit declaration of function 'heartbeat' [-Wimplicit-function-declaration]
+  542 |                 heartbeat();
+      |                 ^~~~~~~~~
+function.h: At top level:
+function.h:545:6: warning: conflicting types for 'heartbeat'; have 'void()'
+  545 | void heartbeat()
+      |      ^~~~~~~~~
+function.h:542:17: note: previous implicit declaration of 'heartbeat' with type 'void()'
+  542 |                 heartbeat();
+      |                 ^~~~~~~~~
+function.h: In function 'countstr':
+function.h:606:13: warning: unused variable 'len_father' [-Wunused-variable]
+  606 |         int len_father=strlen(father);
+      |             ^~~~~~~~~~
+function.h: In function 'wait_for_modem_ready':
+function.h:944:32: warning: 'return' with a value, in function returning void [-Wreturn-type]
+  944 |                         return 0;
+      |                                ^
+function.h:934:6: note: declared here
+  934 | void wait_for_modem_ready()
+      |      ^~~~~~~~~~~~~~~~~~~~
+function.h: In function 'is_card_hotplug':
+function.h:985:22: warning: unused variable 'tmp_buff' [-Wunused-variable]
+  985 |                 char tmp_buff[500];
+      |                      ^~~~~~~~
+function.h: At top level:
+function.h:1028:6: warning: conflicting types for 'find_ttyUSB'; have 'void()'
+ 1028 | void find_ttyUSB()
+      |      ^~~~~~~~~~~
+In file included from main.c:1:
+function.h:100:17: note: previous implicit declaration of 'find_ttyUSB' with type 'void()'
+  100 |                 find_ttyUSB();
+      |                 ^~~~~~~~~~~
+In file included from main.c:1:
+function.h: In function 'find_ttyUSB':
+function.h:1086:25: warning: implicit declaration of function 'reboot_Module' [-Wimplicit-function-declaration]
+ 1086 |                         reboot_Module();
+      |                         ^~~~~~~~~~~~~
+function.h: At top level:
+function.h:1093:6: warning: conflicting types for 'reboot_Module'; have 'void()'
+ 1093 | void reboot_Module()
+      |      ^~~~~~~~~~~~~
+function.h:1086:25: note: previous implicit declaration of 'reboot_Module' with type 'void()'
+ 1086 |                         reboot_Module();
+      |                         ^~~~~~~~~~~~~
+function.h: In function 'fix_ifname':
+function.h:1370:55: warning: argument to 'sizeof' in 'strncpy' call is the same expression as the source; did you mean to use the size of the destination? [-Wsizeof-pointer-memaccess]
+ 1370 |                 strncpy(value_ifname, tmp_buff, sizeof(tmp_buff));
+      |                                                       ^
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h: In function 'getModule':
+dialing.h:648:14: warning: unused variable 'value_devicenum' [-Wunused-variable]
+  648 |         char value_devicenum[5];
+      |              ^~~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h: In function 'setModule':
+dialing.h:1257:17: warning: implicit declaration of function 'setModule_FM650' [-Wimplicit-function-declaration]
+ 1257 |                 setModule_FM650(tmp_mode_usb,tmp_mode_nat);
+      |                 ^~~~~~~~~~~~~~~
+dialing.h:1280:17: warning: implicit declaration of function 'setModule_FM160' [-Wimplicit-function-declaration]
+ 1280 |                 setModule_FM160(tmp_mode_usb,tmp_mode_nat);
+      |                 ^~~~~~~~~~~~~~~
+dialing.h:1285:17: warning: implicit declaration of function 'setModule_FG160' [-Wimplicit-function-declaration]
+ 1285 |                 setModule_FG160();
+      |                 ^~~~~~~~~~~~~~~
+dialing.h:1299:17: warning: implicit declaration of function 'setModule_NL668' [-Wimplicit-function-declaration]
+ 1299 |                 setModule_NL668("18",tmp_mode_nat);
+      |                 ^~~~~~~~~~~~~~~
+dialing.h:1322:17: warning: implicit declaration of function 'setModule_RM500U' [-Wimplicit-function-declaration]
+ 1322 |                 setModule_RM500U(tmp_mode_usb,tmp_mode_nat);
+      |                 ^~~~~~~~~~~~~~~~
+dialing.h:1348:17: warning: implicit declaration of function 'setModule_RG520N' [-Wimplicit-function-declaration]
+ 1348 |                 setModule_RG520N();
+      |                 ^~~~~~~~~~~~~~~~
+dialing.h:1353:17: warning: implicit declaration of function 'setModule_EC20'; did you mean 'setModule'? [-Wimplicit-function-declaration]
+ 1353 |                 setModule_EC20();
+      |                 ^~~~~~~~~~~~~~
+      |                 setModule
+dialing.h:1357:17: warning: implicit declaration of function 'setModule_SIM8200' [-Wimplicit-function-declaration]
+ 1357 |                 setModule_SIM8200();
+      |                 ^~~~~~~~~~~~~~~~~
+dialing.h:1361:17: warning: implicit declaration of function 'setModule_SIM7600' [-Wimplicit-function-declaration]
+ 1361 |                 setModule_SIM7600();
+      |                 ^~~~~~~~~~~~~~~~~
+dialing.h:1362:17: warning: implicit declaration of function 'setFlightmode' [-Wimplicit-function-declaration]
+ 1362 |                 setFlightmode();
+      |                 ^~~~~~~~~~~~~
+dialing.h:1383:17: warning: implicit declaration of function 'setModule_MT5700' [-Wimplicit-function-declaration]
+ 1383 |                 setModule_MT5700(tmp_mode_usb,tmp_mode_nat);
+      |                 ^~~~~~~~~~~~~~~~
+dialing.h:1404:17: warning: implicit declaration of function 'setModule_MT5711' [-Wimplicit-function-declaration]
+ 1404 |                 setModule_MT5711(tmp_mode_usb,tmp_mode_nat);
+      |                 ^~~~~~~~~~~~~~~~
+dialing.h: In function 'getModem':
+dialing.h:1443:17: warning: implicit declaration of function 'getIMEI'; did you mean 'ETIME'? [-Wimplicit-function-declaration]
+ 1443 |                 getIMEI();
+      |                 ^~~~~~~
+      |                 ETIME
+dialing.h:1446:17: warning: implicit declaration of function 'getVERS' [-Wimplicit-function-declaration]
+ 1446 |                 getVERS();
+      |                 ^~~~~~~
+dialing.h:1453:25: warning: implicit declaration of function 'getCPIN_2card_hotplug'; did you mean 'is_card_hotplug'? [-Wimplicit-function-declaration]
+ 1453 |                         getCPIN_2card_hotplug();
+      |                         ^~~~~~~~~~~~~~~~~~~~~
+      |                         is_card_hotplug
+dialing.h:1455:25: warning: implicit declaration of function 'getCPIN_2card' [-Wimplicit-function-declaration]
+ 1455 |                         getCPIN_2card();
+      |                         ^~~~~~~~~~~~~
+dialing.h:1457:17: warning: implicit declaration of function 'getSLOT' [-Wimplicit-function-declaration]
+ 1457 |                 getSLOT();
+      |                 ^~~~~~~
+dialing.h:1462:25: warning: implicit declaration of function 'getCPIN_acm' [-Wimplicit-function-declaration]
+ 1462 |                         getCPIN_acm();
+      |                         ^~~~~~~~~~~
+dialing.h:1464:25: warning: implicit declaration of function 'getCPIN' [-Wimplicit-function-declaration]
+ 1464 |                         getCPIN();
+      |                         ^~~~~~~
+dialing.h:1468:9: warning: implicit declaration of function 'getIMSI' [-Wimplicit-function-declaration]
+ 1468 |         getIMSI();
+      |         ^~~~~~~
+dialing.h:1471:9: warning: implicit declaration of function 'getICCID' [-Wimplicit-function-declaration]
+ 1471 |         getICCID();
+      |         ^~~~~~~~
+dialing.h:1474:9: warning: implicit declaration of function 'getCOPS' [-Wimplicit-function-declaration]
+ 1474 |         getCOPS();
+      |         ^~~~~~~
+dialing.h:1476:9: warning: implicit declaration of function 'debug_card_info' [-Wimplicit-function-declaration]
+ 1476 |         debug_card_info("ready");
+      |         ^~~~~~~~~~~~~~~
+dialing.h:1479:17: warning: implicit declaration of function 'pre_Dial' [-Wimplicit-function-declaration]
+ 1479 |                 pre_Dial();
+      |                 ^~~~~~~~
+dialing.h:1482:9: warning: implicit declaration of function 'getCGREG' [-Wimplicit-function-declaration]
+ 1482 |         getCGREG();
+      |         ^~~~~~~~
+dialing.h:1483:9: warning: implicit declaration of function 'getCEREG' [-Wimplicit-function-declaration]
+ 1483 |         getCEREG();
+      |         ^~~~~~~~
+dialing.h:1485:17: warning: implicit declaration of function 'getC5GREG' [-Wimplicit-function-declaration]
+ 1485 |                 getC5GREG();
+      |                 ^~~~~~~~~
+dialing.h:1490:9: warning: implicit declaration of function 'getTEMP' [-Wimplicit-function-declaration]
+ 1490 |         getTEMP();
+      |         ^~~~~~~
+dialing.h:1493:9: warning: implicit declaration of function 'getCSQ' [-Wimplicit-function-declaration]
+ 1493 |         getCSQ();
+      |         ^~~~~~
+dialing.h:1495:9: warning: implicit declaration of function 'getGPS' [-Wimplicit-function-declaration]
+ 1495 |         getGPS();
+      |         ^~~~~~
+dialing.h:1499:17: warning: implicit declaration of function 'analyticCPSI_SIM7600' [-Wimplicit-function-declaration]
+ 1499 |                 analyticCPSI_SIM7600();
+      |                 ^~~~~~~~~~~~~~~~~~~~
+dialing.h:1501:17: warning: implicit declaration of function 'analyticCPSI_SIM8200' [-Wimplicit-function-declaration]
+ 1501 |                 analyticCPSI_SIM8200();
+      |                 ^~~~~~~~~~~~~~~~~~~~
+dialing.h:1503:17: warning: implicit declaration of function 'analyticINFO_FM650' [-Wimplicit-function-declaration]
+ 1503 |                 analyticINFO_FM650();
+      |                 ^~~~~~~~~~~~~~~~~~
+dialing.h:1505:17: warning: implicit declaration of function 'analyticQENG_RM500U' [-Wimplicit-function-declaration]
+ 1505 |                 analyticQENG_RM500U();
+      |                 ^~~~~~~~~~~~~~~~~~~
+dialing.h:1511:17: warning: implicit declaration of function 'analyticINFO_MT5700' [-Wimplicit-function-declaration]
+ 1511 |                 analyticINFO_MT5700();
+      |                 ^~~~~~~~~~~~~~~~~~~
+dialing.h:1423:14: warning: unused variable 'tmp_buff' [-Wunused-variable]
+ 1423 |         char tmp_buff[1024];
+      |              ^~~~~~~~
+dialing.h: At top level:
+dialing.h:1520:6: warning: conflicting types for 'getVERS'; have 'void()'
+ 1520 | void getVERS()
+      |      ^~~~~~~
+dialing.h:1446:17: note: previous implicit declaration of 'getVERS' with type 'void()'
+ 1446 |                 getVERS();
+      |                 ^~~~~~~
+dialing.h:1718:6: warning: conflicting types for 'getTEMP'; have 'void()'
+ 1718 | void getTEMP()
+      |      ^~~~~~~
+dialing.h:1490:9: note: previous implicit declaration of 'getTEMP' with type 'void()'
+ 1490 |         getTEMP();
+      |         ^~~~~~~
+dialing.h:1804:7: warning: conflicting types for 'getSLOT'; have 'void()'
+ 1804 | void  getSLOT()
+      |       ^~~~~~~
+dialing.h:1457:17: note: previous implicit declaration of 'getSLOT' with type 'void()'
+ 1457 |                 getSLOT();
+      |                 ^~~~~~~
+dialing.h: In function 'getSLOT':
+dialing.h:1806:14: warning: unused variable 'tmp_buff' [-Wunused-variable]
+ 1806 |         char tmp_buff[1024];
+      |              ^~~~~~~~
+dialing.h: At top level:
+dialing.h:1937:6: warning: conflicting types for 'getIMEI'; have 'void()'
+ 1937 | void getIMEI()
+      |      ^~~~~~~
+dialing.h:1443:17: note: previous implicit declaration of 'getIMEI' with type 'void()'
+ 1443 |                 getIMEI();
+      |                 ^~~~~~~
+dialing.h:1980:6: warning: conflicting types for 'setFlightmode'; have 'void()'
+ 1980 | void setFlightmode()
+      |      ^~~~~~~~~~~~~
+dialing.h:1362:17: note: previous implicit declaration of 'setFlightmode' with type 'void()'
+ 1362 |                 setFlightmode();
+      |                 ^~~~~~~~~~~~~
+dialing.h: In function 'resetModem':
+dialing.h:2068:17: warning: implicit declaration of function 'setagainFM650' [-Wimplicit-function-declaration]
+ 2068 |                 setagainFM650();
+      |                 ^~~~~~~~~~~~~
+dialing.h: At top level:
+dialing.h:2074:6: warning: conflicting types for 'getCPIN'; have 'void()'
+ 2074 | void getCPIN()
+      |      ^~~~~~~
+dialing.h:1464:25: note: previous implicit declaration of 'getCPIN' with type 'void()'
+ 1464 |                         getCPIN();
+      |                         ^~~~~~~
+dialing.h: In function 'getCPIN':
+dialing.h:2113:25: warning: implicit declaration of function 'setPINCode' [-Wimplicit-function-declaration]
+ 2113 |                         setPINCode(value_pin);
+      |                         ^~~~~~~~~~
+dialing.h:2138:33: warning: implicit declaration of function 'controlLED' [-Wimplicit-function-declaration]
+ 2138 |                                 controlLED();
+      |                                 ^~~~~~~~~~
+dialing.h:2148:57: warning: implicit declaration of function 'ActiveSIM_MT5700' [-Wimplicit-function-declaration]
+ 2148 |                                                         ActiveSIM_MT5700();
+      |                                                         ^~~~~~~~~~~~~~~~
+dialing.h:2150:41: warning: implicit declaration of function 'setFlightmode_MT5711'; did you mean 'setFlightmode2'? [-Wimplicit-function-declaration]
+ 2150 |                                         setFlightmode_MT5711();
+      |                                         ^~~~~~~~~~~~~~~~~~~~
+      |                                         setFlightmode2
+dialing.h:2146:40: warning: suggest explicit braces to avoid ambiguous 'else' [-Wdangling-else]
+ 2146 |                                 else if(strstr(value_module,"mt5700"))
+      |                                        ^
+dialing.h: At top level:
+dialing.h:2165:6: warning: conflicting types for 'getCPIN_2card'; have 'void()'
+ 2165 | void getCPIN_2card()
+      |      ^~~~~~~~~~~~~
+dialing.h:1455:25: note: previous implicit declaration of 'getCPIN_2card' with type 'void()'
+ 1455 |                         getCPIN_2card();
+      |                         ^~~~~~~~~~~~~
+dialing.h: In function 'getCPIN_2card':
+dialing.h:2337:49: warning: implicit declaration of function 'SwitchSIM_FM650' [-Wimplicit-function-declaration]
+ 2337 |                                                 SwitchSIM_FM650(false);
+      |                                                 ^~~~~~~~~~~~~~~
+dialing.h:2339:49: warning: implicit declaration of function 'SwitchSIM_FG160' [-Wimplicit-function-declaration]
+ 2339 |                                                 SwitchSIM_FG160(false);
+      |                                                 ^~~~~~~~~~~~~~~
+dialing.h:2341:49: warning: implicit declaration of function 'SwitchSIM_NL668' [-Wimplicit-function-declaration]
+ 2341 |                                                 SwitchSIM_NL668(false);
+      |                                                 ^~~~~~~~~~~~~~~
+dialing.h:2343:49: warning: implicit declaration of function 'SwitchSIM_SIM8200' [-Wimplicit-function-declaration]
+ 2343 |                                                 SwitchSIM_SIM8200(false);
+      |                                                 ^~~~~~~~~~~~~~~~~
+dialing.h:2346:49: warning: implicit declaration of function 'SwitchSIM_SIM7600' [-Wimplicit-function-declaration]
+ 2346 |                                                 SwitchSIM_SIM7600(false);       //sim7600切换卡槽后，需要飞行模式才可读卡
+      |                                                 ^~~~~~~~~~~~~~~~~
+dialing.h:2350:49: warning: implicit declaration of function 'SwitchSIM_RG520N' [-Wimplicit-function-declaration]
+ 2350 |                                                 SwitchSIM_RG520N(false);
+      |                                                 ^~~~~~~~~~~~~~~~
+dialing.h:2357:49: warning: implicit declaration of function 'SwitchSIM_EC20' [-Wimplicit-function-declaration]
+ 2357 |                                                 SwitchSIM_EC20(false);
+      |                                                 ^~~~~~~~~~~~~~
+dialing.h:2360:49: warning: implicit declaration of function 'SwitchSIM_MT5700' [-Wimplicit-function-declaration]
+ 2360 |                                                 SwitchSIM_MT5700(false);        //mt5700切换卡槽后，需要飞行模式, 并且激活SIM卡才可读卡
+      |                                                 ^~~~~~~~~~~~~~~~
+dialing.h:2364:49: warning: implicit declaration of function 'SwitchSIM_MT5711' [-Wimplicit-function-declaration]
+ 2364 |                                                 SwitchSIM_MT5711(false);        //mt5700切换卡槽后，需要飞行模式, 并且激活SIM卡才可读卡
+      |                                                 ^~~~~~~~~~~~~~~~
+dialing.h:2415:48: warning: suggest explicit braces to avoid ambiguous 'else' [-Wdangling-else]
+ 2415 |                                         else if(strstr(value_module,"mt5700"))
+      |                                                ^
+dialing.h: At top level:
+dialing.h:2437:6: warning: conflicting types for 'getCPIN_2card_hotplug'; have 'void()'
+ 2437 | void getCPIN_2card_hotplug()
+      |      ^~~~~~~~~~~~~~~~~~~~~
+dialing.h:1453:25: note: previous implicit declaration of 'getCPIN_2card_hotplug' with type 'void()'
+ 1453 |                         getCPIN_2card_hotplug();
+      |                         ^~~~~~~~~~~~~~~~~~~~~
+dialing.h: In function 'getCPIN_2card_hotplug':
+dialing.h:2624:57: warning: implicit declaration of function 'SwitchSIM_RM500U' [-Wimplicit-function-declaration]
+ 2624 |                                                         SwitchSIM_RM500U(false);
+      |                                                         ^~~~~~~~~~~~~~~~
+dialing.h: At top level:
+dialing.h:2676:6: warning: conflicting types for 'getCPIN_acm'; have 'void()'
+ 2676 | void getCPIN_acm()
+      |      ^~~~~~~~~~~
+dialing.h:1462:25: note: previous implicit declaration of 'getCPIN_acm' with type 'void()'
+ 1462 |                         getCPIN_acm();
+      |                         ^~~~~~~~~~~
+dialing.h: In function 'getCPIN_acm':
+dialing.h:2756:48: warning: suggest explicit braces to avoid ambiguous 'else' [-Wdangling-else]
+ 2756 |                                         else if(strstr(value_module,"mt5700"))
+      |                                                ^
+dialing.h:2680:13: warning: unused variable 'count' [-Wunused-variable]
+ 2680 |         int count=0;
+      |             ^~~~~
+dialing.h: At top level:
+dialing.h:2804:6: warning: conflicting types for 'getCOPS'; have 'void()'
+ 2804 | void getCOPS()
+      |      ^~~~~~~
+dialing.h:1474:9: note: previous implicit declaration of 'getCOPS' with type 'void()'
+ 1474 |         getCOPS();
+      |         ^~~~~~~
+dialing.h:2834:6: warning: conflicting types for 'getIMSI'; have 'void()'
+ 2834 | void getIMSI()
+      |      ^~~~~~~
+dialing.h:1468:9: note: previous implicit declaration of 'getIMSI' with type 'void()'
+ 1468 |         getIMSI();
+      |         ^~~~~~~
+dialing.h:2865:6: warning: conflicting types for 'getICCID'; have 'void()'
+ 2865 | void getICCID()
+      |      ^~~~~~~~
+dialing.h:1471:9: note: previous implicit declaration of 'getICCID' with type 'void()'
+ 1471 |         getICCID();
+      |         ^~~~~~~~
+dialing.h:2903:6: warning: conflicting types for 'getCSQ'; have 'void()'
+ 2903 | void getCSQ()
+      |      ^~~~~~
+dialing.h:1493:9: note: previous implicit declaration of 'getCSQ' with type 'void()'
+ 1493 |         getCSQ();
+      |         ^~~~~~
+dialing.h:2933:6: warning: conflicting types for 'getCEREG'; have 'void()'
+ 2933 | void getCEREG()
+      |      ^~~~~~~~
+dialing.h:1483:9: note: previous implicit declaration of 'getCEREG' with type 'void()'
+ 1483 |         getCEREG();
+      |         ^~~~~~~~
+dialing.h:2959:6: warning: conflicting types for 'getCGREG'; have 'void()'
+ 2959 | void getCGREG()
+      |      ^~~~~~~~
+dialing.h:1482:9: note: previous implicit declaration of 'getCGREG' with type 'void()'
+ 1482 |         getCGREG();
+      |         ^~~~~~~~
+dialing.h:2985:6: warning: conflicting types for 'getC5GREG'; have 'void()'
+ 2985 | void getC5GREG()
+      |      ^~~~~~~~~
+dialing.h:1485:17: note: previous implicit declaration of 'getC5GREG' with type 'void()'
+ 1485 |                 getC5GREG();
+      |                 ^~~~~~~~~
+dialing.h:3010:6: warning: conflicting types for 'getGPS'; have 'void()'
+ 3010 | void getGPS()
+      |      ^~~~~~
+dialing.h:1495:9: note: previous implicit declaration of 'getGPS' with type 'void()'
+ 1495 |         getGPS();
+      |         ^~~~~~
+dialing.h: In function 'analyticRSRP':
+dialing.h:3089:14: warning: unused variable 'cmd' [-Wunused-variable]
+ 3089 |         char cmd[1024];
+      |              ^~~
+dialing.h: At top level:
+dialing.h:3198:6: warning: conflicting types for 'setPINCode'; have 'void(char *)'
+ 3198 | void setPINCode(char* pin)
+      |      ^~~~~~~~~~
+dialing.h:2113:25: note: previous implicit declaration of 'setPINCode' with type 'void(char *)'
+ 2113 |                         setPINCode(value_pin);
+      |                         ^~~~~~~~~~
+dialing.h: In function 'setModem':
+dialing.h:3379:17: warning: implicit declaration of function 'setRATMODE_SIM7600' [-Wimplicit-function-declaration]
+ 3379 |                 setRATMODE_SIM7600(tmp_mode_rat);
+      |                 ^~~~~~~~~~~~~~~~~~
+dialing.h:3434:17: warning: implicit declaration of function 'setRATMODE_SIM8200' [-Wimplicit-function-declaration]
+ 3434 |                 setRATMODE_SIM8200(tmp_mode_rat,tmp_band_wcdma,tmp_band_lte,tmp_band_nr,tmp_band_nsa);
+      |                 ^~~~~~~~~~~~~~~~~~
+dialing.h:3490:17: warning: implicit declaration of function 'setRATMODE_FM160' [-Wimplicit-function-declaration]
+ 3490 |                 setRATMODE_FM160(tmp_mode_rat,tmp_band_wcdma,tmp_band_lte,tmp_band_nr);
+      |                 ^~~~~~~~~~~~~~~~
+dialing.h:3495:33: warning: implicit declaration of function 'set5GCELLLOCK_FM650' [-Wimplicit-function-declaration]
+ 3495 |                                 set5GCELLLOCK_FM650(tmp_band_nr,value_arfcn,value_psc,value_scs);
+      |                                 ^~~~~~~~~~~~~~~~~~~
+dialing.h:3499:33: warning: implicit declaration of function 'setCELLLOCK_FM650' [-Wimplicit-function-declaration]
+ 3499 |                                 setCELLLOCK_FM650(value_arfcn,value_pci);
+      |                                 ^~~~~~~~~~~~~~~~~
+dialing.h:3504:25: warning: implicit declaration of function 'resetCELLLOCK_FM650' [-Wimplicit-function-declaration]
+ 3504 |                         resetCELLLOCK_FM650();
+      |                         ^~~~~~~~~~~~~~~~~~~
+dialing.h:3588:17: warning: implicit declaration of function 'setRATMODE_NL668' [-Wimplicit-function-declaration]
+ 3588 |                 setRATMODE_NL668(tmp_mode_rat,tmp_band_gsm,tmp_band_umts,tmp_band_lte,tmp_band_scdma,tmp_band_cdma);
+      |                 ^~~~~~~~~~~~~~~~
+dialing.h:3646:17: warning: implicit declaration of function 'setRATMODE_RM500U' [-Wimplicit-function-declaration]
+ 3646 |                 setRATMODE_RM500U(tmp_mode_rat,tmp_band_wcdma,tmp_band_lte,tmp_band_nr);
+      |                 ^~~~~~~~~~~~~~~~~
+dialing.h:3698:17: warning: implicit declaration of function 'setRATMODE_RM500Q' [-Wimplicit-function-declaration]
+ 3698 |                 setRATMODE_RM500Q(tmp_mode_rat,tmp_band_wcdma,tmp_band_lte,tmp_band_nr);
+      |                 ^~~~~~~~~~~~~~~~~
+dialing.h:3751:17: warning: implicit declaration of function 'setRATMODE_RG520N' [-Wimplicit-function-declaration]
+ 3751 |                 setRATMODE_RG520N(tmp_mode_rat,tmp_band_wcdma,tmp_band_lte,tmp_band_nr,tmp_band_nsa,value_arfcn);
+      |                 ^~~~~~~~~~~~~~~~~
+dialing.h:3756:33: warning: implicit declaration of function 'set5GCELLLOCK_RG520N' [-Wimplicit-function-declaration]
+ 3756 |                                 set5GCELLLOCK_RG520N(tmp_band_nr,value_arfcn,value_psc,value_scs);
+      |                                 ^~~~~~~~~~~~~~~~~~~~
+dialing.h:3760:33: warning: implicit declaration of function 'setCELLLOCK_RG520N' [-Wimplicit-function-declaration]
+ 3760 |                                 setCELLLOCK_RG520N(value_arfcn,value_pci);
+      |                                 ^~~~~~~~~~~~~~~~~~
+dialing.h:3765:25: warning: implicit declaration of function 'reset_RG520N' [-Wimplicit-function-declaration]
+ 3765 |                         reset_RG520N();
+      |                         ^~~~~~~~~~~~
+dialing.h:3791:17: warning: implicit declaration of function 'setRATMODE_EC20' [-Wimplicit-function-declaration]
+ 3791 |                 setRATMODE_EC20(tmp_mode_rat);
+      |                 ^~~~~~~~~~~~~~~
+dialing.h:3849:17: warning: implicit declaration of function 'setRATMODE_MT5700' [-Wimplicit-function-declaration]
+ 3849 |                 setRATMODE_MT5700(tmp_mode_rat,tmp_band_wcdma,tmp_band_lte,tmp_band_nr,value_arfcn,value_psc,value_scs,value_pci);
+      |                 ^~~~~~~~~~~~~~~~~
+dialing.h:3267:1: warning: label '_SETAPN_AGAIN2' defined but not used [-Wunused-label]
+ 3267 | _SETAPN_AGAIN2:
+      | ^~~~~~~~~~~~~~
+dialing.h:3258:1: warning: label '_SETAPN_AGAIN1' defined but not used [-Wunused-label]
+ 3258 | _SETAPN_AGAIN1:
+      | ^~~~~~~~~~~~~~
+dialing.h: In function 'setModem1':
+dialing.h:3979:1: warning: label '_SETAPN_AGAIN2' defined but not used [-Wunused-label]
+ 3979 | _SETAPN_AGAIN2:
+      | ^~~~~~~~~~~~~~
+dialing.h:3969:1: warning: label '_SETAPN_AGAIN1' defined but not used [-Wunused-label]
+ 3969 | _SETAPN_AGAIN1:
+      | ^~~~~~~~~~~~~~
+dialing.h: In function 'setModem2':
+dialing.h:4729:1: warning: label '_SETAPN_AGAIN2' defined but not used [-Wunused-label]
+ 4729 | _SETAPN_AGAIN2:
+      | ^~~~~~~~~~~~~~
+dialing.h:4720:1: warning: label '_SETAPN_AGAIN1' defined but not used [-Wunused-label]
+ 4720 | _SETAPN_AGAIN1:
+      | ^~~~~~~~~~~~~~
+dialing.h: In function 'Dial':
+dialing.h:5464:41: warning: implicit declaration of function 'Dial_SIM7600' [-Wimplicit-function-declaration]
+ 5464 |                                         Dial_SIM7600();
+      |                                         ^~~~~~~~~~~~
+dialing.h:5499:49: warning: implicit declaration of function 'Dial_SIM8200' [-Wimplicit-function-declaration]
+ 5499 |                                                 Dial_SIM8200();
+      |                                                 ^~~~~~~~~~~~
+dialing.h:5536:41: warning: implicit declaration of function 'Dial_FM650' [-Wimplicit-function-declaration]
+ 5536 |                                         Dial_FM650();
+      |                                         ^~~~~~~~~~
+dialing.h:5606:73: warning: implicit declaration of function 'Dial_FM160_PCI' [-Wimplicit-function-declaration]
+ 5606 |                                                                         Dial_FM160_PCI(value_apn_card2,value_username_card2,value_password_card2,value_auth_card2,type_ip_card2);
+      |                                                                         ^~~~~~~~~~~~~~
+dialing.h:5691:49: warning: implicit declaration of function 'Dial_FM160' [-Wimplicit-function-declaration]
+ 5691 |                                                 Dial_FM160();
+      |                                                 ^~~~~~~~~~
+dialing.h:5875:41: warning: implicit declaration of function 'Dial_NL668' [-Wimplicit-function-declaration]
+ 5875 |                                         Dial_NL668();
+      |                                         ^~~~~~~~~~
+dialing.h:5928:41: warning: implicit declaration of function 'Dial_RM500U' [-Wimplicit-function-declaration]
+ 5928 |                                         Dial_RM500U();
+      |                                         ^~~~~~~~~~~
+dialing.h:5959:49: warning: implicit declaration of function 'Dial_RM500Q' [-Wimplicit-function-declaration]
+ 5959 |                                                 Dial_RM500Q();
+      |                                                 ^~~~~~~~~~~
+dialing.h:6041:81: warning: implicit declaration of function 'Dial_RG520N' [-Wimplicit-function-declaration]
+ 6041 |                                                                                 Dial_RG520N(value_apn_card2,value_username_card2,value_password_card2,value_auth_card2,type_ip_card2);
+      |                                                                                 ^~~~~~~~~~~
+dialing.h:6159:73: warning: implicit declaration of function 'Dial_EC20' [-Wimplicit-function-declaration]
+ 6159 |                                                                         Dial_EC20(value_apn_card2,value_username_card2,value_password_card2,value_auth_card2,type_ip_card2);
+      |                                                                         ^~~~~~~~~
+dialing.h:6245:41: warning: implicit declaration of function 'Dial_MT5700' [-Wimplicit-function-declaration]
+ 6245 |                                         Dial_MT5700();
+      |                                         ^~~~~~~~~~~
+dialing.h:6293:57: warning: implicit declaration of function 'clear_debug_info' [-Wimplicit-function-declaration]
+ 6293 |                                                         clear_debug_info();
+      |                                                         ^~~~~~~~~~~~~~~~
+dialing.h:6297:49: warning: implicit declaration of function 'sleep_delay_by_registation' [-Wimplicit-function-declaration]
+ 6297 |                                                 sleep_delay_by_registation();
+      |                                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~
+dialing.h: At top level:
+dialing.h:6512:6: warning: conflicting types for 'pre_Dial'; have 'void()'
+ 6512 | void pre_Dial()
+      |      ^~~~~~~~
+dialing.h:1479:17: note: previous implicit declaration of 'pre_Dial' with type 'void()'
+ 1479 |                 pre_Dial();
+      |                 ^~~~~~~~
+dialing.h: In function 'pre_Dial':
+dialing.h:6536:33: warning: implicit declaration of function 'Dial_FM160_PRE' [-Wimplicit-function-declaration]
+ 6536 |                                 Dial_FM160_PRE();
+      |                                 ^~~~~~~~~~~~~~
+dialing.h: At top level:
+dialing.h:6627:6: warning: conflicting types for 'clear_debug_info'; have 'void()'
+ 6627 | void clear_debug_info()
+      |      ^~~~~~~~~~~~~~~~
+dialing.h:6293:57: note: previous implicit declaration of 'clear_debug_info' with type 'void()'
+ 6293 |                                                         clear_debug_info();
+      |                                                         ^~~~~~~~~~~~~~~~
+dialing.h:6639:6: warning: conflicting types for 'sleep_delay_by_registation'; have 'void()'
+ 6639 | void sleep_delay_by_registation()
+      |      ^~~~~~~~~~~~~~~~~~~~~~~~~~
+dialing.h:6297:49: note: previous implicit declaration of 'sleep_delay_by_registation' with type 'void()'
+ 6297 |                                                 sleep_delay_by_registation();
+      |                                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~
+dialing.h:6717:6: warning: conflicting types for 'debug_card_info'; have 'void(char *)'
+ 6717 | void debug_card_info(char *status)
+      |      ^~~~~~~~~~~~~~~
+dialing.h:1476:9: note: previous implicit declaration of 'debug_card_info' with type 'void(char *)'
+ 1476 |         debug_card_info("ready");
+      |         ^~~~~~~~~~~~~~~
+In file included from main.c:2:
+ctrl_leds.h:133:6: warning: conflicting types for 'controlLED'; have 'void()'
+  133 | void controlLED()
+      |      ^~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:2138:33: note: previous implicit declaration of 'controlLED' with type 'void()'
+ 2138 |                                 controlLED();
+      |                                 ^~~~~~~~~~
+In file included from main.c:2:
+ctrl_leds.h: In function 'controlLED':
+ctrl_leds.h:140:17: warning: implicit declaration of function 'controlLED_R680'; did you mean 'controlLED_RSSI'? [-Wimplicit-function-declaration]
+  140 |                 controlLED_R680();
+      |                 ^~~~~~~~~~~~~~~
+      |                 controlLED_RSSI
+ctrl_leds.h:143:25: warning: implicit declaration of function 'controlLED_R690'; did you mean 'controlLED_RSSI'? [-Wimplicit-function-declaration]
+  143 |                         controlLED_R690(); //R690可能是双模块
+      |                         ^~~~~~~~~~~~~~~
+      |                         controlLED_RSSI
+ctrl_leds.h:145:17: warning: implicit declaration of function 'controlLED_R620'; did you mean 'controlLED_RSSI'? [-Wimplicit-function-declaration]
+  145 |                 controlLED_R620();
+      |                 ^~~~~~~~~~~~~~~
+      |                 controlLED_RSSI
+ctrl_leds.h:147:17: warning: implicit declaration of function 'controlLED_R660'; did you mean 'controlLED_RSSI'? [-Wimplicit-function-declaration]
+  147 |                 controlLED_R660();
+      |                 ^~~~~~~~~~~~~~~
+      |                 controlLED_RSSI
+ctrl_leds.h:149:17: warning: implicit declaration of function 'controlLED_R4008'; did you mean 'controlLED_RSSI3'? [-Wimplicit-function-declaration]
+  149 |                 controlLED_R4008();
+      |                 ^~~~~~~~~~~~~~~~
+      |                 controlLED_RSSI3
+ctrl_leds.h:141:16: warning: suggest explicit braces to avoid ambiguous 'else' [-Wdangling-else]
+  141 |         else if(strstr(board_name,"R690"))
+      |                ^
+ctrl_leds.h: At top level:
+ctrl_leds.h:155:6: warning: conflicting types for 'controlLED_R680'; have 'void()'
+  155 | void controlLED_R680()
+      |      ^~~~~~~~~~~~~~~
+ctrl_leds.h:140:17: note: previous implicit declaration of 'controlLED_R680' with type 'void()'
+  140 |                 controlLED_R680();
+      |                 ^~~~~~~~~~~~~~~
+ctrl_leds.h:218:6: warning: conflicting types for 'controlLED_R690'; have 'void()'
+  218 | void controlLED_R690()
+      |      ^~~~~~~~~~~~~~~
+ctrl_leds.h:143:25: note: previous implicit declaration of 'controlLED_R690' with type 'void()'
+  143 |                         controlLED_R690(); //R690可能是双模块
+      |                         ^~~~~~~~~~~~~~~
+ctrl_leds.h:336:6: warning: conflicting types for 'controlLED_R620'; have 'void()'
+  336 | void controlLED_R620()
+      |      ^~~~~~~~~~~~~~~
+ctrl_leds.h:145:17: note: previous implicit declaration of 'controlLED_R620' with type 'void()'
+  145 |                 controlLED_R620();
+      |                 ^~~~~~~~~~~~~~~
+ctrl_leds.h: In function 'controlLED_R620':
+ctrl_leds.h:340:14: warning: unused variable 'tmp_buff' [-Wunused-variable]
+  340 |         char tmp_buff[1024];
+      |              ^~~~~~~~
+ctrl_leds.h: At top level:
+ctrl_leds.h:353:6: warning: conflicting types for 'controlLED_R660'; have 'void()'
+  353 | void controlLED_R660()
+      |      ^~~~~~~~~~~~~~~
+ctrl_leds.h:147:17: note: previous implicit declaration of 'controlLED_R660' with type 'void()'
+  147 |                 controlLED_R660();
+      |                 ^~~~~~~~~~~~~~~
+ctrl_leds.h:434:6: warning: conflicting types for 'controlLED_R4008'; have 'void()'
+  434 | void controlLED_R4008()
+      |      ^~~~~~~~~~~~~~~~
+ctrl_leds.h:149:17: note: previous implicit declaration of 'controlLED_R4008' with type 'void()'
+  149 |                 controlLED_R4008();
+      |                 ^~~~~~~~~~~~~~~~
+ctrl_leds.h: In function 'controlLED_R4008':
+ctrl_leds.h:436:9: warning: implicit declaration of function 'initiate_controlLED_R4008'; did you mean 'controlLED_R4008'? [-Wimplicit-function-declaration]
+  436 |         initiate_controlLED_R4008(); //R4008 dts文件中未包含led的定义，所以需要初始化gpio
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~
+      |         controlLED_R4008
+ctrl_leds.h: At top level:
+ctrl_leds.h:459:6: warning: conflicting types for 'initiate_controlLED_R4008'; have 'void()'
+  459 | void initiate_controlLED_R4008()
+      |      ^~~~~~~~~~~~~~~~~~~~~~~~~
+ctrl_leds.h:436:9: note: previous implicit declaration of 'initiate_controlLED_R4008' with type 'void()'
+  436 |         initiate_controlLED_R4008(); //R4008 dts文件中未包含led的定义，所以需要初始化gpio
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from main.c:3:
+fm650.h:5:6: warning: conflicting types for 'setModule_FM650'; have 'void(char *, char *)'
+    5 | void setModule_FM650(char *tmp_mode_usb,char *tmp_mode_nat)
+      |      ^~~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:1257:17: note: previous implicit declaration of 'setModule_FM650' with type 'void(char *, char *)'
+ 1257 |                 setModule_FM650(tmp_mode_usb,tmp_mode_nat);
+      |                 ^~~~~~~~~~~~~~~
+In file included from main.c:3:
+fm650.h:270:6: warning: conflicting types for 'setModule_NL668'; have 'void(char *, char *)'
+  270 | void setModule_NL668(char *tmp_mode_usb,char *tmp_mode_nat)
+      |      ^~~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:1299:17: note: previous implicit declaration of 'setModule_NL668' with type 'void(char *, char *)'
+ 1299 |                 setModule_NL668("18",tmp_mode_nat);
+      |                 ^~~~~~~~~~~~~~~
+In file included from main.c:3:
+fm650.h: In function 'analyticRSRP_SS':
+fm650.h:571:14: warning: unused variable 'cmd' [-Wunused-variable]
+  571 |         char cmd[1024];
+      |              ^~~
+fm650.h: At top level:
+fm650.h:674:6: warning: conflicting types for 'analyticINFO_FM650'; have 'void()'
+  674 | void analyticINFO_FM650()
+      |      ^~~~~~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:1503:17: note: previous implicit declaration of 'analyticINFO_FM650' with type 'void()'
+ 1503 |                 analyticINFO_FM650();
+      |                 ^~~~~~~~~~~~~~~~~~
+In file included from main.c:3:
+fm650.h:952:6: warning: conflicting types for 'setRATMODE_NL668'; have 'void(char *, char *, char *, char *, char *, char *)'
+  952 | void setRATMODE_NL668(char *mode,char *gsm,char *umts,char *lte,char *scdma,char *cdma)
+      |      ^~~~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:3588:17: note: previous implicit declaration of 'setRATMODE_NL668' with type 'void(char *, char *, char *, char *, char *, char *)'
+ 3588 |                 setRATMODE_NL668(tmp_mode_rat,tmp_band_gsm,tmp_band_umts,tmp_band_lte,tmp_band_scdma,tmp_band_cdma);
+      |                 ^~~~~~~~~~~~~~~~
+In file included from main.c:3:
+fm650.h: In function 'setRATMODE_NL668':
+fm650.h:955:14: warning: unused variable 'debug' [-Wunused-variable]
+  955 |         char debug[1024];
+      |              ^~~~~
+fm650.h: At top level:
+fm650.h:1055:6: warning: conflicting types for 'set5GCELLLOCK_FM650'; have 'void(char *, char *, char *, char *)'
+ 1055 | void set5GCELLLOCK_FM650(char *nr, char* arfcn, char* psc, char* scs)
+      |      ^~~~~~~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:3495:33: note: previous implicit declaration of 'set5GCELLLOCK_FM650' with type 'void(char *, char *, char *, char *)'
+ 3495 |                                 set5GCELLLOCK_FM650(tmp_band_nr,value_arfcn,value_psc,value_scs);
+      |                                 ^~~~~~~~~~~~~~~~~~~
+In file included from main.c:3:
+fm650.h: In function 'set5GCELLLOCK_FM650':
+fm650.h:1089:80: warning: format '%d' expects argument of type 'int', but argument 5 has type 'char *' [-Wformat=]
+ 1089 |                                 sprintf(cmd_setcell,"+GTCELLLOCK: 1,1,0,%s,%s,%d,%s",arfcn,psc,scs,nr);
+      |                                                                               ~^               ~~~
+      |                                                                                |               |
+      |                                                                                int             char *
+      |                                                                               %s
+fm650.h:1094:91: warning: format '%d' expects argument of type 'int', but argument 6 has type 'char *' [-Wformat=]
+ 1094 |                                         sprintf(cmd,"cmdat %s 'AT+GTCELLLOCK=1,1,0,%s,%s,%d,%s'",path_usb,arfcn,psc,scs,nr);
+      |                                                                                          ~^                         ~~~
+      |                                                                                           |                         |
+      |                                                                                           int                       char *
+      |                                                                                          %s
+fm650.h:1122:70: warning: format '%d' expects argument of type 'int', but argument 4 has type 'char *' [-Wformat=]
+ 1122 |                         sprintf(cmd_setcell,"+GTCELLLOCK: 1,1,1,%s,,%d",arfcn,scs);
+      |                                                                     ~^        ~~~
+      |                                                                      |        |
+      |                                                                      int      char *
+      |                                                                     %s
+fm650.h:1125:81: warning: format '%d' expects argument of type 'int', but argument 5 has type 'char *' [-Wformat=]
+ 1125 |                                 sprintf(cmd,"cmdat %s 'AT+GTCELLLOCK=1,1,1,%s,,%d'",path_usb,arfcn,scs);
+      |                                                                                ~^                  ~~~
+      |                                                                                 |                  |
+      |                                                                                 int                char *
+      |                                                                                %s
+fm650.h: At top level:
+fm650.h:1137:6: warning: conflicting types for 'setCELLLOCK_FM650'; have 'void(char *, char *)'
+ 1137 | void setCELLLOCK_FM650(char* arfcn, char* pci)
+      |      ^~~~~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:3499:33: note: previous implicit declaration of 'setCELLLOCK_FM650' with type 'void(char *, char *)'
+ 3499 |                                 setCELLLOCK_FM650(value_arfcn,value_pci);
+      |                                 ^~~~~~~~~~~~~~~~~
+In file included from main.c:3:
+fm650.h: In function 'setCELLLOCK_FM650':
+fm650.h:1166:27: warning: suggest explicit braces to avoid ambiguous 'else' [-Wdangling-else]
+ 1166 |                         if(strstr(value_module,"fm160"))
+      |                           ^
+fm650.h:1187:27: warning: suggest explicit braces to avoid ambiguous 'else' [-Wdangling-else]
+ 1187 |                         if(strstr(value_module,"fm160"))
+      |                           ^
+fm650.h: At top level:
+fm650.h:1199:6: warning: conflicting types for 'resetCELLLOCK_FM650'; have 'void()'
+ 1199 | void resetCELLLOCK_FM650()
+      |      ^~~~~~~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:3504:25: note: previous implicit declaration of 'resetCELLLOCK_FM650' with type 'void()'
+ 3504 |                         resetCELLLOCK_FM650();
+      |                         ^~~~~~~~~~~~~~~~~~~
+In file included from main.c:3:
+fm650.h: In function 'resetCELLLOCK_FM650':
+fm650.h:1213:19: warning: suggest explicit braces to avoid ambiguous 'else' [-Wdangling-else]
+ 1213 |                 if(strstr(value_module,"fm160"))
+      |                   ^
+fm650.h: At top level:
+fm650.h:1224:6: warning: conflicting types for 'Dial_FM650'; have 'void()'
+ 1224 | void Dial_FM650()
+      |      ^~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:5536:41: note: previous implicit declaration of 'Dial_FM650' with type 'void()'
+ 5536 |                                         Dial_FM650();
+      |                                         ^~~~~~~~~~
+In file included from main.c:3:
+fm650.h: In function 'Dial_FM650':
+fm650.h:1448:25: warning: implicit declaration of function 'trans_register_status_FM650' [-Wimplicit-function-declaration]
+ 1448 |                         trans_register_status_FM650(debug_cgreg,stat_cgreg);
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+fm650.h:1226:13: warning: unused variable 'count' [-Wunused-variable]
+ 1226 |         int count=0;
+      |             ^~~~~
+fm650.h: At top level:
+fm650.h:1481:6: warning: conflicting types for 'Dial_NL668'; have 'void()'
+ 1481 | void Dial_NL668()
+      |      ^~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:5875:41: note: previous implicit declaration of 'Dial_NL668' with type 'void()'
+ 5875 |                                         Dial_NL668();
+      |                                         ^~~~~~~~~~
+In file included from main.c:3:
+fm650.h:1742:6: warning: conflicting types for 'SwitchSIM_FM650'; have 'void(_Bool)'
+ 1742 | void SwitchSIM_FM650(bool isdefault)
+      |      ^~~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:2337:49: note: previous implicit declaration of 'SwitchSIM_FM650' with type 'void(_Bool)'
+ 2337 |                                                 SwitchSIM_FM650(false);
+      |                                                 ^~~~~~~~~~~~~~~
+In file included from main.c:3:
+fm650.h: In function 'SwitchSIM_FM650':
+fm650.h:1746:28: warning: initialization of 'int' from 'char *' makes integer from pointer without a cast [-Wint-conversion]
+ 1746 |         int value_nextcard=value_defaultcard;
+      |                            ^~~~~~~~~~~~~~~~~
+fm650.h: At top level:
+fm650.h:1826:6: warning: conflicting types for 'SwitchSIM_FG160'; have 'void(_Bool)'
+ 1826 | void SwitchSIM_FG160(bool isdefault)
+      |      ^~~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:2339:49: note: previous implicit declaration of 'SwitchSIM_FG160' with type 'void(_Bool)'
+ 2339 |                                                 SwitchSIM_FG160(false);
+      |                                                 ^~~~~~~~~~~~~~~
+In file included from main.c:3:
+fm650.h: In function 'SwitchSIM_FG160':
+fm650.h:1830:28: warning: initialization of 'int' from 'char *' makes integer from pointer without a cast [-Wint-conversion]
+ 1830 |         int value_nextcard=value_defaultcard;
+      |                            ^~~~~~~~~~~~~~~~~
+fm650.h: At top level:
+fm650.h:1871:6: warning: conflicting types for 'SwitchSIM_NL668'; have 'void(_Bool)'
+ 1871 | void SwitchSIM_NL668(bool isdefault)
+      |      ^~~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:2341:49: note: previous implicit declaration of 'SwitchSIM_NL668' with type 'void(_Bool)'
+ 2341 |                                                 SwitchSIM_NL668(false);
+      |                                                 ^~~~~~~~~~~~~~~
+In file included from main.c:3:
+fm650.h: In function 'SwitchSIM_NL668':
+fm650.h:1875:28: warning: initialization of 'int' from 'char *' makes integer from pointer without a cast [-Wint-conversion]
+ 1875 |         int value_nextcard=value_defaultcard;
+      |                            ^~~~~~~~~~~~~~~~~
+fm650.h: At top level:
+fm650.h:1926:6: warning: conflicting types for 'setagainFM650'; have 'void()'
+ 1926 | void setagainFM650()
+      |      ^~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:2068:17: note: previous implicit declaration of 'setagainFM650' with type 'void()'
+ 2068 |                 setagainFM650();
+      |                 ^~~~~~~~~~~~~
+In file included from main.c:3:
+fm650.h: In function 'setagainFM650':
+fm650.h:1931:22: warning: unused variable 'tmp_buff' [-Wunused-variable]
+ 1931 |                 char tmp_buff[1024];
+      |                      ^~~~~~~~
+fm650.h: At top level:
+fm650.h:1965:6: warning: conflicting types for 'trans_register_status_FM650'; have 'void(char *, char *)'
+ 1965 | void trans_register_status_FM650(char *reg,char *status)
+      |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+fm650.h:1448:25: note: previous implicit declaration of 'trans_register_status_FM650' with type 'void(char *, char *)'
+ 1448 |                         trans_register_status_FM650(debug_cgreg,stat_cgreg);
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from main.c:4:
+fm150_na.h:5:6: warning: conflicting types for 'setModule_FM160'; have 'void(char *, char *)'
+    5 | void setModule_FM160(char *tmp_mode_usb,char *tmp_mode_nat)
+      |      ^~~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:1280:17: note: previous implicit declaration of 'setModule_FM160' with type 'void(char *, char *)'
+ 1280 |                 setModule_FM160(tmp_mode_usb,tmp_mode_nat);
+      |                 ^~~~~~~~~~~~~~~
+In file included from main.c:4:
+fm150_na.h:454:6: warning: conflicting types for 'setModule_FG160'; have 'void()'
+  454 | void setModule_FG160()
+      |      ^~~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:1285:17: note: previous implicit declaration of 'setModule_FG160' with type 'void()'
+ 1285 |                 setModule_FG160();
+      |                 ^~~~~~~~~~~~~~~
+In file included from main.c:4:
+fm150_na.h: In function 'setModule_FG160':
+fm150_na.h:551:34: warning: unused variable 'time' [-Wunused-variable]
+  551 |                         long int time=strtol(tmp_buff, &end, 10);
+      |                                  ^~~~
+fm150_na.h:702:34: warning: unused variable 'time' [-Wunused-variable]
+  702 |                         long int time=strtol(tmp_buff, &end, 10);
+      |                                  ^~~~
+fm150_na.h:469:18: warning: unused variable 'time' [-Wunused-variable]
+  469 |         long int time=strtol(tmp_buff, &end, 10);
+      |                  ^~~~
+fm150_na.h: At top level:
+fm150_na.h:839:6: warning: conflicting types for 'setRATMODE_FM160'; have 'void(char *, char *, char *, char *)'
+  839 | void setRATMODE_FM160(char *mode,char *wcdma,char *lte,char *nr)
+      |      ^~~~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:3490:17: note: previous implicit declaration of 'setRATMODE_FM160' with type 'void(char *, char *, char *, char *)'
+ 3490 |                 setRATMODE_FM160(tmp_mode_rat,tmp_band_wcdma,tmp_band_lte,tmp_band_nr);
+      |                 ^~~~~~~~~~~~~~~~
+In file included from main.c:4:
+fm150_na.h:960:6: warning: conflicting types for 'Dial_FM160'; have 'void()'
+  960 | void Dial_FM160()
+      |      ^~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:5691:49: note: previous implicit declaration of 'Dial_FM160' with type 'void()'
+ 5691 |                                                 Dial_FM160();
+      |                                                 ^~~~~~~~~~
+In file included from main.c:4:
+fm150_na.h: In function 'Dial_FM160':
+fm150_na.h:1197:33: warning: implicit declaration of function 'trans_register_status_FM160'; did you mean 'trans_register_status_FM650'? [-Wimplicit-function-declaration]
+ 1197 |                                 trans_register_status_FM160(debug_cgreg,stat_cgreg);
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                 trans_register_status_FM650
+fm150_na.h: At top level:
+fm150_na.h:1231:6: warning: conflicting types for 'Dial_FM160_PRE'; have 'void()'
+ 1231 | void Dial_FM160_PRE()
+      |      ^~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:6536:33: note: previous implicit declaration of 'Dial_FM160_PRE' with type 'void()'
+ 6536 |                                 Dial_FM160_PRE();
+      |                                 ^~~~~~~~~~~~~~
+In file included from main.c:4:
+fm150_na.h:1404:6: warning: conflicting types for 'Dial_FM160_PCI'; have 'void(char *, char *, char *, char *, char *)'
+ 1404 | void Dial_FM160_PCI(char *apn,char *username,char *password,char *auth,char *ip)
+      |      ^~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:5606:73: note: previous implicit declaration of 'Dial_FM160_PCI' with type 'void(char *, char *, char *, char *, char *)'
+ 5606 |                                                                         Dial_FM160_PCI(value_apn_card2,value_username_card2,value_password_card2,value_auth_card2,type_ip_card2);
+      |                                                                         ^~~~~~~~~~~~~~
+In file included from main.c:4:
+fm150_na.h: In function 'Dial_FM160_PCI':
+fm150_na.h:1513:37: warning: zero-length gnu_printf format string [-Wformat-zero-length]
+ 1513 |                 sprintf(tmp_type_ip,"");
+      |                                     ^~
+fm150_na.h:1517:45: warning: zero-length gnu_printf format string [-Wformat-zero-length]
+ 1517 |                         sprintf(tmp_type_ip,"");
+      |                                             ^~
+fm150_na.h:1680:25: warning: implicit declaration of function 'trans_register_status_RG520N'; did you mean 'trans_register_status_FM650'? [-Wimplicit-function-declaration]
+ 1680 |                         trans_register_status_RG520N(debug_cgreg,stat_cgreg);
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                         trans_register_status_FM650
+fm150_na.h:1406:13: warning: unused variable 'count' [-Wunused-variable]
+ 1406 |         int count=0;
+      |             ^~~~~
+fm150_na.h: At top level:
+fm150_na.h:1703:6: warning: conflicting types for 'trans_register_status_FM160'; have 'void(char *, char *)'
+ 1703 | void trans_register_status_FM160(char *reg,char *status)
+      |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+fm150_na.h:1197:33: note: previous implicit declaration of 'trans_register_status_FM160' with type 'void(char *, char *)'
+ 1197 |                                 trans_register_status_FM160(debug_cgreg,stat_cgreg);
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from main.c:5:
+rm500u.h:5:6: warning: conflicting types for 'setModule_RM500U'; have 'void(char *, char *)'
+    5 | void setModule_RM500U(char *tmp_mode_usb,char *tmp_mode_nat)
+      |      ^~~~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:1322:17: note: previous implicit declaration of 'setModule_RM500U' with type 'void(char *, char *)'
+ 1322 |                 setModule_RM500U(tmp_mode_usb,tmp_mode_nat);
+      |                 ^~~~~~~~~~~~~~~~
+In file included from main.c:5:
+rm500u.h: In function 'setModule_RM500U':
+rm500u.h:103:29: warning: too many arguments for format [-Wformat-extra-args]
+  103 |                 sprintf(cmd,"cmdat %s 'AT+QSIMDET=1,1' | grep \"OK\" | wc -l",path_usb,tmp_mode_nat);
+      |                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+rm500u.h: At top level:
+rm500u.h:327:6: warning: conflicting types for 'setModule_RG520N'; have 'void(char *, char *)'
+  327 | void setModule_RG520N(char *tmp_mode_usb,char *tmp_mode_nat)
+      |      ^~~~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:1348:17: note: previous implicit declaration of 'setModule_RG520N' with type 'void(char *, char *)'
+ 1348 |                 setModule_RG520N();
+      |                 ^~~~~~~~~~~~~~~~
+In file included from main.c:5:
+rm500u.h:743:6: warning: conflicting types for 'setModule_EC20'; have 'void()'
+  743 | void setModule_EC20()
+      |      ^~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:1353:17: note: previous implicit declaration of 'setModule_EC20' with type 'void()'
+ 1353 |                 setModule_EC20();
+      |                 ^~~~~~~~~~~~~~
+In file included from main.c:5:
+rm500u.h:890:6: warning: conflicting types for 'set5GCELLLOCK_RG520N'; have 'void(char *, char *, char *, char *)'
+  890 | void set5GCELLLOCK_RG520N(char *nr, char* arfcn, char* psc, char* scs)
+      |      ^~~~~~~~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:3756:33: note: previous implicit declaration of 'set5GCELLLOCK_RG520N' with type 'void(char *, char *, char *, char *)'
+ 3756 |                                 set5GCELLLOCK_RG520N(tmp_band_nr,value_arfcn,value_psc,value_scs);
+      |                                 ^~~~~~~~~~~~~~~~~~~~
+In file included from main.c:5:
+rm500u.h: In function 'set5GCELLLOCK_RG520N':
+rm500u.h:913:62: warning: format '%d' expects argument of type 'int', but argument 5 has type 'char *' [-Wformat=]
+  913 |                                 sprintf(cmd_setcell,",%s,%s,%d,%s",psc,arfcn,scs,nr);
+      |                                                             ~^               ~~~
+      |                                                              |               |
+      |                                                              int             char *
+      |                                                             %s
+rm500u.h:920:96: warning: format '%d' expects argument of type 'int', but argument 6 has type 'char *' [-Wformat=]
+  920 |                                         sprintf(cmd,"cmdat %s 'AT+QNWLOCK=\"common/5g\",%s,%s,%d,%s'",path_usb,psc,arfcn,scs,nr);
+      |                                                                                               ~^                         ~~~
+      |                                                                                                |                         |
+      |                                                                                                int                       char *
+      |                                                                                               %s
+rm500u.h:931:117: warning: format '%d' expects argument of type 'int', but argument 6 has type 'char *' [-Wformat=]
+  931 |                                                 sprintf(debug,"lock 5g cell OK, band: %s; psc: %s; arfcn: %s; scs: %d",nr,psc,arfcn,scs);
+      |                                                                                                                    ~^               ~~~
+      |                                                                                                                     |               |
+      |                                                                                                                     int             char *
+      |                                                                                                                    %s
+rm500u.h:946:129: warning: format '%d' expects argument of type 'int', but argument 6 has type 'char *' [-Wformat=]
+  946 |                                                         sprintf(debug,"lock 5g cell failed, band: %s; psc: %s; arfcn: %s; scs: %d",nr,psc,arfcn,scs);
+      |                                                                                                                                ~^               ~~~
+      |                                                                                                                                 |               |
+      |                                                                                                                                 int             char *
+      |                                                                                                                                %s
+rm500u.h: At top level:
+rm500u.h:965:6: warning: conflicting types for 'setCELLLOCK_RG520N'; have 'void(char *, char *)'
+  965 | void setCELLLOCK_RG520N(char* arfcn, char* pci)
+      |      ^~~~~~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:3760:33: note: previous implicit declaration of 'setCELLLOCK_RG520N' with type 'void(char *, char *)'
+ 3760 |                                 setCELLLOCK_RG520N(value_arfcn,value_pci);
+      |                                 ^~~~~~~~~~~~~~~~~~
+In file included from main.c:5:
+rm500u.h:1028:6: warning: conflicting types for 'reset_RG520N'; have 'void()'
+ 1028 | void reset_RG520N()
+      |      ^~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:3765:25: note: previous implicit declaration of 'reset_RG520N' with type 'void()'
+ 3765 |                         reset_RG520N();
+      |                         ^~~~~~~~~~~~
+In file included from main.c:5:
+rm500u.h: In function 'analyticRSRP_RG520N':
+rm500u.h:1109:14: warning: unused variable 'cmd' [-Wunused-variable]
+ 1109 |         char cmd[1024];
+      |              ^~~
+In file included from main.c:5:
+rm500u.h: At top level:
+rm500u.h:1142:6: warning: conflicting types for 'analyticQENG_RM500U'; have 'void()'
+ 1142 | void analyticQENG_RM500U()
+      |      ^~~~~~~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:1505:17: note: previous implicit declaration of 'analyticQENG_RM500U' with type 'void()'
+ 1505 |                 analyticQENG_RM500U();
+      |                 ^~~~~~~~~~~~~~~~~~~
+In file included from main.c:5:
+rm500u.h:1625:6: warning: conflicting types for 'setRATMODE_RM500U'; have 'void(char *, char *, char *, char *)'
+ 1625 | void setRATMODE_RM500U(char *mode,char *wcdma,char *lte,char *nr)
+      |      ^~~~~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:3646:17: note: previous implicit declaration of 'setRATMODE_RM500U' with type 'void(char *, char *, char *, char *)'
+ 3646 |                 setRATMODE_RM500U(tmp_mode_rat,tmp_band_wcdma,tmp_band_lte,tmp_band_nr);
+      |                 ^~~~~~~~~~~~~~~~~
+In file included from main.c:5:
+rm500u.h: In function 'setRATMODE_RM500U':
+rm500u.h:1650:14: warning: unused variable 'str_nsa' [-Wunused-variable]
+ 1650 |         char str_nsa[100];
+      |              ^~~~~~~
+rm500u.h: At top level:
+rm500u.h:1734:6: warning: conflicting types for 'setRATMODE_RM500Q'; have 'void(char *, char *, char *, char *)'
+ 1734 | void setRATMODE_RM500Q(char *mode,char *wcdma,char *lte,char *nr)
+      |      ^~~~~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:3698:17: note: previous implicit declaration of 'setRATMODE_RM500Q' with type 'void(char *, char *, char *, char *)'
+ 3698 |                 setRATMODE_RM500Q(tmp_mode_rat,tmp_band_wcdma,tmp_band_lte,tmp_band_nr);
+      |                 ^~~~~~~~~~~~~~~~~
+In file included from main.c:5:
+rm500u.h: In function 'setRATMODE_RM500Q':
+rm500u.h:1759:14: warning: unused variable 'str_nsa' [-Wunused-variable]
+ 1759 |         char str_nsa[100];
+      |              ^~~~~~~
+rm500u.h: At top level:
+rm500u.h:1828:6: warning: conflicting types for 'setRATMODE_RG520N'; have 'void(char *, char *, char *, char *, char *, char *)'
+ 1828 | void setRATMODE_RG520N(char *mode,char *wcdma,char *lte,char *nr,char *nsa,char *arfcn)
+      |      ^~~~~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:3751:17: note: previous implicit declaration of 'setRATMODE_RG520N' with type 'void(char *, char *, char *, char *, char *, char *)'
+ 3751 |                 setRATMODE_RG520N(tmp_mode_rat,tmp_band_wcdma,tmp_band_lte,tmp_band_nr,tmp_band_nsa,value_arfcn);
+      |                 ^~~~~~~~~~~~~~~~~
+In file included from main.c:5:
+rm500u.h:1979:6: warning: conflicting types for 'setRATMODE_EC20'; have 'void(char *, char *, char *, char *)'
+ 1979 | void setRATMODE_EC20(char *mode,char *gsm,char *wcdma,char *lte)
+      |      ^~~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:3791:17: note: previous implicit declaration of 'setRATMODE_EC20' with type 'void(char *, char *, char *, char *)'
+ 3791 |                 setRATMODE_EC20(tmp_mode_rat);
+      |                 ^~~~~~~~~~~~~~~
+In file included from main.c:5:
+rm500u.h:2083:6: warning: conflicting types for 'Dial_RM500U'; have 'void()'
+ 2083 | void Dial_RM500U()
+      |      ^~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:5928:41: note: previous implicit declaration of 'Dial_RM500U' with type 'void()'
+ 5928 |                                         Dial_RM500U();
+      |                                         ^~~~~~~~~~~
+In file included from main.c:5:
+rm500u.h:2165:6: warning: conflicting types for 'Dial_RM500Q'; have 'void()'
+ 2165 | void Dial_RM500Q()
+      |      ^~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:5959:49: note: previous implicit declaration of 'Dial_RM500Q' with type 'void()'
+ 5959 |                                                 Dial_RM500Q();
+      |                                                 ^~~~~~~~~~~
+In file included from main.c:5:
+rm500u.h:2254:6: warning: conflicting types for 'Dial_RG520N'; have 'void(char *, char *, char *, char *, char *)'
+ 2254 | void Dial_RG520N(char *apn,char *username,char *password,char *auth,char *ip)
+      |      ^~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:6041:81: note: previous implicit declaration of 'Dial_RG520N' with type 'void(char *, char *, char *, char *, char *)'
+ 6041 |                                                                                 Dial_RG520N(value_apn_card2,value_username_card2,value_password_card2,value_auth_card2,type_ip_card2);
+      |                                                                                 ^~~~~~~~~~~
+In file included from main.c:5:
+rm500u.h: In function 'Dial_RG520N':
+rm500u.h:2353:37: warning: zero-length gnu_printf format string [-Wformat-zero-length]
+ 2353 |                 sprintf(tmp_type_ip,"");
+      |                                     ^~
+rm500u.h:2357:45: warning: zero-length gnu_printf format string [-Wformat-zero-length]
+ 2357 |                         sprintf(tmp_type_ip,"");
+      |                                             ^~
+rm500u.h:2318:13: warning: unused variable 'result' [-Wunused-variable]
+ 2318 |         int result;
+      |             ^~~~~~
+rm500u.h:2256:13: warning: unused variable 'count' [-Wunused-variable]
+ 2256 |         int count=0;
+      |             ^~~~~
+rm500u.h: In function 'Dial_RM520N':
+rm500u.h:2534:13: warning: unused variable 'count' [-Wunused-variable]
+ 2534 |         int count=0;
+      |             ^~~~~
+rm500u.h: At top level:
+rm500u.h:2784:6: warning: conflicting types for 'Dial_EC20'; have 'void(char *, char *, char *, char *, char *)'
+ 2784 | void Dial_EC20(char *apn,char *username,char *password,char *auth,char *ip)
+      |      ^~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:6159:73: note: previous implicit declaration of 'Dial_EC20' with type 'void(char *, char *, char *, char *, char *)'
+ 6159 |                                                                         Dial_EC20(value_apn_card2,value_username_card2,value_password_card2,value_auth_card2,type_ip_card2);
+      |                                                                         ^~~~~~~~~
+In file included from main.c:5:
+rm500u.h: In function 'Dial_EC20':
+rm500u.h:2859:37: warning: zero-length gnu_printf format string [-Wformat-zero-length]
+ 2859 |                 sprintf(tmp_type_ip,"");
+      |                                     ^~
+rm500u.h:2861:45: warning: zero-length gnu_printf format string [-Wformat-zero-length]
+ 2861 |                         sprintf(tmp_type_ip,"");
+      |                                             ^~
+rm500u.h:2786:13: warning: unused variable 'count' [-Wunused-variable]
+ 2786 |         int count=0;
+      |             ^~~~~
+rm500u.h: At top level:
+rm500u.h:3019:6: warning: conflicting types for 'SwitchSIM_RM500U'; have 'void(_Bool)'
+ 3019 | void SwitchSIM_RM500U(bool isdefault)
+      |      ^~~~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:2624:57: note: previous implicit declaration of 'SwitchSIM_RM500U' with type 'void(_Bool)'
+ 2624 |                                                         SwitchSIM_RM500U(false);
+      |                                                         ^~~~~~~~~~~~~~~~
+In file included from main.c:5:
+rm500u.h: In function 'SwitchSIM_RM500U':
+rm500u.h:3023:28: warning: initialization of 'int' from 'char *' makes integer from pointer without a cast [-Wint-conversion]
+ 3023 |         int value_nextcard=value_defaultcard;
+      |                            ^~~~~~~~~~~~~~~~~
+rm500u.h:3027:53: warning: format '%d' expects argument of type 'int', but argument 4 has type 'char *' [-Wformat=]
+ 3027 |                 sprintf(cmd,"cmdat %s 'AT+QUIMSLOT=%d'",path_usb,value_defaultcard);
+      |                                                    ~^            ~~~~~~~~~~~~~~~~~
+      |                                                     |            |
+      |                                                     int          char *
+      |                                                    %s
+rm500u.h:3029:36: warning: format '%d' expects argument of type 'int', but argument 3 has type 'char *' [-Wformat=]
+ 3029 |                 sprintf(tmp_buff,"%d",value_defaultcard);
+      |                                   ~^  ~~~~~~~~~~~~~~~~~
+      |                                    |  |
+      |                                    |  char *
+      |                                    int
+      |                                   %s
+rm500u.h: At top level:
+rm500u.h:3056:6: warning: conflicting types for 'SwitchSIM_RG520N'; have 'void(_Bool)'
+ 3056 | void SwitchSIM_RG520N(bool isdefault)
+      |      ^~~~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:2350:49: note: previous implicit declaration of 'SwitchSIM_RG520N' with type 'void(_Bool)'
+ 2350 |                                                 SwitchSIM_RG520N(false);
+      |                                                 ^~~~~~~~~~~~~~~~
+In file included from main.c:5:
+rm500u.h:3187:6: warning: conflicting types for 'SwitchSIM_EC20'; have 'void(_Bool)'
+ 3187 | void SwitchSIM_EC20(bool isdefault)
+      |      ^~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:2357:49: note: previous implicit declaration of 'SwitchSIM_EC20' with type 'void(_Bool)'
+ 2357 |                                                 SwitchSIM_EC20(false);
+      |                                                 ^~~~~~~~~~~~~~
+In file included from main.c:5:
+rm500u.h: In function 'SwitchSIM_EC20':
+rm500u.h:3191:28: warning: initialization of 'int' from 'char *' makes integer from pointer without a cast [-Wint-conversion]
+ 3191 |         int value_nextcard=value_defaultcard;
+      |                            ^~~~~~~~~~~~~~~~~
+rm500u.h: At top level:
+rm500u.h:3242:6: warning: conflicting types for 'trans_register_status_RG520N'; have 'void(char *, char *)'
+ 3242 | void trans_register_status_RG520N(char *reg,char *status)
+      |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from main.c:4:
+fm150_na.h:1680:25: note: previous implicit declaration of 'trans_register_status_RG520N' with type 'void(char *, char *)'
+ 1680 |                         trans_register_status_RG520N(debug_cgreg,stat_cgreg);
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from main.c:5:
+rm500u.h: In function 'get_time':
+rm500u.h:3292:33: warning: argument to 'sizeof' in 'memset' call is the same expression as the destination; did you mean to provide an explicit length? [-Wsizeof-pointer-memaccess]
+ 3292 |         memset(time_str,0,sizeof(time_str));
+      |                                 ^
+In file included from main.c:6:
+sim7600.h: At top level:
+sim7600.h:5:6: warning: conflicting types for 'setModule_SIM7600'; have 'void(char *, char *)'
+    5 | void setModule_SIM7600(char *tmp_mode_usb,char *tmp_mode_nat)
+      |      ^~~~~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:1361:17: note: previous implicit declaration of 'setModule_SIM7600' with type 'void(char *, char *)'
+ 1361 |                 setModule_SIM7600();
+      |                 ^~~~~~~~~~~~~~~~~
+In file included from main.c:6:
+sim7600.h: In function 'setModule_SIM7600':
+sim7600.h:30:20: warning: comparison between pointer and integer
+   30 |         if (result == value_defaultcard) //[优先卡槽] == [当前卡槽]
+      |                    ^~
+sim7600.h:32:40: warning: format '%d' expects argument of type 'int', but argument 3 has type 'char *' [-Wformat=]
+   32 |                 sprintf(tmp_str_buff,"%d",value_defaultcard);
+      |                                       ~^  ~~~~~~~~~~~~~~~~~
+      |                                        |  |
+      |                                        |  char *
+      |                                        int
+      |                                       %s
+sim7600.h:37:36: warning: format '%d' expects argument of type 'int', but argument 3 has type 'char *' [-Wformat=]
+   37 |                 sprintf(cmd,"echo %d > /sys/class/leds/pwr_sim2/brightness",value_defaultcard);
+      |                                   ~^                                        ~~~~~~~~~~~~~~~~~
+      |                                    |                                        |
+      |                                    int                                      char *
+      |                                   %s
+sim7600.h:39:40: warning: format '%d' expects argument of type 'int', but argument 3 has type 'char *' [-Wformat=]
+   39 |                 sprintf(tmp_str_buff,"%d",value_defaultcard);
+      |                                       ~^  ~~~~~~~~~~~~~~~~~
+      |                                        |  |
+      |                                        |  char *
+      |                                        int
+      |                                       %s
+sim7600.h: At top level:
+sim7600.h:47:6: warning: conflicting types for 'analyticCPSI_SIM7600'; have 'void()'
+   47 | void analyticCPSI_SIM7600()
+      |      ^~~~~~~~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:1499:17: note: previous implicit declaration of 'analyticCPSI_SIM7600' with type 'void()'
+ 1499 |                 analyticCPSI_SIM7600();
+      |                 ^~~~~~~~~~~~~~~~~~~~
+In file included from main.c:6:
+sim7600.h:121:6: warning: conflicting types for 'setRATMODE_SIM7600'; have 'void(int)'
+  121 | void setRATMODE_SIM7600(int mode)
+      |      ^~~~~~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:3379:17: note: previous implicit declaration of 'setRATMODE_SIM7600' with type 'void(int)'
+ 3379 |                 setRATMODE_SIM7600(tmp_mode_rat);
+      |                 ^~~~~~~~~~~~~~~~~~
+In file included from main.c:6:
+sim7600.h:164:6: warning: conflicting types for 'Dial_SIM7600'; have 'void()'
+  164 | void Dial_SIM7600()
+      |      ^~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:5464:41: note: previous implicit declaration of 'Dial_SIM7600' with type 'void()'
+ 5464 |                                         Dial_SIM7600();
+      |                                         ^~~~~~~~~~~~
+In file included from main.c:6:
+sim7600.h: In function 'Dial_SIM7600':
+sim7600.h:166:13: warning: unused variable 'count' [-Wunused-variable]
+  166 |         int count=0;
+      |             ^~~~~
+In file included from main.c:6:
+sim7600.h: At top level:
+sim7600.h:245:6: warning: conflicting types for 'SwitchSIM_SIM7600'; have 'void(_Bool)'
+  245 | void SwitchSIM_SIM7600(bool isdefault)
+      |      ^~~~~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:2346:49: note: previous implicit declaration of 'SwitchSIM_SIM7600' with type 'void(_Bool)'
+ 2346 |                                                 SwitchSIM_SIM7600(false);       //sim7600切换卡槽后，需要飞行模式才可读卡
+      |                                                 ^~~~~~~~~~~~~~~~~
+In file included from main.c:6:
+sim7600.h: In function 'SwitchSIM_SIM7600':
+sim7600.h:249:28: warning: initialization of 'int' from 'char *' makes integer from pointer without a cast [-Wint-conversion]
+  249 |         int value_nextcard=value_defaultcard;
+      |                            ^~~~~~~~~~~~~~~~~
+sim7600.h:253:36: warning: format '%d' expects argument of type 'int', but argument 3 has type 'char *' [-Wformat=]
+  253 |                 sprintf(cmd,"echo %d > /sys/class/leds/pwr_sim2/brightness",value_defaultcard);
+      |                                   ~^                                        ~~~~~~~~~~~~~~~~~
+      |                                    |                                        |
+      |                                    int                                      char *
+      |                                   %s
+sim7600.h:255:36: warning: format '%d' expects argument of type 'int', but argument 3 has type 'char *' [-Wformat=]
+  255 |                 sprintf(tmp_buff,"%d",value_defaultcard);
+      |                                   ~^  ~~~~~~~~~~~~~~~~~
+      |                                    |  |
+      |                                    |  char *
+      |                                    int
+      |                                   %s
+In file included from main.c:7:
+sim8200.h: At top level:
+sim8200.h:5:6: warning: conflicting types for 'setModule_SIM8200'; have 'void(char *, char *)'
+    5 | void setModule_SIM8200(char *tmp_mode_usb,char *tmp_mode_nat)
+      |      ^~~~~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:1357:17: note: previous implicit declaration of 'setModule_SIM8200' with type 'void(char *, char *)'
+ 1357 |                 setModule_SIM8200();
+      |                 ^~~~~~~~~~~~~~~~~
+In file included from main.c:7:
+sim8200.h: In function 'setModule_SIM8200':
+sim8200.h:11:14: warning: unused variable 'tmp_str_buff' [-Wunused-variable]
+   11 |         char tmp_str_buff[1024];
+      |              ^~~~~~~~~~~~
+sim8200.h: At top level:
+sim8200.h:61:6: warning: conflicting types for 'analyticCPSI_SIM8200'; have 'void()'
+   61 | void analyticCPSI_SIM8200()
+      |      ^~~~~~~~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:1501:17: note: previous implicit declaration of 'analyticCPSI_SIM8200' with type 'void()'
+ 1501 |                 analyticCPSI_SIM8200();
+      |                 ^~~~~~~~~~~~~~~~~~~~
+In file included from main.c:7:
+sim8200.h:157:6: warning: conflicting types for 'setRATMODE_SIM8200'; have 'void(int,  char *, char *, char *, char *)'
+  157 | void setRATMODE_SIM8200(int mode,char *wcdma,char *lte,char *nr,char *nsa)
+      |      ^~~~~~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:3434:17: note: previous implicit declaration of 'setRATMODE_SIM8200' with type 'void(int,  char *, char *, char *, char *)'
+ 3434 |                 setRATMODE_SIM8200(tmp_mode_rat,tmp_band_wcdma,tmp_band_lte,tmp_band_nr,tmp_band_nsa);
+      |                 ^~~~~~~~~~~~~~~~~~
+In file included from main.c:7:
+sim8200.h:261:6: warning: conflicting types for 'Dial_SIM8200'; have 'void()'
+  261 | void Dial_SIM8200()
+      |      ^~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:5499:49: note: previous implicit declaration of 'Dial_SIM8200' with type 'void()'
+ 5499 |                                                 Dial_SIM8200();
+      |                                                 ^~~~~~~~~~~~
+In file included from main.c:7:
+sim8200.h: In function 'Dial_SIM8200':
+sim8200.h:296:29: warning: zero-length gnu_printf format string [-Wformat-zero-length]
+  296 |         sprintf(tmp_type_ip,"");
+      |                             ^~
+sim8200.h:298:37: warning: zero-length gnu_printf format string [-Wformat-zero-length]
+  298 |                 sprintf(tmp_type_ip,"");
+      |                                     ^~
+sim8200.h:265:14: warning: unused variable 'tmp_buff' [-Wunused-variable]
+  265 |         char tmp_buff[1024];
+      |              ^~~~~~~~
+sim8200.h:263:13: warning: unused variable 'count' [-Wunused-variable]
+  263 |         int count=0;
+      |             ^~~~~
+sim8200.h: At top level:
+sim8200.h:332:6: warning: conflicting types for 'SwitchSIM_SIM8200'; have 'void(_Bool)'
+  332 | void SwitchSIM_SIM8200(bool isdefault)
+      |      ^~~~~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:2343:49: note: previous implicit declaration of 'SwitchSIM_SIM8200' with type 'void(_Bool)'
+ 2343 |                                                 SwitchSIM_SIM8200(false);
+      |                                                 ^~~~~~~~~~~~~~~~~
+In file included from main.c:7:
+sim8200.h: In function 'SwitchSIM_SIM8200':
+sim8200.h:334:14: warning: unused variable 'cmd' [-Wunused-variable]
+  334 |         char cmd[1024];
+      |              ^~~
+In file included from main.c:8:
+mt5700.h: At top level:
+mt5700.h:32:6: warning: conflicting types for 'setModule_MT5700'; have 'void(char *, char *)'
+   32 | void setModule_MT5700(char *tmp_mode_usb,char *tmp_mode_nat)
+      |      ^~~~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:1383:17: note: previous implicit declaration of 'setModule_MT5700' with type 'void(char *, char *)'
+ 1383 |                 setModule_MT5700(tmp_mode_usb,tmp_mode_nat);
+      |                 ^~~~~~~~~~~~~~~~
+In file included from main.c:8:
+mt5700.h: In function 'setModule_MT5700':
+mt5700.h:80:37: warning: too many arguments for format [-Wformat-extra-args]
+   80 |                         sprintf(cmd,"cmdat %s \"AT^SETE5STICK?\" | sed -n 2p",path_usb,tmp_mode_nat);
+      |                                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mt5700.h:86:45: warning: too many arguments for format [-Wformat-extra-args]
+   86 |                                 sprintf(cmd,"cmdat %s \"AT^SETE5STICK=0\" | grep \"OK\" |wc -l",path_usb,tmp_mode_nat);
+      |                                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mt5700.h: At top level:
+mt5700.h:278:6: warning: conflicting types for 'setModule_MT5711'; have 'void(char *, char *)'
+  278 | void setModule_MT5711(char *tmp_mode_usb,char *tmp_mode_nat)
+      |      ^~~~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:1404:17: note: previous implicit declaration of 'setModule_MT5711' with type 'void(char *, char *)'
+ 1404 |                 setModule_MT5711(tmp_mode_usb,tmp_mode_nat);
+      |                 ^~~~~~~~~~~~~~~~
+In file included from main.c:8:
+mt5700.h: In function 'setModule_MT5711':
+mt5700.h:326:37: warning: too many arguments for format [-Wformat-extra-args]
+  326 |                         sprintf(cmd,"cmdat %s \"AT^SETE5STICK?\" | sed -n 2p",path_usb,tmp_mode_nat);
+      |                                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mt5700.h:332:45: warning: too many arguments for format [-Wformat-extra-args]
+  332 |                                 sprintf(cmd,"cmdat %s \"AT^SETE5STICK=0\" | grep \"OK\" |wc -l",path_usb,tmp_mode_nat);
+      |                                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mt5700.h: In function 'analyticRSRP_MT5700':
+mt5700.h:526:14: warning: unused variable 'cmd' [-Wunused-variable]
+  526 |         char cmd[1024];
+      |              ^~~
+mt5700.h: In function 'analyticRSRP_MT5700_HCSQ':
+mt5700.h:566:14: warning: unused variable 'cmd' [-Wunused-variable]
+  566 |         char cmd[1024];
+      |              ^~~
+In file included from main.c:8:
+mt5700.h: At top level:
+mt5700.h:615:6: warning: conflicting types for 'analyticINFO_MT5700'; have 'void()'
+  615 | void analyticINFO_MT5700()
+      |      ^~~~~~~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:1511:17: note: previous implicit declaration of 'analyticINFO_MT5700' with type 'void()'
+ 1511 |                 analyticINFO_MT5700();
+      |                 ^~~~~~~~~~~~~~~~~~~
+In file included from main.c:8:
+mt5700.h:882:6: warning: conflicting types for 'setRATMODE_MT5700'; have 'void(char *, char *, char *, char *, char *, char *, int,  char *)'
+  882 | void setRATMODE_MT5700(char *mode,char *wcdma,char *lte,char *nr,char *arfcn,char *psc,int scs,char *pci)
+      |      ^~~~~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:3849:17: note: previous implicit declaration of 'setRATMODE_MT5700' with type 'void(char *, char *, char *, char *, char *, char *, int,  char *)'
+ 3849 |                 setRATMODE_MT5700(tmp_mode_rat,tmp_band_wcdma,tmp_band_lte,tmp_band_nr,value_arfcn,value_psc,value_scs,value_pci);
+      |                 ^~~~~~~~~~~~~~~~~
+In file included from main.c:8:
+mt5700.h: In function 'setRATMODE_MT5700':
+mt5700.h:954:21: warning: implicit declaration of function 'set5GCELLLOCK_MT5700'; did you mean 'set5GCELLLOCK_RG520N'? [-Wimplicit-function-declaration]
+  954 |                 set=set5GCELLLOCK_MT5700(str_nr,arfcn,psc,scs);
+      |                     ^~~~~~~~~~~~~~~~~~~~
+      |                     set5GCELLLOCK_RG520N
+mt5700.h:960:21: warning: implicit declaration of function 'setCELLLOCK_MT5700'; did you mean 'setCELLLOCK_RG520N'? [-Wimplicit-function-declaration]
+  960 |                 set=setCELLLOCK_MT5700(str_lte,arfcn,pci);
+      |                     ^~~~~~~~~~~~~~~~~~
+      |                     setCELLLOCK_RG520N
+mt5700.h: In function 'set5GCELLLOCK_MT5700':
+mt5700.h:1005:40: warning: implicit declaration of function 'resetCELLLOCK_MT5700'; did you mean 'set5GCELLLOCK_MT5700'? [-Wimplicit-function-declaration]
+ 1005 |                                 return resetCELLLOCK_MT5700();
+      |                                        ^~~~~~~~~~~~~~~~~~~~
+      |                                        set5GCELLLOCK_MT5700
+mt5700.h: At top level:
+mt5700.h:1215:6: warning: conflicting types for 'Dial_MT5700'; have 'void()'
+ 1215 | void Dial_MT5700()
+      |      ^~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:6245:41: note: previous implicit declaration of 'Dial_MT5700' with type 'void()'
+ 6245 |                                         Dial_MT5700();
+      |                                         ^~~~~~~~~~~
+In file included from main.c:8:
+mt5700.h: In function 'Dial_MT5700':
+mt5700.h:1477:25: warning: implicit declaration of function 'trans_register_status_MT5700'; did you mean 'trans_register_status_RG520N'? [-Wimplicit-function-declaration]
+ 1477 |                         trans_register_status_MT5700(debug_cgreg,stat_cgreg);
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                         trans_register_status_RG520N
+mt5700.h:1217:13: warning: unused variable 'count' [-Wunused-variable]
+ 1217 |         int count=0;
+      |             ^~~~~
+mt5700.h: At top level:
+mt5700.h:1512:6: warning: conflicting types for 'SwitchSIM_MT5700'; have 'void(_Bool)'
+ 1512 | void SwitchSIM_MT5700(bool isdefault)
+      |      ^~~~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:2360:49: note: previous implicit declaration of 'SwitchSIM_MT5700' with type 'void(_Bool)'
+ 2360 |                                                 SwitchSIM_MT5700(false);        //mt5700切换卡槽后，需要飞行模式, 并且激活SIM卡才可读卡
+      |                                                 ^~~~~~~~~~~~~~~~
+In file included from main.c:8:
+mt5700.h: In function 'SwitchSIM_MT5700':
+mt5700.h:1516:28: warning: initialization of 'int' from 'char *' makes integer from pointer without a cast [-Wint-conversion]
+ 1516 |         int value_nextcard=value_defaultcard;
+      |                            ^~~~~~~~~~~~~~~~~
+mt5700.h: At top level:
+mt5700.h:1597:6: warning: conflicting types for 'SwitchSIM_MT5711'; have 'void(_Bool)'
+ 1597 | void SwitchSIM_MT5711(bool isdefault)
+      |      ^~~~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:2364:49: note: previous implicit declaration of 'SwitchSIM_MT5711' with type 'void(_Bool)'
+ 2364 |                                                 SwitchSIM_MT5711(false);        //mt5700切换卡槽后，需要飞行模式, 并且激活SIM卡才可读卡
+      |                                                 ^~~~~~~~~~~~~~~~
+In file included from main.c:8:
+mt5700.h: In function 'SwitchSIM_MT5711':
+mt5700.h:1601:28: warning: initialization of 'int' from 'char *' makes integer from pointer without a cast [-Wint-conversion]
+ 1601 |         int value_nextcard=value_defaultcard;
+      |                            ^~~~~~~~~~~~~~~~~
+mt5700.h: At top level:
+mt5700.h:1681:6: warning: conflicting types for 'setFlightmode_MT5711'; have 'void()'
+ 1681 | void setFlightmode_MT5711()
+      |      ^~~~~~~~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:2150:41: note: previous implicit declaration of 'setFlightmode_MT5711' with type 'void()'
+ 2150 |                                         setFlightmode_MT5711();
+      |                                         ^~~~~~~~~~~~~~~~~~~~
+In file included from main.c:8:
+mt5700.h:1691:6: warning: conflicting types for 'ActiveSIM_MT5700'; have 'void()'
+ 1691 | void ActiveSIM_MT5700()
+      |      ^~~~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h:2148:57: note: previous implicit declaration of 'ActiveSIM_MT5700' with type 'void()'
+ 2148 |                                                         ActiveSIM_MT5700();
+      |                                                         ^~~~~~~~~~~~~~~~
+In file included from main.c:8:
+mt5700.h:1700:6: warning: conflicting types for 'trans_register_status_MT5700'; have 'void(char *, char *)'
+ 1700 | void trans_register_status_MT5700(char *reg,char *status)
+      |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mt5700.h:1477:25: note: previous implicit declaration of 'trans_register_status_MT5700' with type 'void(char *, char *)'
+ 1477 |                         trans_register_status_MT5700(debug_cgreg,stat_cgreg);
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from main.c:1:
+function.h: In function 'cmd_recieve_int':
+function.h:179:1: warning: control reaches end of non-void function [-Wreturn-type]
+  179 | }
+      | ^
+function.h: In function 'Debug':
+function.h:217:31: warning: '%s' directive writing up to 1023 bytes into a region of size between 994 and 1023 [-Wformat-overflow=]
+  217 |         sprintf(tmp_ptr2, "%s %s",time, tmp_ptr1);
+      |                               ^~        ~~~~~~~~
+function.h:217:9: note: 'sprintf' output between 2 and 1054 bytes into a destination of size 1024
+  217 |         sprintf(tmp_ptr2, "%s %s",time, tmp_ptr1);
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+function.h:227:36: warning: '%s' directive writing up to 1023 bytes into a region of size 1018 [-Wformat-overflow=]
+  227 |                 sprintf(tmp_ptr,"%s%s%s%s","echo \"",tmp_ptr2,"\">>",path_debuglog);
+      |                                    ^~                ~~~~~~~~
+function.h:227:17: note: 'sprintf' output between 10 and 1132 bytes into a destination of size 1024
+  227 |                 sprintf(tmp_ptr,"%s%s%s%s","echo \"",tmp_ptr2,"\">>",path_debuglog);
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+function.h:233:52: warning: '%s' directive writing up to 499 bytes into a region of size between 87 and 186 [-Wformat-overflow=]
+  233 |                         sprintf(tmp_tail,"%s %s %s %s","tail -n 10",path_debuglog,">",tmp_debuglog);
+      |                                                    ^~                                 ~~~~~~~~~~~~
+function.h:233:25: note: 'sprintf' output between 15 and 613 bytes into a destination of size 200
+  233 |                         sprintf(tmp_tail,"%s %s %s %s","tail -n 10",path_debuglog,">",tmp_debuglog);
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+function.h:241:46: warning: '%s' directive writing up to 499 bytes into a region of size 197 [-Wformat-overflow=]
+  241 |                         sprintf(tmp_tail,"%s %s %s","mv",tmp_debuglog,path_debuglog);
+      |                                              ^~          ~~~~~~~~~~~~
+function.h:241:25: note: 'sprintf' output between 5 and 603 bytes into a destination of size 200
+  241 |                         sprintf(tmp_tail,"%s %s %s","mv",tmp_debuglog,path_debuglog);
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from main.c:1:
+function.h: In function 'heartbeat':
+function.h:552:23: warning: '%s' directive writing up to 99 bytes into a region of size 96 [-Wformat-overflow=]
+  552 |     sprintf(str, "cat %s",heartbeat_file);
+      |                       ^~  ~~~~~~~~~~~~~~
+function.h:552:5: note: 'sprintf' output between 5 and 104 bytes into a destination of size 100
+  552 |     sprintf(str, "cat %s",heartbeat_file);
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+function.h: In function 'check_ttyUSB':
+function.h:707:35: warning: '%s' directive writing up to 199 bytes into a region of size 100 [-Wformat-overflow=]
+  707 |                 sprintf(path_usb,"%s",tmp_buff);
+      |                                   ^~  ~~~~~~~~
+function.h:707:17: note: 'sprintf' output between 1 and 200 bytes into a destination of size 100
+  707 |                 sprintf(path_usb,"%s",tmp_buff);
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+function.h: In function 'fix_ifname':
+function.h:1366:65: warning: 'sprintf' may write a terminating nul past the end of the destination [-Wformat-overflow=]
+ 1366 |         sprintf(cmd,"uci -P /var/state -q get cellular.%s.ifname",name_config);
+      |                                                                 ^
+function.h:1366:9: note: 'sprintf' output between 42 and 51 bytes into a destination of size 50
+ 1366 |         sprintf(cmd,"uci -P /var/state -q get cellular.%s.ifname",name_config);
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from ctrl_leds.h:1,
+                 from main.c:2:
+dialing.h: In function 'getVERS':
+dialing.h:1629:97: warning: '%s' directive writing up to 1023 bytes into a region of size 982 [-Wformat-overflow=]
+ 1629 |                                         sprintf(cmd,"uci set system.@system[0].module_version=\"%s\"",tmp_buff);
+      |                                                                                                 ^~    ~~~~~~~~
+dialing.h:1629:41: note: 'sprintf' output between 44 and 1067 bytes into a destination of size 1024
+ 1629 |                                         sprintf(cmd,"uci set system.@system[0].module_version=\"%s\"",tmp_buff);
+      |                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+dialing.h:1625:93: warning: '%s' directive writing up to 1023 bytes into a region of size between 979 and 988 [-Wformat-overflow=]
+ 1625 |                                         sprintf(cmd,"uci set system.@system[0].%s_version=\"%s\"",name_config,tmp_buff);
+      |                                                                                             ^~                ~~~~~~~~
+dialing.h:1625:41: note: 'sprintf' output between 38 and 1070 bytes into a destination of size 1024
+ 1625 |                                         sprintf(cmd,"uci set system.@system[0].%s_version=\"%s\"",name_config,tmp_buff);
+      |                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+dialing.h:1568:97: warning: '%s' directive writing up to 1023 bytes into a region of size 982 [-Wformat-overflow=]
+ 1568 |                                         sprintf(cmd,"uci set system.@system[0].module_version=\"%s\"",tmp_buff);
+      |                                                                                                 ^~    ~~~~~~~~
+dialing.h:1568:41: note: 'sprintf' output between 44 and 1067 bytes into a destination of size 1024
+ 1568 |                                         sprintf(cmd,"uci set system.@system[0].module_version=\"%s\"",tmp_buff);
+      |                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+dialing.h:1564:93: warning: '%s' directive writing up to 1023 bytes into a region of size between 979 and 988 [-Wformat-overflow=]
+ 1564 |                                         sprintf(cmd,"uci set system.@system[0].%s_version=\"%s\"",name_config,tmp_buff);
+      |                                                                                             ^~                ~~~~~~~~
+dialing.h:1564:41: note: 'sprintf' output between 38 and 1070 bytes into a destination of size 1024
+ 1564 |                                         sprintf(cmd,"uci set system.@system[0].%s_version=\"%s\"",name_config,tmp_buff);
+      |                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+dialing.h: In function 'getCOPS':
+dialing.h:2822:45: warning: '%s' directive writing up to 1023 bytes into a region of size 100 [-Wformat-overflow=]
+ 2822 |                         sprintf(debug_cops,"%s",tmp_buff);
+      |                                             ^~  ~~~~~~~~
+dialing.h:2822:25: note: 'sprintf' output between 1 and 1024 bytes into a destination of size 100
+ 2822 |                         sprintf(debug_cops,"%s",tmp_buff);
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+dialing.h: In function 'getIMSI':
+dialing.h:2853:45: warning: '%s' directive writing up to 1023 bytes into a region of size 100 [-Wformat-overflow=]
+ 2853 |                         sprintf(debug_imsi,"%s",tmp_buff);
+      |                                             ^~  ~~~~~~~~
+dialing.h:2853:25: note: 'sprintf' output between 1 and 1024 bytes into a destination of size 100
+ 2853 |                         sprintf(debug_imsi,"%s",tmp_buff);
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+dialing.h: In function 'getICCID':
+dialing.h:2891:46: warning: '%s' directive writing up to 1023 bytes into a region of size 100 [-Wformat-overflow=]
+ 2891 |                         sprintf(debug_iccid,"%s",tmp_buff);
+      |                                              ^~  ~~~~~~~~
+dialing.h:2891:25: note: 'sprintf' output between 1 and 1024 bytes into a destination of size 100
+ 2891 |                         sprintf(debug_iccid,"%s",tmp_buff);
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+dialing.h: In function 'analyticCSQ':
+dialing.h:3144:37: warning: '%s' directive writing up to 1023 bytes into a region of size 1018 [-Wformat-overflow=]
+ 3144 |                 sprintf(cmd,"echo \"%s\" | awk '{print $2}' | awk -F ',' '{print $1}'",tmp_buff);
+      |                                     ^~                                                 ~~~~~~~~
+dialing.h:3144:17: note: 'sprintf' output between 53 and 1076 bytes into a destination of size 1024
+ 3144 |                 sprintf(cmd,"echo \"%s\" | awk '{print $2}' | awk -F ',' '{print $1}'",tmp_buff);
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+dialing.h: In function 'setModem':
+dialing.h:3282:39: warning: '%s' directive writing up to 99 bytes into a region of size 49 [-Wformat-overflow=]
+ 3282 |                 sprintf(tmp_iptype,"\"%s\"",type_ip);
+      |                                       ^~    ~~~~~~~
+dialing.h:3282:17: note: 'sprintf' output between 3 and 102 bytes into a destination of size 50
+ 3282 |                 sprintf(tmp_iptype,"\"%s\"",type_ip);
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+dialing.h:3285:36: warning: '%s' directive writing up to 99 bytes into a region of size 49 [-Wformat-overflow=]
+ 3285 |                 sprintf(tmp_apn,"\"%s\"",value_apn);
+      |                                    ^~    ~~~~~~~~~
+dialing.h:3285:17: note: 'sprintf' output between 3 and 102 bytes into a destination of size 50
+ 3285 |                 sprintf(tmp_apn,"\"%s\"",value_apn);
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+dialing.h: In function 'setModem1':
+dialing.h:3994:39: warning: '%s' directive writing up to 99 bytes into a region of size 49 [-Wformat-overflow=]
+ 3994 |                 sprintf(tmp_iptype,"\"%s\"",type_ip_card1);
+      |                                       ^~    ~~~~~~~~~~~~~
+dialing.h:3994:17: note: 'sprintf' output between 3 and 102 bytes into a destination of size 50
+ 3994 |                 sprintf(tmp_iptype,"\"%s\"",type_ip_card1);
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+dialing.h:3997:36: warning: '%s' directive writing up to 99 bytes into a region of size 49 [-Wformat-overflow=]
+ 3997 |                 sprintf(tmp_apn,"\"%s\"",value_apn_card1);
+      |                                    ^~    ~~~~~~~~~~~~~~~
+dialing.h:3997:17: note: 'sprintf' output between 3 and 102 bytes into a destination of size 50
+ 3997 |                 sprintf(tmp_apn,"\"%s\"",value_apn_card1);
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+dialing.h: In function 'setModem2':
+dialing.h:4744:39: warning: '%s' directive writing up to 99 bytes into a region of size 49 [-Wformat-overflow=]
+ 4744 |                 sprintf(tmp_iptype,"\"%s\"",type_ip_card2);
+      |                                       ^~    ~~~~~~~~~~~~~
+dialing.h:4744:17: note: 'sprintf' output between 3 and 102 bytes into a destination of size 50
+ 4744 |                 sprintf(tmp_iptype,"\"%s\"",type_ip_card2);
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+dialing.h:4747:36: warning: '%s' directive writing up to 99 bytes into a region of size 49 [-Wformat-overflow=]
+ 4747 |                 sprintf(tmp_apn,"\"%s\"",value_apn_card2);
+      |                                    ^~    ~~~~~~~~~~~~~~~
+dialing.h:4747:17: note: 'sprintf' output between 3 and 102 bytes into a destination of size 50
+ 4747 |                 sprintf(tmp_apn,"\"%s\"",value_apn_card2);
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+dialing.h: In function 'Dial':
+dialing.h:6210:73: warning: '%s' directive writing up to 499 bytes into a region of size 291 [-Wformat-overflow=]
+ 6210 |                                                 sprintf(debug,"dial OK, %s,%s,%s,%s,%s,%s",value_ip_ifconfig,value_ipv6_ifconfig,value_dnsv4_1,value_dnsv6_1,value_dnsv4_2,value_dnsv6_2);
+      |                                                                         ^~                 ~~~~~~~~~~~~~~~~~
+dialing.h:6210:49: note: 'sprintf' output between 15 and 3009 bytes into a destination of size 300
+ 6210 |                                                 sprintf(debug,"dial OK, %s,%s,%s,%s,%s,%s",value_ip_ifconfig,value_ipv6_ifconfig,value_dnsv4_1,value_dnsv6_1,value_dnsv4_2,value_dnsv6_2);
+      |                                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+dialing.h:6106:73: warning: '%s' directive writing up to 499 bytes into a region of size 291 [-Wformat-overflow=]
+ 6106 |                                                 sprintf(debug,"dial OK, %s,%s,%s,%s,%s,%s",value_ip_ifconfig,value_ipv6_ifconfig,value_dnsv4_1,value_dnsv6_1,value_dnsv4_2,value_dnsv6_2);
+      |                                                                         ^~                 ~~~~~~~~~~~~~~~~~
+dialing.h:6106:49: note: 'sprintf' output between 15 and 3009 bytes into a destination of size 300
+ 6106 |                                                 sprintf(debug,"dial OK, %s,%s,%s,%s,%s,%s",value_ip_ifconfig,value_ipv6_ifconfig,value_dnsv4_1,value_dnsv6_1,value_dnsv4_2,value_dnsv6_2);
+      |                                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+dialing.h:5827:81: warning: '%s' directive writing up to 499 bytes into a region of size 291 [-Wformat-overflow=]
+ 5827 |                                                         sprintf(debug,"dial OK, %s,%s,%s,%s,%s,%s",value_ip_ifconfig,value_ipv6_ifconfig,value_dnsv4_1,value_dnsv6_1,value_dnsv4_2,value_dnsv6_2);
+      |                                                                                 ^~                 ~~~~~~~~~~~~~~~~~
+dialing.h:5827:57: note: 'sprintf' output between 15 and 3009 bytes into a destination of size 300
+ 5827 |                                                         sprintf(debug,"dial OK, %s,%s,%s,%s,%s,%s",value_ip_ifconfig,value_ipv6_ifconfig,value_dnsv4_1,value_dnsv6_1,value_dnsv4_2,value_dnsv6_2);
+      |                                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+dialing.h:5656:81: warning: '%s' directive writing up to 499 bytes into a region of size 291 [-Wformat-overflow=]
+ 5656 |                                                         sprintf(debug,"dial OK, %s,%s,%s,%s,%s,%s",value_ip_ifconfig,value_ipv6_ifconfig,value_dnsv4_1,value_dnsv6_1,value_dnsv4_2,value_dnsv6_2);
+      |                                                                                 ^~                 ~~~~~~~~~~~~~~~~~
+dialing.h:5656:57: note: 'sprintf' output between 15 and 3009 bytes into a destination of size 300
+ 5656 |                                                         sprintf(debug,"dial OK, %s,%s,%s,%s,%s,%s",value_ip_ifconfig,value_ipv6_ifconfig,value_dnsv4_1,value_dnsv6_1,value_dnsv4_2,value_dnsv6_2);
+      |                                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+dialing.h: In function 'checkDNS':
+dialing.h:6581:51: warning: '%s' directive writing up to 499 bytes into a region of size 45 [-Wformat-overflow=]
+ 6581 |                                 sprintf(cmd,"ping %s failed",value_pingaddr);
+      |                                                   ^~         ~~~~~~~~~~~~~~
+dialing.h:6581:33: note: 'sprintf' output between 13 and 512 bytes into a destination of size 50
+ 6581 |                                 sprintf(cmd,"ping %s failed",value_pingaddr);
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+dialing.h:6571:51: warning: '%s' directive writing up to 499 bytes into a region of size 45 [-Wformat-overflow=]
+ 6571 |                                 sprintf(cmd,"ping %s OK",value_pingaddr);
+      |                                                   ^~     ~~~~~~~~~~~~~~
+dialing.h:6571:33: note: 'sprintf' output between 9 and 508 bytes into a destination of size 50
+ 6571 |                                 sprintf(cmd,"ping %s OK",value_pingaddr);
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+dialing.h: In function 'sleep_delay_by_registation':
+dialing.h:6686:53: warning: '%s' directive writing up to 199 bytes into a region of size 193 [-Wformat-overflow=]
+ 6686 |                                 sprintf(cmd,"cgreg: %s; cereg: %s; c5greg: %s",cgreg,cereg,c5greg);
+      |                                                     ^~                         ~~~~~
+dialing.h:6686:33: note: 'sprintf' output between 27 and 624 bytes into a destination of size 200
+ 6686 |                                 sprintf(cmd,"cgreg: %s; cereg: %s; c5greg: %s",cgreg,cereg,c5greg);
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+dialing.h:6676:53: warning: '%s' directive writing up to 199 bytes into a region of size 193 [-Wformat-overflow=]
+ 6676 |                                 sprintf(cmd,"cgreg: %s; cereg: %s; c5greg: %s",cgreg,cereg,c5greg);
+      |                                                     ^~                         ~~~~~
+dialing.h:6676:33: note: 'sprintf' output between 27 and 624 bytes into a destination of size 200
+ 6676 |                                 sprintf(cmd,"cgreg: %s; cereg: %s; c5greg: %s",cgreg,cereg,c5greg);
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+dialing.h: In function 'debug_card_info':
+dialing.h:6725:79: warning: '%s' directive writing up to 99 bytes into a region of size between 65 and 263 [-Wformat-overflow=]
+ 6725 |                         sprintf(cmd,"read card, ccid: %s; imsi: %s; operator: %s",debug_iccid,debug_imsi,debug_cops);
+      |                                                                               ^~                         ~~~~~~~~~~
+dialing.h:6725:25: note: 'sprintf' output between 38 and 335 bytes into a destination of size 300
+ 6725 |                         sprintf(cmd,"read card, ccid: %s; imsi: %s; operator: %s",debug_iccid,debug_imsi,debug_cops);
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from main.c:3:
+fm650.h: In function 'setModule_FM650':
+fm650.h:33:53: warning: '%s' directive writing up to 1023 bytes into a region of size 91 [-Wformat-overflow=]
+   33 |                         sprintf(tmp_debug,"usbmode: %s; ",tmp_str_buff);
+      |                                                     ^~    ~~~~~~~~~~~~
+fm650.h:33:25: note: 'sprintf' output between 12 and 1035 bytes into a destination of size 100
+   33 |                         sprintf(tmp_debug,"usbmode: %s; ",tmp_str_buff);
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+fm650.h:68:60: warning: '%s' directive writing up to 1023 bytes into a region of size 92 [-Wformat-overflow=]
+   68 |                                 sprintf(tmp_debug,"ippass: %s; ",tmp_str_buff);
+      |                                                            ^~    ~~~~~~~~~~~~
+fm650.h:68:33: note: 'sprintf' output between 11 and 1034 bytes into a destination of size 100
+   68 |                                 sprintf(tmp_debug,"ippass: %s; ",tmp_str_buff);
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from main.c:3:
+fm650.h: In function 'setModule_NL668':
+fm650.h:316:61: warning: '%s' directive writing up to 1023 bytes into a region of size 91 [-Wformat-overflow=]
+  316 |                                 sprintf(tmp_debug,"usbmode: %s; ",tmp_str_buff);
+      |                                                             ^~    ~~~~~~~~~~~~
+fm650.h:316:33: note: 'sprintf' output between 12 and 1035 bytes into a destination of size 100
+  316 |                                 sprintf(tmp_debug,"usbmode: %s; ",tmp_str_buff);
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+fm650.h:349:60: warning: '%s' directive writing up to 1023 bytes into a region of size 92 [-Wformat-overflow=]
+  349 |                                 sprintf(tmp_debug,"ippass: %s ",tmp_str_buff);
+      |                                                            ^~   ~~~~~~~~~~~~
+fm650.h:349:33: note: 'sprintf' output between 10 and 1033 bytes into a destination of size 100
+  349 |                                 sprintf(tmp_debug,"ippass: %s ",tmp_str_buff);
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+fm650.h: In function 'analyticINFO_FM650':
+fm650.h:706:95: warning: '%s' directive writing up to 499 bytes into a region of size 45 [-Wformat-overflow=]
+  706 |                         sprintf(debug,"formatting the current information of cellular failed, %s\n",buff);
+      |                                                                                               ^~    ~~~~
+fm650.h:706:25: note: 'sprintf' output between 57 and 556 bytes into a destination of size 100
+  706 |                         sprintf(debug,"formatting the current information of cellular failed, %s\n",buff);
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+fm650.h:886:66: warning: ', band: ' directive writing 8 bytes into a region of size between 1 and 100 [-Wformat-overflow=]
+  886 |                                                 sprintf(debug,"%s, band: %s; arfcn: %s; pci: %s",nservice,array_CPSI[8],arfcn,pci);
+      |                                                                  ^~~~~~~~
+fm650.h:886:49: note: 'sprintf' output between 25 and 371 bytes into a destination of size 100
+  886 |                                                 sprintf(debug,"%s, band: %s; arfcn: %s; pci: %s",nservice,array_CPSI[8],arfcn,pci);
+      |                                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+fm650.h:874:66: warning: ', band: ' directive writing 8 bytes into a region of size between 1 and 100 [-Wformat-overflow=]
+  874 |                                                 sprintf(debug,"%s, band: %s; arfcn: %s; pci: %s; eNB: %s; cellID: %s",nservice,band,arfcn,pci,eNB,cellID);
+      |                                                                  ^~~~~~~~
+fm650.h:874:49: note: 'sprintf' output between 42 and 636 bytes into a destination of size 100
+  874 |                                                 sprintf(debug,"%s, band: %s; arfcn: %s; pci: %s; eNB: %s; cellID: %s",nservice,band,arfcn,pci,eNB,cellID);
+      |                                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+fm650.h: In function 'Dial_FM650':
+fm650.h:1452:66: warning: '%s' directive writing up to 1023 bytes into a region of size 82 [-Wformat-overflow=]
+ 1452 |                                 sprintf(debug,"5GS & EPS & GPRS: %s, reboot cellular network",stat_c5greg);
+      |                                                                  ^~                           ~~~~~~~~~~~
+fm650.h:1452:33: note: 'sprintf' output between 44 and 1067 bytes into a destination of size 100
+ 1452 |                                 sprintf(debug,"5GS & EPS & GPRS: %s, reboot cellular network",stat_c5greg);
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+fm650.h:1458:53: warning: '%s' directive writing up to 1023 bytes into a region of size 95 [-Wformat-overflow=]
+ 1458 |                                 sprintf(debug,"5GS: %s; EPS: %s; GPRS: %s, reboot cellular network",stat_c5greg,stat_cereg,stat_cgreg);
+      |                                                     ^~                                              ~~~~~~~~~~~
+fm650.h:1458:33: note: 'sprintf' output between 46 and 3115 bytes into a destination of size 100
+ 1458 |                                 sprintf(debug,"5GS: %s; EPS: %s; GPRS: %s, reboot cellular network",stat_c5greg,stat_cereg,stat_cgreg);
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+fm650.h:1456:53: warning: '%s' directive writing up to 1023 bytes into a region of size 95 [-Wformat-overflow=]
+ 1456 |                                 sprintf(debug,"5GS: %s; EPS & GPRS: %s, reboot cellular network",stat_c5greg,stat_cereg);
+      |                                                     ^~                                           ~~~~~~~~~~~
+fm650.h:1456:33: note: 'sprintf' output between 45 and 2091 bytes into a destination of size 100
+ 1456 |                                 sprintf(debug,"5GS: %s; EPS & GPRS: %s, reboot cellular network",stat_c5greg,stat_cereg);
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+fm650.h:1454:59: warning: '%s' directive writing up to 1023 bytes into a region of size 89 [-Wformat-overflow=]
+ 1454 |                                 sprintf(debug,"5GS & EPS: %s; GPRS: %s, reboot cellular network",stat_c5greg,stat_cgreg);
+      |                                                           ^~                                     ~~~~~~~~~~~
+fm650.h:1454:33: note: 'sprintf' output between 45 and 2091 bytes into a destination of size 100
+ 1454 |                                 sprintf(debug,"5GS & EPS: %s; GPRS: %s, reboot cellular network",stat_c5greg,stat_cgreg);
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+fm650.h: In function 'Dial_NL668':
+fm650.h:1718:53: warning: '%s' directive writing up to 1023 bytes into a region of size 95 [-Wformat-overflow=]
+ 1718 |                                 sprintf(debug,"EPS: %s; GPRS: %s, reboot cellular network",stat_cereg,stat_cgreg);
+      |                                                     ^~                                     ~~~~~~~~~~
+fm650.h:1718:33: note: 'sprintf' output between 39 and 2085 bytes into a destination of size 100
+ 1718 |                                 sprintf(debug,"EPS: %s; GPRS: %s, reboot cellular network",stat_cereg,stat_cgreg);
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+fm650.h:1716:60: warning: '%s' directive writing up to 1023 bytes into a region of size 88 [-Wformat-overflow=]
+ 1716 |                                 sprintf(debug,"EPS & GPRS: %s, reboot cellular network",stat_cereg);
+      |                                                            ^~                           ~~~~~~~~~~
+fm650.h:1716:33: note: 'sprintf' output between 38 and 1061 bytes into a destination of size 100
+ 1716 |                                 sprintf(debug,"EPS & GPRS: %s, reboot cellular network",stat_cereg);
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from main.c:4:
+fm150_na.h: In function 'setModule_FM160':
+fm150_na.h:73:61: warning: '%s' directive writing up to 1023 bytes into a region of size 91 [-Wformat-overflow=]
+   73 |                                 sprintf(tmp_debug,"usbmode: %s; ",tmp_str_buff);
+      |                                                             ^~    ~~~~~~~~~~~~
+fm150_na.h:73:33: note: 'sprintf' output between 12 and 1035 bytes into a destination of size 100
+   73 |                                 sprintf(tmp_debug,"usbmode: %s; ",tmp_str_buff);
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+fm150_na.h:109:60: warning: '%s' directive writing up to 1023 bytes into a region of size 92 [-Wformat-overflow=]
+  109 |                                 sprintf(tmp_debug,"ippass: %s; ",tmp_str_buff);
+      |                                                            ^~    ~~~~~~~~~~~~
+fm150_na.h:109:33: note: 'sprintf' output between 11 and 1034 bytes into a destination of size 100
+  109 |                                 sprintf(tmp_debug,"ippass: %s; ",tmp_str_buff);
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+fm150_na.h:144:64: warning: '%s' directive writing up to 1023 bytes into a region of size 88 [-Wformat-overflow=]
+  144 |                                 sprintf(tmp_debug,"ippassmode: %s",tmp_str_buff);
+      |                                                                ^~  ~~~~~~~~~~~~
+fm150_na.h:144:33: note: 'sprintf' output between 13 and 1036 bytes into a destination of size 100
+  144 |                                 sprintf(tmp_debug,"ippassmode: %s",tmp_str_buff);
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from main.c:4:
+fm150_na.h: In function 'Dial_FM160':
+fm150_na.h:1201:74: warning: '%s' directive writing up to 1023 bytes into a region of size 82 [-Wformat-overflow=]
+ 1201 |                                         sprintf(debug,"5GS & EPS & GPRS: %s, reboot cellular network",stat_c5greg);
+      |                                                                          ^~                           ~~~~~~~~~~~
+fm150_na.h:1201:41: note: 'sprintf' output between 44 and 1067 bytes into a destination of size 100
+ 1201 |                                         sprintf(debug,"5GS & EPS & GPRS: %s, reboot cellular network",stat_c5greg);
+      |                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+fm150_na.h:1207:61: warning: '%s' directive writing up to 1023 bytes into a region of size 95 [-Wformat-overflow=]
+ 1207 |                                         sprintf(debug,"5GS: %s; EPS: %s; GPRS: %s, reboot cellular network",stat_c5greg,stat_cereg,stat_cgreg);
+      |                                                             ^~                                              ~~~~~~~~~~~
+fm150_na.h:1207:41: note: 'sprintf' output between 46 and 3115 bytes into a destination of size 100
+ 1207 |                                         sprintf(debug,"5GS: %s; EPS: %s; GPRS: %s, reboot cellular network",stat_c5greg,stat_cereg,stat_cgreg);
+      |                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+fm150_na.h:1205:61: warning: '%s' directive writing up to 1023 bytes into a region of size 95 [-Wformat-overflow=]
+ 1205 |                                         sprintf(debug,"5GS: %s; EPS & GPRS: %s, reboot cellular network",stat_c5greg,stat_cereg);
+      |                                                             ^~                                           ~~~~~~~~~~~
+fm150_na.h:1205:41: note: 'sprintf' output between 45 and 2091 bytes into a destination of size 100
+ 1205 |                                         sprintf(debug,"5GS: %s; EPS & GPRS: %s, reboot cellular network",stat_c5greg,stat_cereg);
+      |                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+fm150_na.h:1203:67: warning: '%s' directive writing up to 1023 bytes into a region of size 89 [-Wformat-overflow=]
+ 1203 |                                         sprintf(debug,"5GS & EPS: %s; GPRS: %s, reboot cellular network",stat_c5greg,stat_cgreg);
+      |                                                                   ^~                                     ~~~~~~~~~~~
+fm150_na.h:1203:41: note: 'sprintf' output between 45 and 2091 bytes into a destination of size 100
+ 1203 |                                         sprintf(debug,"5GS & EPS: %s; GPRS: %s, reboot cellular network",stat_c5greg,stat_cgreg);
+      |                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+fm150_na.h: In function 'Dial_FM160_PCI':
+fm150_na.h:1684:66: warning: '%s' directive writing up to 1023 bytes into a region of size 82 [-Wformat-overflow=]
+ 1684 |                                 sprintf(debug,"5GS & EPS & GPRS: %s, reboot cellular network",stat_c5greg);
+      |                                                                  ^~                           ~~~~~~~~~~~
+fm150_na.h:1684:33: note: 'sprintf' output between 44 and 1067 bytes into a destination of size 100
+ 1684 |                                 sprintf(debug,"5GS & EPS & GPRS: %s, reboot cellular network",stat_c5greg);
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+fm150_na.h:1690:53: warning: '%s' directive writing up to 1023 bytes into a region of size 95 [-Wformat-overflow=]
+ 1690 |                                 sprintf(debug,"5GS: %s; EPS: %s; GPRS: %s, reboot cellular network",stat_c5greg,stat_cereg,stat_cgreg);
+      |                                                     ^~                                              ~~~~~~~~~~~
+fm150_na.h:1690:33: note: 'sprintf' output between 46 and 3115 bytes into a destination of size 100
+ 1690 |                                 sprintf(debug,"5GS: %s; EPS: %s; GPRS: %s, reboot cellular network",stat_c5greg,stat_cereg,stat_cgreg);
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+fm150_na.h:1688:53: warning: '%s' directive writing up to 1023 bytes into a region of size 95 [-Wformat-overflow=]
+ 1688 |                                 sprintf(debug,"5GS: %s; EPS & GPRS: %s, reboot cellular network",stat_c5greg,stat_cereg);
+      |                                                     ^~                                           ~~~~~~~~~~~
+fm150_na.h:1688:33: note: 'sprintf' output between 45 and 2091 bytes into a destination of size 100
+ 1688 |                                 sprintf(debug,"5GS: %s; EPS & GPRS: %s, reboot cellular network",stat_c5greg,stat_cereg);
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+fm150_na.h:1686:59: warning: '%s' directive writing up to 1023 bytes into a region of size 89 [-Wformat-overflow=]
+ 1686 |                                 sprintf(debug,"5GS & EPS: %s; GPRS: %s, reboot cellular network",stat_c5greg,stat_cgreg);
+      |                                                           ^~                                     ~~~~~~~~~~~
+fm150_na.h:1686:33: note: 'sprintf' output between 45 and 2091 bytes into a destination of size 100
+ 1686 |                                 sprintf(debug,"5GS & EPS: %s; GPRS: %s, reboot cellular network",stat_c5greg,stat_cgreg);
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+fm150_na.h:1625:73: warning: '%s' directive writing up to 499 bytes into a region of size 291 [-Wformat-overflow=]
+ 1625 |                                                 sprintf(debug,"dial OK, %s,%s,%s,%s,%s,%s",value_ip_ifconfig,value_ipv6_ifconfig,value_dnsv4_1,value_dnsv6_1,value_dnsv4_2,value_dnsv6_2);
+      |                                                                         ^~                 ~~~~~~~~~~~~~~~~~
+fm150_na.h:1625:49: note: 'sprintf' output between 15 and 3009 bytes into a destination of size 300
+ 1625 |                                                 sprintf(debug,"dial OK, %s,%s,%s,%s,%s,%s",value_ip_ifconfig,value_ipv6_ifconfig,value_dnsv4_1,value_dnsv6_1,value_dnsv4_2,value_dnsv6_2);
+      |                                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from main.c:5:
+rm500u.h: In function 'analyticQENG_RM500U':
+rm500u.h:1234:95: warning: '%s' directive writing up to 2047 bytes into a region of size 45 [-Wformat-overflow=]
+ 1234 |                         sprintf(debug,"formatting the current information of cellular failed, %s\n",tmp_buff);
+      |                                                                                               ^~    ~~~~~~~~
+rm500u.h:1234:25: note: 'sprintf' output between 57 and 2104 bytes into a destination of size 100
+ 1234 |                         sprintf(debug,"formatting the current information of cellular failed, %s\n",tmp_buff);
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+rm500u.h:1488:58: warning: ', band: ' directive writing 8 bytes into a region of size between 1 and 100 [-Wformat-overflow=]
+ 1488 |                                         sprintf(debug,"%s, band: %s; arfcn: %s; pci: %s; eNB: %s; cellID: %s",nservice,band,arfcn,pci,eNB,cellID);
+      |                                                          ^~~~~~~~
+rm500u.h:1488:41: note: 'sprintf' output between 42 and 636 bytes into a destination of size 100
+ 1488 |                                         sprintf(debug,"%s, band: %s; arfcn: %s; pci: %s; eNB: %s; cellID: %s",nservice,band,arfcn,pci,eNB,cellID);
+      |                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+rm500u.h: In function 'analyticQENG_EC20':
+rm500u.h:1572:95: warning: '%s' directive writing up to 2047 bytes into a region of size 45 [-Wformat-overflow=]
+ 1572 |                         sprintf(debug,"formatting the current information of cellular failed, %s\n",tmp_buff);
+      |                                                                                               ^~    ~~~~~~~~
+rm500u.h:1572:25: note: 'sprintf' output between 57 and 2104 bytes into a destination of size 100
+ 1572 |                         sprintf(debug,"formatting the current information of cellular failed, %s\n",tmp_buff);
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+rm500u.h:1609:58: warning: ', band: ' directive writing 8 bytes into a region of size between 1 and 100 [-Wformat-overflow=]
+ 1609 |                                         sprintf(debug,"%s, band: %s",nservice,band);
+      |                                                          ^~~~~~~~
+rm500u.h:1609:41: note: 'sprintf' output between 9 and 207 bytes into a destination of size 100
+ 1609 |                                         sprintf(debug,"%s, band: %s",nservice,band);
+      |                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+rm500u.h: In function 'setRATMODE_EC20':
+rm500u.h:2029:59: warning: '%s' directive writing up to 99 bytes into a region of size 36 [-Wformat-overflow=]
+ 2029 |                         sprintf(band_cmp,"\"band\",0x93,0x%s,0x0",str_lte);
+      |                                                           ^~      ~~~~~~~
+rm500u.h:2029:25: note: 'sprintf' output between 19 and 118 bytes into a destination of size 50
+ 2029 |                         sprintf(band_cmp,"\"band\",0x93,0x%s,0x0",str_lte);
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+rm500u.h:2030:56: warning: '%s' directive writing up to 99 bytes into a region of size 40 [-Wformat-overflow=]
+ 2030 |                         sprintf(band_lock,"\"band\",93,%s,0",str_lte);
+      |                                                        ^~    ~~~~~~~
+rm500u.h:2030:25: note: 'sprintf' output between 13 and 112 bytes into a destination of size 50
+ 2030 |                         sprintf(band_lock,"\"band\",93,%s,0",str_lte);
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+rm500u.h:2020:54: warning: '%s' directive writing up to 99 bytes into a region of size 41 [-Wformat-overflow=]
+ 2020 |                         sprintf(band_cmp,"\"band\",0x%s,0x1a0080800c5,0x0",str_wcdma);
+      |                                                      ^~                    ~~~~~~~~~
+rm500u.h:2020:25: note: 'sprintf' output between 28 and 127 bytes into a destination of size 50
+ 2020 |                         sprintf(band_cmp,"\"band\",0x%s,0x1a0080800c5,0x0",str_wcdma);
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+rm500u.h:2021:53: warning: '%s' directive writing up to 99 bytes into a region of size 43 [-Wformat-overflow=]
+ 2021 |                         sprintf(band_lock,"\"band\",%s,1a0080800c5,0",str_wcdma);
+      |                                                     ^~                ~~~~~~~~~
+rm500u.h:2021:25: note: 'sprintf' output between 22 and 121 bytes into a destination of size 50
+ 2021 |                         sprintf(band_lock,"\"band\",%s,1a0080800c5,0",str_wcdma);
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+rm500u.h:2011:54: warning: '%s' directive writing up to 99 bytes into a region of size 41 [-Wformat-overflow=]
+ 2011 |                         sprintf(band_cmp,"\"band\",0x%s,0x1a0080800c5,0x0",str_gsm);
+      |                                                      ^~                    ~~~~~~~
+rm500u.h:2011:25: note: 'sprintf' output between 28 and 127 bytes into a destination of size 50
+ 2011 |                         sprintf(band_cmp,"\"band\",0x%s,0x1a0080800c5,0x0",str_gsm);
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+rm500u.h:2012:53: warning: '%s' directive writing up to 99 bytes into a region of size 43 [-Wformat-overflow=]
+ 2012 |                         sprintf(band_lock,"\"band\",%s,1a0080800c5,0",str_gsm);
+      |                                                     ^~                ~~~~~~~
+rm500u.h:2012:25: note: 'sprintf' output between 22 and 121 bytes into a destination of size 50
+ 2012 |                         sprintf(band_lock,"\"band\",%s,1a0080800c5,0",str_gsm);
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+rm500u.h:2055:60: warning: '%s' directive writing up to 99 bytes into a region of size 35 [-Wformat-overflow=]
+ 2055 |                         sprintf(band_cmp,"\"band\",0x260,0x%s,0x0",str_lte);
+      |                                                            ^~      ~~~~~~~
+rm500u.h:2055:25: note: 'sprintf' output between 20 and 119 bytes into a destination of size 50
+ 2055 |                         sprintf(band_cmp,"\"band\",0x260,0x%s,0x0",str_lte);
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+rm500u.h:2056:57: warning: '%s' directive writing up to 99 bytes into a region of size 39 [-Wformat-overflow=]
+ 2056 |                         sprintf(band_lock,"\"band\",260,%s,0",str_lte);
+      |                                                         ^~    ~~~~~~~
+rm500u.h:2056:25: note: 'sprintf' output between 14 and 113 bytes into a destination of size 50
+ 2056 |                         sprintf(band_lock,"\"band\",260,%s,0",str_lte);
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+rm500u.h:2046:54: warning: '%s' directive writing up to 99 bytes into a region of size 41 [-Wformat-overflow=]
+ 2046 |                         sprintf(band_cmp,"\"band\",0x%s,0x42000000000000381a,0x0",str_wcdma);
+      |                                                      ^~                           ~~~~~~~~~
+rm500u.h:2046:25: note: 'sprintf' output between 35 and 134 bytes into a destination of size 50
+ 2046 |                         sprintf(band_cmp,"\"band\",0x%s,0x42000000000000381a,0x0",str_wcdma);
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+rm500u.h:2047:53: warning: '%s' directive writing up to 99 bytes into a region of size 43 [-Wformat-overflow=]
+ 2047 |                         sprintf(band_lock,"\"band\",%s,42000000000000381a,0",str_wcdma);
+      |                                                     ^~                       ~~~~~~~~~
+rm500u.h:2047:25: note: 'sprintf' output between 29 and 128 bytes into a destination of size 50
+ 2047 |                         sprintf(band_lock,"\"band\",%s,42000000000000381a,0",str_wcdma);
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+rm500u.h: In function 'Dial_RG520N':
+rm500u.h:2513:66: warning: '%s' directive writing up to 1023 bytes into a region of size 82 [-Wformat-overflow=]
+ 2513 |                                 sprintf(debug,"5GS & EPS & GPRS: %s, reboot cellular network",stat_c5greg);
+      |                                                                  ^~                           ~~~~~~~~~~~
+rm500u.h:2513:33: note: 'sprintf' output between 44 and 1067 bytes into a destination of size 100
+ 2513 |                                 sprintf(debug,"5GS & EPS & GPRS: %s, reboot cellular network",stat_c5greg);
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+rm500u.h:2519:53: warning: '%s' directive writing up to 1023 bytes into a region of size 95 [-Wformat-overflow=]
+ 2519 |                                 sprintf(debug,"5GS: %s; EPS: %s; GPRS: %s, reboot cellular network",stat_c5greg,stat_cereg,stat_cgreg);
+      |                                                     ^~                                              ~~~~~~~~~~~
+rm500u.h:2519:33: note: 'sprintf' output between 46 and 3115 bytes into a destination of size 100
+ 2519 |                                 sprintf(debug,"5GS: %s; EPS: %s; GPRS: %s, reboot cellular network",stat_c5greg,stat_cereg,stat_cgreg);
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+rm500u.h:2517:53: warning: '%s' directive writing up to 1023 bytes into a region of size 95 [-Wformat-overflow=]
+ 2517 |                                 sprintf(debug,"5GS: %s; EPS & GPRS: %s, reboot cellular network",stat_c5greg,stat_cereg);
+      |                                                     ^~                                           ~~~~~~~~~~~
+rm500u.h:2517:33: note: 'sprintf' output between 45 and 2091 bytes into a destination of size 100
+ 2517 |                                 sprintf(debug,"5GS: %s; EPS & GPRS: %s, reboot cellular network",stat_c5greg,stat_cereg);
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+rm500u.h:2515:59: warning: '%s' directive writing up to 1023 bytes into a region of size 89 [-Wformat-overflow=]
+ 2515 |                                 sprintf(debug,"5GS & EPS: %s; GPRS: %s, reboot cellular network",stat_c5greg,stat_cgreg);
+      |                                                           ^~                                     ~~~~~~~~~~~
+rm500u.h:2515:33: note: 'sprintf' output between 45 and 2091 bytes into a destination of size 100
+ 2515 |                                 sprintf(debug,"5GS & EPS: %s; GPRS: %s, reboot cellular network",stat_c5greg,stat_cgreg);
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+rm500u.h:2455:65: warning: '%s' directive writing up to 499 bytes into a region of size 291 [-Wformat-overflow=]
+ 2455 |                                         sprintf(debug,"dial OK, %s,%s,%s,%s,%s,%s",value_ip_ifconfig,value_ipv6_ifconfig,value_dnsv4_1,value_dnsv6_1,value_dnsv4_2,value_dnsv6_2);
+      |                                                                 ^~                 ~~~~~~~~~~~~~~~~~
+rm500u.h:2455:41: note: 'sprintf' output between 15 and 3009 bytes into a destination of size 300
+ 2455 |                                         sprintf(debug,"dial OK, %s,%s,%s,%s,%s,%s",value_ip_ifconfig,value_ipv6_ifconfig,value_dnsv4_1,value_dnsv6_1,value_dnsv4_2,value_dnsv6_2);
+      |                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+rm500u.h: In function 'Dial_RM520N':
+rm500u.h:2765:66: warning: '%s' directive writing up to 1023 bytes into a region of size 82 [-Wformat-overflow=]
+ 2765 |                                 sprintf(debug,"5GS & EPS & GPRS: %s, reboot cellular network",stat_c5greg);
+      |                                                                  ^~                           ~~~~~~~~~~~
+rm500u.h:2765:33: note: 'sprintf' output between 44 and 1067 bytes into a destination of size 100
+ 2765 |                                 sprintf(debug,"5GS & EPS & GPRS: %s, reboot cellular network",stat_c5greg);
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+rm500u.h:2771:53: warning: '%s' directive writing up to 1023 bytes into a region of size 95 [-Wformat-overflow=]
+ 2771 |                                 sprintf(debug,"5GS: %s; EPS: %s; GPRS: %s, reboot cellular network",stat_c5greg,stat_cereg,stat_cgreg);
+      |                                                     ^~                                              ~~~~~~~~~~~
+rm500u.h:2771:33: note: 'sprintf' output between 46 and 3115 bytes into a destination of size 100
+ 2771 |                                 sprintf(debug,"5GS: %s; EPS: %s; GPRS: %s, reboot cellular network",stat_c5greg,stat_cereg,stat_cgreg);
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+rm500u.h:2769:53: warning: '%s' directive writing up to 1023 bytes into a region of size 95 [-Wformat-overflow=]
+ 2769 |                                 sprintf(debug,"5GS: %s; EPS & GPRS: %s, reboot cellular network",stat_c5greg,stat_cereg);
+      |                                                     ^~                                           ~~~~~~~~~~~
+rm500u.h:2769:33: note: 'sprintf' output between 45 and 2091 bytes into a destination of size 100
+ 2769 |                                 sprintf(debug,"5GS: %s; EPS & GPRS: %s, reboot cellular network",stat_c5greg,stat_cereg);
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+rm500u.h:2767:59: warning: '%s' directive writing up to 1023 bytes into a region of size 89 [-Wformat-overflow=]
+ 2767 |                                 sprintf(debug,"5GS & EPS: %s; GPRS: %s, reboot cellular network",stat_c5greg,stat_cgreg);
+      |                                                           ^~                                     ~~~~~~~~~~~
+rm500u.h:2767:33: note: 'sprintf' output between 45 and 2091 bytes into a destination of size 100
+ 2767 |                                 sprintf(debug,"5GS & EPS: %s; GPRS: %s, reboot cellular network",stat_c5greg,stat_cgreg);
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+rm500u.h:2700:73: warning: '%s' directive writing up to 499 bytes into a region of size 291 [-Wformat-overflow=]
+ 2700 |                                                 sprintf(debug,"dial OK, %s,%s,%s,%s,%s,%s",value_ip_ifconfig,value_ipv6_ifconfig,value_dnsv4_1,value_dnsv6_1,value_dnsv4_2,value_dnsv6_2);
+      |                                                                         ^~                 ~~~~~~~~~~~~~~~~~
+rm500u.h:2700:49: note: 'sprintf' output between 15 and 3009 bytes into a destination of size 300
+ 2700 |                                                 sprintf(debug,"dial OK, %s,%s,%s,%s,%s,%s",value_ip_ifconfig,value_ipv6_ifconfig,value_dnsv4_1,value_dnsv6_1,value_dnsv4_2,value_dnsv6_2);
+      |                                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+rm500u.h: In function 'Dial_EC20':
+rm500u.h:3006:53: warning: '%s' directive writing up to 1023 bytes into a region of size 95 [-Wformat-overflow=]
+ 3006 |                                 sprintf(debug,"EPS: %s; GPRS: %s, reboot cellular network",stat_cereg,stat_cgreg);
+      |                                                     ^~                                     ~~~~~~~~~~
+rm500u.h:3006:33: note: 'sprintf' output between 39 and 2085 bytes into a destination of size 100
+ 3006 |                                 sprintf(debug,"EPS: %s; GPRS: %s, reboot cellular network",stat_cereg,stat_cgreg);
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+rm500u.h:3004:60: warning: '%s' directive writing up to 1023 bytes into a region of size 88 [-Wformat-overflow=]
+ 3004 |                                 sprintf(debug,"EPS & GPRS: %s, reboot cellular network",stat_cgreg);
+      |                                                            ^~                           ~~~~~~~~~~
+rm500u.h:3004:33: note: 'sprintf' output between 38 and 1061 bytes into a destination of size 100
+ 3004 |                                 sprintf(debug,"EPS & GPRS: %s, reboot cellular network",stat_cgreg);
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+rm500u.h:2960:65: warning: '%s' directive writing up to 499 bytes into a region of size 291 [-Wformat-overflow=]
+ 2960 |                                         sprintf(debug,"dial OK, %s,%s,%s,%s,%s,%s",value_ip_ifconfig,value_ipv6_ifconfig,value_dnsv4_1,value_dnsv6_1,value_dnsv4_2,value_dnsv6_2);
+      |                                                                 ^~                 ~~~~~~~~~~~~~~~~~
+rm500u.h:2960:41: note: 'sprintf' output between 15 and 3009 bytes into a destination of size 300
+ 2960 |                                         sprintf(debug,"dial OK, %s,%s,%s,%s,%s,%s",value_ip_ifconfig,value_ipv6_ifconfig,value_dnsv4_1,value_dnsv6_1,value_dnsv4_2,value_dnsv6_2);
+      |                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+rm500u.h: In function 'get_time':
+rm500u.h:3297:36: warning: '%s' directive writing up to 99 bytes into a region of size 94 [-Wformat-overflow=]
+ 3297 |                 sprintf(cmd,"cmdat %s 'AT' | grep OK |wc -l",path_usb);
+      |                                    ^~                        ~~~~~~~~
+rm500u.h:3297:17: note: 'sprintf' output between 29 and 128 bytes into a destination of size 100
+ 3297 |                 sprintf(cmd,"cmdat %s 'AT' | grep OK |wc -l",path_usb);
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+rm500u.h:3304:28: warning: '%s' directive writing up to 99 bytes into a region of size 94 [-Wformat-overflow=]
+ 3304 |         sprintf(cmd,"cmdat %s 'AT+CTZU=1'",path_usb);
+      |                            ^~              ~~~~~~~~
+rm500u.h:3304:9: note: 'sprintf' output between 19 and 118 bytes into a destination of size 100
+ 3304 |         sprintf(cmd,"cmdat %s 'AT+CTZU=1'",path_usb);
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+rm500u.h:3308:28: warning: '%s' directive writing up to 99 bytes into a region of size 94 [-Wformat-overflow=]
+ 3308 |         sprintf(cmd,"cmdat %s AT+CCLK? | grep +CCLK: | awk -F '\"' '{print$2}'",path_usb);
+      |                            ^~                                                   ~~~~~~~~
+rm500u.h:3308:9: note: 'sprintf' output between 55 and 154 bytes into a destination of size 100
+ 3308 |         sprintf(cmd,"cmdat %s AT+CCLK? | grep +CCLK: | awk -F '\"' '{print$2}'",path_usb);
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from main.c:8:
+mt5700.h: In function 'setModule_MT5700':
+mt5700.h:66:53: warning: '%s' directive writing up to 1023 bytes into a region of size 91 [-Wformat-overflow=]
+   66 |                         sprintf(tmp_debug,"usbmode: %s; ",tmp_str_buff);
+      |                                                     ^~    ~~~~~~~~~~~~
+mt5700.h:66:25: note: 'sprintf' output between 12 and 1035 bytes into a destination of size 100
+   66 |                         sprintf(tmp_debug,"usbmode: %s; ",tmp_str_buff);
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mt5700.h:101:57: warning: '%s' directive writing up to 1023 bytes into a region of size 95 [-Wformat-overflow=]
+  101 |                                 sprintf(tmp_debug,"nat: %s; ",tmp_str_buff);
+      |                                                         ^~    ~~~~~~~~~~~~
+mt5700.h:101:33: note: 'sprintf' output between 8 and 1031 bytes into a destination of size 100
+  101 |                                 sprintf(tmp_debug,"nat: %s; ",tmp_str_buff);
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mt5700.h: In function 'setModule_MT5711':
+mt5700.h:312:53: warning: '%s' directive writing up to 1023 bytes into a region of size 91 [-Wformat-overflow=]
+  312 |                         sprintf(tmp_debug,"usbmode: %s; ",tmp_str_buff);
+      |                                                     ^~    ~~~~~~~~~~~~
+mt5700.h:312:25: note: 'sprintf' output between 12 and 1035 bytes into a destination of size 100
+  312 |                         sprintf(tmp_debug,"usbmode: %s; ",tmp_str_buff);
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mt5700.h:347:57: warning: '%s' directive writing up to 1023 bytes into a region of size 95 [-Wformat-overflow=]
+  347 |                                 sprintf(tmp_debug,"nat: %s; ",tmp_str_buff);
+      |                                                         ^~    ~~~~~~~~~~~~
+mt5700.h:347:33: note: 'sprintf' output between 8 and 1031 bytes into a destination of size 100
+  347 |                                 sprintf(tmp_debug,"nat: %s; ",tmp_str_buff);
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from main.c:8:
+mt5700.h: In function 'analyticINFO_MT5700':
+mt5700.h:652:95: warning: '%s' directive writing up to 499 bytes into a region of size 45 [-Wformat-overflow=]
+  652 |                         sprintf(debug,"formatting the current information of cellular failed, %s\n",buff);
+      |                                                                                               ^~    ~~~~
+mt5700.h:652:25: note: 'sprintf' output between 57 and 556 bytes into a destination of size 100
+  652 |                         sprintf(debug,"formatting the current information of cellular failed, %s\n",buff);
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mt5700.h:822:58: warning: ', band: ' directive writing 8 bytes into a region of size between 1 and 100 [-Wformat-overflow=]
+  822 |                                         sprintf(debug,"%s, band: %s; arfcn: %s; pci: %s; eNB: %s; cellID: %s",nservice,band,arfcn,pci,eNB,cellID);
+      |                                                          ^~~~~~~~
+mt5700.h:822:41: note: 'sprintf' output between 42 and 636 bytes into a destination of size 100
+  822 |                                         sprintf(debug,"%s, band: %s; arfcn: %s; pci: %s; eNB: %s; cellID: %s",nservice,band,arfcn,pci,eNB,cellID);
+      |                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mt5700.h: In function 'Dial_MT5700':
+mt5700.h:1481:66: warning: '%s' directive writing up to 1023 bytes into a region of size 82 [-Wformat-overflow=]
+ 1481 |                                 sprintf(debug,"5GS & EPS & GPRS: %s, reboot cellular network",stat_c5greg);
+      |                                                                  ^~                           ~~~~~~~~~~~
+mt5700.h:1481:33: note: 'sprintf' output between 44 and 1067 bytes into a destination of size 100
+ 1481 |                                 sprintf(debug,"5GS & EPS & GPRS: %s, reboot cellular network",stat_c5greg);
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mt5700.h:1487:53: warning: '%s' directive writing up to 1023 bytes into a region of size 95 [-Wformat-overflow=]
+ 1487 |                                 sprintf(debug,"5GS: %s; EPS: %s; GPRS: %s, reboot cellular network",stat_c5greg,stat_cereg,stat_cgreg);
+      |                                                     ^~                                              ~~~~~~~~~~~
+mt5700.h:1487:33: note: 'sprintf' output between 46 and 3115 bytes into a destination of size 100
+ 1487 |                                 sprintf(debug,"5GS: %s; EPS: %s; GPRS: %s, reboot cellular network",stat_c5greg,stat_cereg,stat_cgreg);
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mt5700.h:1485:53: warning: '%s' directive writing up to 1023 bytes into a region of size 95 [-Wformat-overflow=]
+ 1485 |                                 sprintf(debug,"5GS: %s; EPS & GPRS: %s, reboot cellular network",stat_c5greg,stat_cereg);
+      |                                                     ^~                                           ~~~~~~~~~~~
+mt5700.h:1485:33: note: 'sprintf' output between 45 and 2091 bytes into a destination of size 100
+ 1485 |                                 sprintf(debug,"5GS: %s; EPS & GPRS: %s, reboot cellular network",stat_c5greg,stat_cereg);
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mt5700.h:1483:59: warning: '%s' directive writing up to 1023 bytes into a region of size 89 [-Wformat-overflow=]
+ 1483 |                                 sprintf(debug,"5GS & EPS: %s; GPRS: %s, reboot cellular network",stat_c5greg,stat_cgreg);
+      |                                                           ^~                                     ~~~~~~~~~~~
+mt5700.h:1483:33: note: 'sprintf' output between 45 and 2091 bytes into a destination of size 100
+ 1483 |                                 sprintf(debug,"5GS & EPS: %s; GPRS: %s, reboot cellular network",stat_c5greg,stat_cgreg);
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Makefile:18: recipe for target 'main.o' failed
+make[3]: *** [main.o] Error 1
+make[3]: Leaving directory '/home/slk/SLK-R8862A/clsemi-openwrt/build_dir/target-aarch64_cortex-a53_musl/dialing'
+Makefile:37: recipe for target '/home/slk/SLK-R8862A/clsemi-openwrt/build_dir/target-aarch64_cortex-a53_musl/dialing/.built' failed
+make[2]: *** [/home/slk/SLK-R8862A/clsemi-openwrt/build_dir/target-aarch64_cortex-a53_musl/dialing/.built] Error 2
+make[2]: Leaving directory '/home/slk/SLK-R8862A/clsemi-openwrt/package/custom/dialing'
+time: package/custom/dialing/compile#0.70#0.17#0.81
+    ERROR: package/custom/dialing failed to build.
+package/Makefile:114: recipe for target 'package/custom/dialing/compile' failed
+make[1]: *** [package/custom/dialing/compile] Error 1
+make[1]: Leaving directory '/home/slk/SLK-R8862A/clsemi-openwrt'
+/home/slk/SLK-R8862A/clsemi-openwrt/include/toplevel.mk:228: recipe for target 'package/custom/dialing/compile' failed
+make: *** [package/custom/dialing/compile] Error 2
